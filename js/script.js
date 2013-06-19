@@ -9,14 +9,20 @@
 (function() {
 
   $(function() {
-    var basesettings, dockerCommands, id, interpreter;
+    var basesettings, cmd_run, cmd_search, docker, dockerCommands, id, interpreter, printDot, results_docker_pull_ubuntu, results_search_ubuntu, wait;
     id = 1;
     basesettings = {
-      prompt: '>>>>> $ ',
+      prompt: '> $ ',
       greetings: "Welcome to the interactive Docker tutorial. Enter 'docker' to begin"
     };
-    interpreter = function(command, term) {
-      var description, dockerCommand, _results;
+    /*
+        Base interpreter
+    */
+
+    interpreter = function(input, term) {
+      var command, description, dockerCommand, inputs;
+      inputs = input.split(" ");
+      command = inputs[0];
       if (command === 'hi') {
         term.echo('hi there! What would you like to do today?');
         term.push(function(command, term) {
@@ -24,49 +30,138 @@
         });
       }
       if (command === "help") {
-        term.echo('printing help');
-        term.echo('[[b]printing help]');
+        term.error('printing help');
+        term.echo('[[b;#fff;]some text]');
       }
       if (command === "docker") {
-        _results = [];
+        docker(term, inputs);
+      }
+      if (command === "colors") {
         for (dockerCommand in dockerCommands) {
           description = dockerCommands[dockerCommand];
-          _results.push(term.echo("[[b]" + dockerCommand + "] " + description + ""));
+          term.echo("[[b;#fff;]" + dockerCommand + "] - " + description + "");
         }
-        return _results;
+      }
+      if (command === "pull") {
+        term.echo('[[b;#fff;]some text]');
+        wait(term, 5000, true);
       }
     };
+    /*
+        Common utils
+    */
+
     $('body').terminal(interpreter, basesettings);
-    return dockerCommands = {
-      "attach": "Attach to a running container",
-      "build": "Build a container from a Dockerfile",
-      "commit": "Create a new image from a container's changes",
-      "diff": "Inspect changes on a container's filesystem",
-      "export": "Stream the contents of a container as a tar archive",
-      "history": "Show the history of an image",
-      "images": "List images",
-      "import": "Create a new filesystem image from the contents of a tarball",
-      "info": "Display system-wide information",
-      "insert": "Insert a file in an image",
-      "inspect": "Return low-level information on a container",
-      "kill": "Kill a running container",
-      "login": "Register or Login to the docker registry server",
-      "logs": "Fetch the logs of a container",
-      "port": "Lookup the public-facing port which is NAT-ed to PRIVATE_PORT",
-      "ps": "List containers",
-      "pull": "Pull an image or a repository from the docker registry server",
-      "push": "Push an image or a repository to the docker registry server",
-      "restart": "Restart a running container",
-      "rm": "Remove a container",
-      "rmi": "Remove an image",
-      "run": "Run a command in a new container",
-      "search": "Search for an image in the docker index",
-      "start": "Start a stopped container",
-      "stop": "Stop a running container",
-      "tag": "Tag an image into a repository",
-      "version": "Show the docker version information",
-      "wait": "Block until a container stops, then print its exit code"
+    printDot = function(term) {
+      return term.insert("a bunch of text; ");
     };
+    wait = function(term, time, dots) {
+      var interval_id;
+      term.echo("starting to wait");
+      interval_id = self.setInterval((function() {
+        return dots != null ? dots : term.insert('.');
+      }), 500);
+      return self.setTimeout((function() {
+        var output;
+        self.clearInterval(interval_id);
+        output = term.get_command();
+        term.echo(output);
+        return term.echo("done ");
+      }), time);
+    };
+    /*
+        Docker program
+    */
+
+    docker = function(term, inputs) {
+      var description, dockerCommand, echo, i, insert, keyword, line, print_line, pull_lines, _fn, _i, _len;
+      echo = term.echo;
+      insert = term.insert;
+      if (!inputs[1]) {
+        console.debug("no args");
+        echo("Usage: docker [OPTIONS] COMMAND [arg...]\n  -H=\"127.0.0.1:4243\": Host:port to bind/connect to\n\nA self-sufficient runtime for linux containers.\n\nCommands:\n");
+        for (dockerCommand in dockerCommands) {
+          description = dockerCommands[dockerCommand];
+          echo("[[b;#fff;]" + dockerCommand + "]" + description + "");
+        }
+      } else if (inputs[1] === "run") {
+        if (inputs[2] === "ubuntu") {
+          console.log("run ubuntu");
+          echo(results_run_ubuntu);
+        } else {
+          console.log("run");
+          echo(cmd_run);
+        }
+      } else if (inputs[1] === "search") {
+        if (keyword = inputs[2]) {
+          if (keyword === "ubuntu") {
+            echo(results_search_ubuntu);
+          } else {
+            echo("Found 0 results matching your query (\"" + inputs[2] + "\")\nNAME                DESCRIPTION");
+          }
+        } else {
+          echo(cmd_search);
+        }
+      } else if (inputs[1] === "pull") {
+        pull_lines = results_docker_pull_ubuntu.split("\n");
+        i = 1;
+        print_line = function(line) {
+          return echo(line);
+        };
+        _fn = function() {
+          var uline;
+          uline = line;
+          self.setTimeout((function() {
+            return echo(uline);
+          }), 1000 * i);
+          return i++;
+        };
+        for (_i = 0, _len = pull_lines.length; _i < _len; _i++) {
+          line = pull_lines[_i];
+          _fn();
+        }
+      } else if (dockerCommands[inputs[1]]) {
+        echo("" + inputs[1] + " is a valid argument, but not implemented");
+      }
+    };
+    /*
+      Some default variables / commands
+    */
+
+    dockerCommands = {
+      "attach": "    Attach to a running container",
+      "build": "     Build a container from a Dockerfile",
+      "commit": "    Create a new image from a container's changes",
+      "diff": "      Inspect changes on a container's filesystem",
+      "export": "    Stream the contents of a container as a tar archive",
+      "history": "   Show the history of an image",
+      "images": "    List images",
+      "import": "    Create a new filesystem image from the contents of a tarball",
+      "info": "      Display system-wide information",
+      "insert": "    Insert a file in an image",
+      "inspect": "   Return low-level information on a container",
+      "kill": "      Kill a running container",
+      "login": "     Register or Login to the docker registry server",
+      "logs": "      Fetch the logs of a container",
+      "port": "      Lookup the public-facing port which is NAT-ed to PRIVATE_PORT",
+      "ps": "        List containers",
+      "pull": "      Pull an image or a repository from the docker registry server",
+      "push": "      Push an image or a repository to the docker registry server",
+      "restart": "   Restart a running container",
+      "rm": "        Remove a container",
+      "rmi": "       Remove an image",
+      "run": "       Run a command in a new container",
+      "search": "    Search for an image in the docker index",
+      "start": "     Start a stopped container",
+      "stop": "      Stop a running container",
+      "tag": "       Tag an image into a repository",
+      "version": "   Show the docker version information",
+      "wait": "      Block until a container stops, then print its exit code"
+    };
+    cmd_run = "Usage: docker run [OPTIONS] IMAGE COMMAND [ARG...]\n\nRun a command in a new container\n\n-a=map[]: Attach to stdin, stdout or stderr.\n-c=0: CPU shares (relative weight)\n-d=false: Detached mode: leave the container running in the background\n-dns=[]: Set custom dns servers\n-e=[]: Set environment variables\n-h=\"\": Container host name\n-i=false: Keep stdin open even if not attached\n-m=0: Memory limit (in bytes)\n-p=[]: Expose a container's port to the host (use 'docker port' to see the actual mapping)\n-t=false: Allocate a pseudo-tty\n-u=\"\": Username or UID\n-v=map[]: Attach a data volume\n-volumes-from=\"\": Mount volumes from the specified container\n";
+    cmd_search = "\nUsage: docker search NAME\n\nSearch the docker index for images\n";
+    results_search_ubuntu = "Found 22 results matching your query (\"ubuntu\")\nNAME                DESCRIPTION\nshykes/ubuntu\nbase                Another general use Ubuntu base image. Tag...\nubuntu              General use Ubuntu base image. Tags availa...\nboxcar/raring       Ubuntu Raring 13.04 suitable for testing v...\ndhrp/ubuntu\ncreack/ubuntu       Tags:\n12.04-ssh,\n12.10-ssh,\n12.10-ssh-l...\ncrohr/ubuntu              Ubuntu base images. Only lucid (10.04) for...\nknewton/ubuntu\npallet/ubuntu2\nerikh/ubuntu\nsamalba/wget              Test container inherited from ubuntu with ...\ncreack/ubuntu-12-10-ssh\nknewton/ubuntu-12.04\ntithonium/rvm-ubuntu      The base 'ubuntu' image, with rvm installe...\ndekz/build                13.04 ubuntu with build\nooyala/test-ubuntu\nooyala/test-my-ubuntu\nooyala/test-ubuntu2\nooyala/test-ubuntu3\nooyala/test-ubuntu4\nooyala/test-ubuntu5\nsurma/go                  Simple augmentation of the standard Ubuntu...\n";
+    return results_docker_pull_ubuntu = "Pulling repository ubuntu from https://index.docker.io/v1\nPulling image 8dbd9e392a964056420e5d58ca5cc376ef18e2de93b5cc90e868a1bbc8318c1c (precise) from ubuntu\nPulling image b750fe79269d2ec9a3c593ef05b4332b1d1a02a62b4accb2c21d589ff2f5f2dc (12.10) from ubuntu\nPulling image 27cf784147099545 () from ubuntu";
   });
 
 }).call(this);
