@@ -1,5 +1,5 @@
 ###
-  Please note the javascript is being fully generated from coffeescript. So make your changes here.
+  Please note the javascript is being fully generated from coffeescript. So make your changes in the .coffee file.
   Thatcher Peskens
 ###
 
@@ -9,14 +9,13 @@ $ ->
   id = 1
 
   basesettings = {
-    prompt: '> $ ',
+    prompt: 'you@tutorial:~$ ',
     greetings: "Welcome to the interactive Docker tutorial. Enter 'docker' to begin",
   }
 
   ###
     Base interpreter
   ###
-
 
   interpreter = (input, term) ->
     inputs = input.split(" ")
@@ -27,13 +26,20 @@ $ ->
       term.push (command, term) ->
         term.echo command + ' is a pretty name'
 
+    if command is 'cd'
+      bash(term, inputs)
+
+    if command is 'exec'
+      term.exec (
+          "docker run"
+      )
+
     if command is "help"
-      term.error 'printing help'
+      term.error 'pcd rinting help'
       term.echo '[[b;#fff;]some text]';
 
     if command is "docker"
       docker(term, inputs)
-
 
     if command is "colors"
       for dockerCommand, description of dockerCommands
@@ -51,9 +57,33 @@ $ ->
 
   $('body').terminal( interpreter, basesettings )
 
+  # add beginsWith function to prototype
+  String.prototype.beginsWith = (string) ->
+    return(this.indexOf(string) is 0)
 
-  printDot = (term) ->
-    term.insert("a bunch of text; ")
+  #
+
+  util_slow_lines = (term, paragraph, keyword) ->
+
+    if keyword
+      lines = paragraph(keyword).split("\n")
+    else
+      lines = paragraph.split("\n")
+
+    term.pause()
+    i = 0
+    foo = (lines) ->
+      self.setTimeout ( ->
+        if lines[i]
+          term.echo (lines[i])
+          foo(lines)
+          i++
+        else
+          term.resume()
+      ), 1000
+
+    foo(lines)
+
 
   wait = (term, time, dots) ->
     term.echo "starting to wait"
@@ -66,6 +96,22 @@ $ ->
       term.echo "done "
     ), time
 
+  ###
+    Bash program
+  ###
+
+  bash = (term, inputs) ->
+    echo = term.echo
+    insert = term.insert
+
+    if not inputs[1]
+
+    else
+      argument = inputs[1]
+      if argument.beginsWith('..')
+        echo "-bash: cd: #{argument}: Permission denied"
+      else
+        echo "-bash: cd: #{argument}: No such file or directory"
 
   ###
     Docker program
@@ -76,19 +122,17 @@ $ ->
     echo = term.echo
     insert = term.insert
 
+
     if not inputs[1]
       console.debug "no args"
-      echo """
-           Usage: docker [OPTIONS] COMMAND [arg...]
-             -H="127.0.0.1:4243": Host:port to bind/connect to
-
-           A self-sufficient runtime for linux containers.
-
-           Commands:
-
-           """
+      echo cmd_docker
       for dockerCommand, description of dockerCommands
         echo "[[b;#fff;]" + dockerCommand + "]" + description + ""
+
+    else if inputs[1] is 'do'
+      term.push('do', {prompt: "do $ "})
+#      term.pop()
+
 
     else if inputs[1] is "run"
       if inputs[2] is "ubuntu"
@@ -101,29 +145,27 @@ $ ->
     else if inputs[1] is "search"
       if keyword = inputs[2]
         if keyword is "ubuntu"
-          echo results_search_ubuntu
+          echo search_ubuntu
         else
-          echo """
-                 Found 0 results matching your query ("#{inputs[2]}")
-                 NAME                DESCRIPTION
-                 """
-      else echo cmd_search
+          echo search_no_results(inputs[2])
+      else echo search
 
     else if inputs[1] is "pull"
-      pull_lines = results_docker_pull_ubuntu.split("\n")
+      if keyword = inputs[2]
+        if keyword is 'ubuntu'
+          # http://www.benjiegillam.com/2011/11/coffeescript-lets-you-express-yourself-more-clearly/
+          # 'do' signals a self executing function, and therefore creates the closure
+          i = 0
+          for line in pull_ubuntu.split("\n")
+            do ->
+              uline = line
+              self.setTimeout ( -> echo uline ), 1000 * i
+              i++
+        else
+          util_slow_lines(term, pull_no_results, keyword)
 
-      i = 1
-
-
-      print_line = (line) -> echo line
-
-      # http://www.benjiegillam.com/2011/11/coffeescript-lets-you-express-yourself-more-clearly/
-      for line in pull_lines
-        do ->
-          uline = line
-          self.setTimeout ( -> echo uline ), 1000 * i
-          i++
-
+      else
+        echo pull
 
 
     else if dockerCommands[inputs[1]]
@@ -132,12 +174,20 @@ $ ->
     # return empty value because otherwise coffeescript will return last var
     return
 
-
-
   ###
-  Some default variables / commands
+    Some default variables / commands
   ###
 
+  cmd_docker = \
+    """
+      Usage: docker [OPTIONS] COMMAND [arg...]
+      -H="127.0.0.1:4243": Host:port to bind/connect to
+
+      A self-sufficient runtime for linux containers.
+
+      Commands:
+
+    """
 
   dockerCommands =
     "attach": "    Attach to a running container"
@@ -169,6 +219,31 @@ $ ->
     "version": "   Show the docker version information"
     "wait": "      Block until a container stops, then print its exit code"
 
+  pull = \
+    """
+    Usage: docker pull NAME
+
+    Pull an image or a repository from the registry
+
+    -registry="": Registry to download from. Necessary if image is pulled by ID
+    -t="": Download tagged image in repository
+    """
+
+
+  pull_no_results = (keyword) ->
+    """
+    Pulling repository #{keyword} from https://index.docker.io/v1
+    2013/06/19 19:27:03 HTTP code: 404
+    """
+
+  pull_ubuntu =
+    """
+    Pulling repository ubuntu from https://index.docker.io/v1
+    Pulling image 8dbd9e392a964056420e5d58ca5cc376ef18e2de93b5cc90e868a1bbc8318c1c (precise) from ubuntu
+    Pulling image b750fe79269d2ec9a3c593ef05b4332b1d1a02a62b4accb2c21d589ff2f5f2dc (12.10) from ubuntu
+    Pulling image 27cf784147099545 () from ubuntu
+    """
+
   cmd_run = \
     """
     Usage: docker run [OPTIONS] IMAGE COMMAND [ARG...]
@@ -191,7 +266,7 @@ $ ->
 
     """
 
-  cmd_search = \
+  search = \
     """
 
     Usage: docker search NAME
@@ -200,7 +275,14 @@ $ ->
 
     """
 
-  results_search_ubuntu = \
+  search_no_results = (keyword) ->
+    """
+    Found 0 results matching your query ("#{keyword}")
+    NAME                DESCRIPTION
+    """
+
+
+  search_ubuntu = \
     """
     Found 22 results matching your query ("ubuntu")
     NAME                DESCRIPTION
@@ -230,12 +312,4 @@ $ ->
     ooyala/test-ubuntu5
     surma/go                  Simple augmentation of the standard Ubuntu...
 
-    """
-
-  results_docker_pull_ubuntu = \
-    """
-    Pulling repository ubuntu from https://index.docker.io/v1
-    Pulling image 8dbd9e392a964056420e5d58ca5cc376ef18e2de93b5cc90e868a1bbc8318c1c (precise) from ubuntu
-    Pulling image b750fe79269d2ec9a3c593ef05b4332b1d1a02a62b4accb2c21d589ff2f5f2dc (12.10) from ubuntu
-    Pulling image 27cf784147099545 () from ubuntu
     """
