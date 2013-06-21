@@ -8,18 +8,27 @@
 
 (function() {
 
-  $(function() {
-    var basesettings, bash, cmd_docker, cmd_run, docker, dockerCommands, id, interpreter, pull, pull_no_results, pull_ubuntu, search, search_no_results, search_ubuntu, util_slow_lines, wait;
-    id = 1;
-    basesettings = {
+  (this.myTerminal = function() {
+    var bash, cmd_docker, cmd_run, docker, dockerCommands, pull, pull_no_results, pull_ubuntu, search, search_no_results, search_ubuntu, util_slow_lines, wait;
+    this.basesettings = {
       prompt: 'you@tutorial:~$ ',
       greetings: "Welcome to the interactive Docker tutorial. Enter 'docker' to begin"
+    };
+    /*
+        Callback definitions. These can be overridden by functions anywhere else
+    */
+
+    this.immediateCallback = function(command) {
+      console.debug("immediate callback from " + command);
+    };
+    this.finishedCallback = function(command) {
+      console.debug("finished callback from " + command);
     };
     /*
         Base interpreter
     */
 
-    interpreter = function(input, term) {
+    this.interpreter = function(input, term) {
       var command, description, dockerCommand, inputs;
       inputs = input.split(" ");
       command = inputs[0];
@@ -29,6 +38,9 @@
           return term.echo(command + ' is a pretty name');
         });
       }
+      if (command === 'hi') {
+        term.echo('complete');
+      }
       if (command === 'cd') {
         bash(term, inputs);
       }
@@ -36,7 +48,7 @@
         term.exec("docker run");
       }
       if (command === "help") {
-        term.error('pcd rinting help');
+        term.error('printing help');
         term.echo('[[b;#fff;]some text]');
       }
       if (command === "docker") {
@@ -51,17 +63,19 @@
       if (command === "pull") {
         term.echo('[[b;#fff;]some text]');
         wait(term, 5000, true);
+        alert(term.get_output());
+        return;
       }
+      return immediateCallback(inputs);
     };
     /*
         Common utils
     */
 
-    $('body').terminal(interpreter, basesettings);
     String.prototype.beginsWith = function(string) {
       return this.indexOf(string) === 0;
     };
-    util_slow_lines = function(term, paragraph, keyword) {
+    util_slow_lines = function(term, paragraph, keyword, finishedCallback) {
       var foo, i, lines;
       if (keyword) {
         lines = paragraph(keyword).split("\n");
@@ -74,10 +88,11 @@
         return self.setTimeout((function() {
           if (lines[i]) {
             term.echo(lines[i]);
-            foo(lines);
-            return i++;
+            i++;
+            return foo(lines);
           } else {
-            return term.resume();
+            term.resume();
+            return finishedCallback();
           }
         }), 1000);
       };
@@ -121,9 +136,12 @@
     */
 
     docker = function(term, inputs) {
-      var description, dockerCommand, echo, i, insert, keyword, line, _fn, _i, _len, _ref;
+      var callback, description, dockerCommand, echo, insert, keyword, result;
       echo = term.echo;
       insert = term.insert;
+      callback = function() {
+        return this.finishedCallback(inputs);
+      };
       if (!inputs[1]) {
         console.debug("no args");
         echo(cmd_docker);
@@ -156,20 +174,7 @@
       } else if (inputs[1] === "pull") {
         if (keyword = inputs[2]) {
           if (keyword === 'ubuntu') {
-            i = 0;
-            _ref = pull_ubuntu.split("\n");
-            _fn = function() {
-              var uline;
-              uline = line;
-              self.setTimeout((function() {
-                return echo(uline);
-              }), 1000 * i);
-              return i++;
-            };
-            for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-              line = _ref[_i];
-              _fn();
-            }
+            result = util_slow_lines(term, pull_ubuntu, "", callback);
           } else {
             util_slow_lines(term, pull_no_results, keyword);
           }
@@ -225,7 +230,8 @@
     search_no_results = function(keyword) {
       return "Found 0 results matching your query (\"" + keyword + "\")\nNAME                DESCRIPTION";
     };
-    return search_ubuntu = "Found 22 results matching your query (\"ubuntu\")\nNAME                DESCRIPTION\nshykes/ubuntu\nbase                Another general use Ubuntu base image. Tag...\nubuntu              General use Ubuntu base image. Tags availa...\nboxcar/raring       Ubuntu Raring 13.04 suitable for testing v...\ndhrp/ubuntu\ncreack/ubuntu       Tags:\n12.04-ssh,\n12.10-ssh,\n12.10-ssh-l...\ncrohr/ubuntu              Ubuntu base images. Only lucid (10.04) for...\nknewton/ubuntu\npallet/ubuntu2\nerikh/ubuntu\nsamalba/wget              Test container inherited from ubuntu with ...\ncreack/ubuntu-12-10-ssh\nknewton/ubuntu-12.04\ntithonium/rvm-ubuntu      The base 'ubuntu' image, with rvm installe...\ndekz/build                13.04 ubuntu with build\nooyala/test-ubuntu\nooyala/test-my-ubuntu\nooyala/test-ubuntu2\nooyala/test-ubuntu3\nooyala/test-ubuntu4\nooyala/test-ubuntu5\nsurma/go                  Simple augmentation of the standard Ubuntu...\n";
-  });
+    search_ubuntu = "Found 22 results matching your query (\"ubuntu\")\nNAME                DESCRIPTION\nshykes/ubuntu\nbase                Another general use Ubuntu base image. Tag...\nubuntu              General use Ubuntu base image. Tags availa...\nboxcar/raring       Ubuntu Raring 13.04 suitable for testing v...\ndhrp/ubuntu\ncreack/ubuntu       Tags:\n12.04-ssh,\n12.10-ssh,\n12.10-ssh-l...\ncrohr/ubuntu              Ubuntu base images. Only lucid (10.04) for...\nknewton/ubuntu\npallet/ubuntu2\nerikh/ubuntu\nsamalba/wget              Test container inherited from ubuntu with ...\ncreack/ubuntu-12-10-ssh\nknewton/ubuntu-12.04\ntithonium/rvm-ubuntu      The base 'ubuntu' image, with rvm installe...\ndekz/build                13.04 ubuntu with build\nooyala/test-ubuntu\nooyala/test-my-ubuntu\nooyala/test-ubuntu2\nooyala/test-ubuntu3\nooyala/test-ubuntu4\nooyala/test-ubuntu5\nsurma/go                  Simple augmentation of the standard Ubuntu...\n";
+    return this;
+  })();
 
 }).call(this);

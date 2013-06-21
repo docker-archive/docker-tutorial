@@ -3,21 +3,32 @@
   Thatcher Peskens
 ###
 
+do @myTerminal = ->
 
-$ ->
+  #  id = terminal
 
-  id = 1
-
-  basesettings = {
+  @basesettings = {
     prompt: 'you@tutorial:~$ ',
     greetings: "Welcome to the interactive Docker tutorial. Enter 'docker' to begin",
   }
 
   ###
+    Callback definitions. These can be overridden by functions anywhere else
+  ###
+
+  @immediateCallback = (command) ->
+    console.debug("immediate callback from #{command}")
+    return
+
+  @finishedCallback = (command) ->
+    console.debug("finished callback from #{command}")
+    return
+
+  ###
     Base interpreter
   ###
 
-  interpreter = (input, term) ->
+  @interpreter = (input, term) ->
     inputs = input.split(" ")
     command = inputs[0]
 
@@ -25,6 +36,9 @@ $ ->
       term.echo 'hi there! What would you like to do today?'
       term.push (command, term) ->
         term.echo command + ' is a pretty name'
+
+    if command is 'hi'
+      term.echo 'complete'
 
     if command is 'cd'
       bash(term, inputs)
@@ -35,7 +49,7 @@ $ ->
       )
 
     if command is "help"
-      term.error 'pcd rinting help'
+      term.error 'printing help'
       term.echo '[[b;#fff;]some text]';
 
     if command is "docker"
@@ -48,14 +62,18 @@ $ ->
     if command is "pull"
       term.echo '[[b;#fff;]some text]'
       wait(term, 5000, true)
+      alert term.get_output()
 
       return
+
+    immediateCallback(inputs)
+
+  #  $('#terminal').terminal( interpreter, basesettings )
+
 
   ###
     Common utils
   ###
-
-  $('body').terminal( interpreter, basesettings )
 
   # add beginsWith function to prototype
   String.prototype.beginsWith = (string) ->
@@ -63,7 +81,7 @@ $ ->
 
   #
 
-  util_slow_lines = (term, paragraph, keyword) ->
+  util_slow_lines = (term, paragraph, keyword, finishedCallback) ->
 
     if keyword
       lines = paragraph(keyword).split("\n")
@@ -72,14 +90,17 @@ $ ->
 
     term.pause()
     i = 0
+    # function calls itself after timeout is done, untill
+    # all lines are finished
     foo = (lines) ->
       self.setTimeout ( ->
         if lines[i]
           term.echo (lines[i])
-          foo(lines)
           i++
+          foo(lines)
         else
           term.resume()
+          finishedCallback()
       ), 1000
 
     foo(lines)
@@ -121,6 +142,7 @@ $ ->
 
     echo = term.echo
     insert = term.insert
+    callback = () -> @finishedCallback(inputs)
 
 
     if not inputs[1]
@@ -153,14 +175,7 @@ $ ->
     else if inputs[1] is "pull"
       if keyword = inputs[2]
         if keyword is 'ubuntu'
-          # http://www.benjiegillam.com/2011/11/coffeescript-lets-you-express-yourself-more-clearly/
-          # 'do' signals a self executing function, and therefore creates the closure
-          i = 0
-          for line in pull_ubuntu.split("\n")
-            do ->
-              uline = line
-              self.setTimeout ( -> echo uline ), 1000 * i
-              i++
+          result = util_slow_lines(term, pull_ubuntu, "", callback )
         else
           util_slow_lines(term, pull_no_results, keyword)
 
@@ -313,3 +328,7 @@ $ ->
     surma/go                  Simple augmentation of the standard Ubuntu...
 
     """
+
+  return this
+
+

@@ -1,0 +1,76 @@
+.debug {
+  border: 2px red dotted;
+  background: #361919;
+  /* Fall-back for browsers that don't support rgba */
+
+  background: rgba(54, 25, 25, 0.5);
+  box-sizing: border-box;
+}
+#overlay {
+  position: relative;
+  width: 700px;
+  height: 400px;
+  border: 2px #008BB8 solid;
+}
+#overlay.fullsize {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  width: auto;
+  height: auto;
+  background-color: white;
+}
+#main {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+}
+#main.fullsize {
+  margin-top: 0px;
+  top: 40px;
+}
+#tutorialTop {
+  display: none;
+  position: absolute;
+  height: 40px;
+  left: 0;
+  right: 0;
+  width: 100%;
+  border: 2px red dotted;
+  background: #361919;
+  /* Fall-back for browsers that don't support rgba */
+
+  background: rgba(54, 25, 25, 0.5);
+  box-sizing: border-box;
+}
+#tutorialTop.fullsize {
+  display: block;
+}
+#left {
+  box-sizing: border-box;
+  width: 35%;
+  position: absolute;
+  display: block;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+}
+#instructions,
+#results,
+#actions {
+  padding: 10px;
+}
+#terminal {
+  box-sizing: border-box;
+  position: absolute;
+  display: block;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 35%;
+}

@@ -1,0 +1,111 @@
+.debug {
+  border: 2px red dotted;
+  background: rgb(54, 25, 25); /* Fall-back for browsers that don't support rgba */
+  background: rgba(54, 25, 25, .5);
+  box-sizing: border-box;
+}
+
+body {
+}
+
+
+#overlay {
+  position: relative;
+  width: 700px;
+  height: 400px;
+//  background-color: silver;
+  border: 2px #008BB8 solid;
+}
+
+#overlay.fullsize {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  width: auto;
+  height: auto;
+
+  // here we set a background color for the overlay, so the elements below don't shine through
+  background-color: white;
+
+}
+
+#main {
+  position: absolute;
+
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+
+//  margin-top: 40px;
+}
+
+#main.fullsize {
+  margin-top: 0px;
+  top: 40px;
+}
+
+#tutorialTop {
+  display: none;
+  position: absolute;
+  height: 40px;
+//  background-color: #faebd7;
+  left: 0;
+  right: 0;
+  width: 100%;
+  .debug;
+}
+
+#tutorialTop.fullsize {
+  display: block;
+}
+
+
+
+#left {
+  box-sizing: border-box;
+  width: 35%;
+
+  position: absolute;
+  display: block;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+//  .debug;
+}
+
+#instructions, #results, #actions {
+  padding: 10px;
+//  .debug;
+}
+
+
+#instructions {
+//  .debug;
+}
+
+#results {
+//  border: 1px red solid;
+}
+
+#actions {
+//  .debug;
+}
+
+
+#terminal {
+  box-sizing: border-box;
+
+  position: absolute;
+  display: block;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 35%;
+
+//  margin: 5px; // possible, but not used
+
+}
