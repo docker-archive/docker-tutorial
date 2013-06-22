@@ -12,6 +12,7 @@
     <script src="lib/js/jquery.terminal-min.js"></script>
     <script src="lib/js/sugar-1.3.9.min.js"></script>
     <script src="js/terminal.js"></script>
+    <link href='//fonts.googleapis.com/css?family=Cabin:400,700,400italic' rel='stylesheet' type='text/css'>
 
     <link href="lib/css/jquery.terminal.css" rel="stylesheet"/>
     <link rel="stylesheet" href="css/style.css" />
@@ -23,27 +24,70 @@
 <div id="top">
 
     <h2 id="title">Docker interactive tutorial</h2>
+    <p>bla </p><p>bla </p>
 
 </div>
 
 <div id="overlay" class="fullsize">
     <div id="tutorialTop" class="fullsize">
-        This is the top..
-        <a id="fullSizeClose" href="#" class="">close full screen mode</a>
+        <img src="img/docker-topicon.png">
+        <h1>Learn Docker</h1>
+
+        <!--<a id="fullSizeClose" href="#" class="">close full screen mode</a>-->
     </div>
 
     <div id="main" class="fullsize">
         <div id="left" class="left">
             <div id="instructions">
-                Instructions go here
+                <div class="circle">
+                    <svg xmlns="http://www.w3.org/2000/svg" version="1.1"
+                         style="width:40px; height:40px; position:relative; float: left; top:5; left:5; z-index:1;">
+                        <circle cx="50%" cy="50%" r="50%" stroke-width="2" fill="#FF8100" ></circle>
+                        <text x="50%" y="55%" text-anchor="middle" dominant-baseline="middle" fill="white">1</text>
+                    </svg>
+                </div>
+                <div class="text">
+                    <!--<p>`docker version` will show the versions docker is running. If either are not present this will show a warning</p>-->
+
+                    <!--<h4>background:</h4>-->
+                    <!--<p>There are actually two programs, a Docker daemon, it actually manages al lthe containers, and the Docker client. It acts as a remote control. On most systems, like ours, both run on the same host. </p>-->
+                </div>
             </div>
-            <div id="results">
-                results go here
+            <div id="results" class="">
+                <div class="circle">
+                    <svg xmlns="http://www.w3.org/2000/svg" version="1.1"
+                         style="width:40px; height:40px; position:relative; float: left; top:5; left:5; z-index:1;">
+                        <circle cx="50%" cy="50%" r="50%" fill="black" ></circle>
+                        <circle cx="50%" cy="50%" r="45%" fill="white" ></circle>
+                        <text x="50%" y="55%" text-anchor="middle" dominant-baseline="middle" fill="white">1</text>
+                    </svg>
+                </div>
+                <div class="text">
+
+                </div>
             </div>
             <div id="actions">
-                <button id="buttonPrevious" >previous</button>
-                <button id="buttonNext" >next</button>
+                <div class="text">
+                    <h1>Actions</h1>
+                    <button id="buttonPrevious" class="docker-btn-blue docker-btn-large " >previous</button>
+                    <button id="buttonNext" class="docker-btn-blue docker-btn-large" disabled="disabled" >next</button>
+                </div>
+
             </div>
+            <div id="tips">
+                <svg xmlns="http://www.w3.org/2000/svg" version="1.1"
+                     style="width:40px; height:40px; position:relative; float: left; top:5; left:5; z-index:1;">
+                    <circle cx="50%" cy="50%" r="50%" fill="#008BB8" ></circle>
+                    <text x="50%" y="55%" text-anchor="middle" dominant-baseline="middle" fill="white">i</text>
+                </svg>
+                <div class="text">
+                    <h1>Tips</h1>
+                    <div id="tiptext" style="width: 100%; height: 100%">
+                        click here for tips
+                    </div>
+                </div>
+            </div>
+
         </div>
         <div id="terminal" class="right"></div>
     </div>

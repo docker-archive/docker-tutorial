@@ -11,16 +11,18 @@
 
 
 (function() {
-  var leaveFullSizeMode, next, previous, question, questions, results;
+  var buildfunction, current_question, f, leaveFullSizeMode, next, previous, q, question, questions, results, _i, _len;
 
   this.webterm = $('#terminal').terminal(interpreter, basesettings);
 
   $('#buttonNext').click(function() {
-    return next();
+    next();
+    return $('#results').hide();
   });
 
   $('#buttonPrevious').click(function() {
-    return previous();
+    previous();
+    return $('#results').hide();
   });
 
   /*
@@ -30,17 +32,17 @@
 
   questions = [];
 
-  question = 0;
+  current_question = 0;
 
   next = function() {
-    question++;
-    questions[question]();
+    current_question++;
+    questions[current_question]();
     return results.clear();
   };
 
   previous = function() {
-    question--;
-    questions[question]();
+    current_question--;
+    questions[current_question]();
     return results.clear();
   };
 
@@ -53,27 +55,56 @@
     }
   };
 
-  questions.push(function() {
-    $('#instructions').html("<h1>one</h1>\nWelcome\n\nPlease type docker search ubuntu\n");
-    return window.immediateCallback = function(input) {
-      console.log(input);
-      if (Object.equal(input, ['docker', 'search', 'ubuntu'])) {
-        results.set("yeey! hurray, woohooo, you did it, amazing, you are awesome, you completed the first assignment.");
-      } else {
-        results.set("That was not the right command.");
-      }
-    };
+  /*
+    Array of question objects
+  */
+
+
+  q = [];
+
+  q.push({
+    html: "<h1>Welcome</h1>\n\nPlease type docker search ubuntu\n",
+    command_expected: ['docker'],
+    result: "yeey! hurray, woohooo, you did it, amazing, you are awesome, you completed the first assignment.",
+    tip: "try typing `docker version"
   });
 
-  questions.push(function() {
-    $('#instructions').html("<h1>two</h1>\n<p>Great. Now you know how to find images, lets download them. The command to use is \"pull\".</p>\n<p>Go ahead and pull the tutorial image</p>");
-    return window.finishedCallback = function(input) {
-      console.log(input);
-      if (Object.equal(input, ['docker', 'pull', 'ubuntu'])) {
-        $('#results').html("yeey! hurray, woohooo, you did it, amazing, you are awesome, you completed the second assignment.");
-      }
-    };
+  q.push({
+    html: "<h1>Check if Docker is running</h1>\n\n`docker version` will show the versions docker is running. If either are not present this will show a warning\n\n<h4>background:</h4>\nThere are actually two programs, a Docker daemon, it actually manages al lthe containers, and the Docker client. It acts as a remote control. On most systems, like ours, both run on the same host.",
+    command_expected: ['docker', 'version'],
+    result: "Well done.",
+    tip: "try typing `docker version"
   });
+
+  /*
+    Transform question objects into functions
+  */
+
+
+  buildfunction = function(q) {
+    var _q;
+    _q = q;
+    return function() {
+      console.debug("function called");
+      $('#instructions .text').html(_q.html);
+      window.immediateCallback = function(input) {
+        console.log(input);
+        if (Object.equal(input, _q.command_expected)) {
+          $('#results').show();
+          $('#results .text').html(_q.result);
+          $('#buttonNext').removeAttr('disabled');
+        } else {
+          $('#results.text').html(_q.partial_results);
+        }
+      };
+    };
+  };
+
+  for (_i = 0, _len = q.length; _i < _len; _i++) {
+    question = q[_i];
+    f = buildfunction(question);
+    questions.push(f);
+  }
 
   questions[0]();
 
@@ -86,7 +117,8 @@
     console.debug("going to fullsize mode");
     $('#overlay').addClass('fullsize');
     $('#main').addClass('fullsize');
-    return $('#tutorialTop').addClass('fullsize');
+    $('#tutorialTop').addClass('fullsize');
+    return webterm.resize();
   });
 
   $('#fullSizeClose').click(function() {
@@ -97,7 +129,8 @@
     console.debug("leaving full-size mode");
     $('#overlay').removeClass('fullsize');
     $('#main').removeClass('fullsize');
-    return $('#tutorialTop').removeClass('fullsize');
+    $('#tutorialTop').removeClass('fullsize');
+    return webterm.resize();
   };
 
 }).call(this);
