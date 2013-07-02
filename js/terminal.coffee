@@ -24,6 +24,10 @@ do @myTerminal = ->
     console.debug("finished callback from #{command}")
     return
 
+  @intermediateResults = (string) ->
+    console.debug("sent #{string}")
+    return
+
   ###
     Base interpreter
   ###
@@ -37,8 +41,11 @@ do @myTerminal = ->
       term.push (command, term) ->
         term.echo command + ' is a pretty name'
 
-    if command is 'hi'
-      term.echo 'complete'
+    if command is 'r'
+      location.reload('forceGet')
+
+    if command is '#'
+      term.echo 'which question?'
 
     if command is 'cd'
       bash(term, inputs)
@@ -147,7 +154,7 @@ do @myTerminal = ->
 
     if not inputs[1]
       console.debug "no args"
-      echo cmd_docker
+      echo docker_cmd
       for dockerCommand, description of dockerCommands
         echo "[[b;#fff;]" + dockerCommand + "]" + description + ""
 
@@ -155,19 +162,25 @@ do @myTerminal = ->
       term.push('do', {prompt: "do $ "})
 #      term.pop()
 
-
     else if inputs[1] is "run"
       if inputs[2] is "ubuntu"
         console.log("run ubuntu")
-        echo results_run_ubuntu
+        echo run_ubuntu
+      else if inputs[2] is "learn/tutorial"
+        echo run_learn_tutorial
+        intermediateResults()
+      else if inputs[2]
+        echo run_notfound(inputs[2])
       else
         console.log("run")
-        echo (cmd_run)
+        echo (run_cmd)
 
     else if inputs[1] is "search"
       if keyword = inputs[2]
         if keyword is "ubuntu"
           echo search_ubuntu
+        if keyword is "tutorial"
+          echo search_tutorial
         else
           echo search_no_results(inputs[2])
       else echo search
@@ -176,11 +189,15 @@ do @myTerminal = ->
       if keyword = inputs[2]
         if keyword is 'ubuntu'
           result = util_slow_lines(term, pull_ubuntu, "", callback )
+        else if keyword is 'learn/tutorial'
+          result = util_slow_lines(term, pull_tutorial, "", callback )
         else
           util_slow_lines(term, pull_no_results, keyword)
-
       else
         echo pull
+
+    else if inputs[1] is "version"
+      echo (version)
 
 
     else if dockerCommands[inputs[1]]
@@ -191,9 +208,11 @@ do @myTerminal = ->
 
   ###
     Some default variables / commands
+
+    All items are sorted by alphabet
   ###
 
-  cmd_docker = \
+  docker_cmd = \
     """
       Usage: docker [OPTIONS] COMMAND [arg...]
       -H="127.0.0.1:4243": Host:port to bind/connect to
@@ -234,6 +253,7 @@ do @myTerminal = ->
     "version": "   Show the docker version information"
     "wait": "      Block until a container stops, then print its exit code"
 
+
   pull = \
     """
     Usage: docker pull NAME
@@ -259,7 +279,15 @@ do @myTerminal = ->
     Pulling image 27cf784147099545 () from ubuntu
     """
 
-  cmd_run = \
+  pull_tutorial = \
+    """
+    Pulling repository learn/tutorial from https://index.docker.io/v1
+    Pulling image 8dbd9e392a964056420e5d58ca5cc376ef18e2de93b5cc90e868a1bbc8318c1c (precise) from ubuntu
+    Pulling image b750fe79269d2ec9a3c593ef05b4332b1d1a02a62b4accb2c21d589ff2f5f2dc (12.10) from ubuntu
+    Pulling image 27cf784147099545 () from tutorial
+    """
+
+  run_cmd = \
     """
     Usage: docker run [OPTIONS] IMAGE COMMAND [ARG...]
 
@@ -281,6 +309,22 @@ do @myTerminal = ->
 
     """
 
+  run_learn_tutorial = \
+    """
+    2013/07/02 02:00:59 Error: No command specified
+    """
+
+  run_ubuntu = \
+    """
+    2013/07/02 02:00:59 Error: No command specified
+    """
+
+  run_notfound = (keyword) ->
+    """
+    Pulling repository #{keyword} from https://index.docker.io/v1
+    2013/07/02 02:14:47 Error: No such image: #{keyword}
+    """
+
   search = \
     """
 
@@ -296,6 +340,12 @@ do @myTerminal = ->
     NAME                DESCRIPTION
     """
 
+  search_tutorial = \
+    """
+    Found 1 results matching your query ("tutorial")
+    NAME                      DESCRIPTION
+    learn/tutorial            An image for the interactive tutorial
+    """
 
   search_ubuntu = \
     """
@@ -329,6 +379,18 @@ do @myTerminal = ->
 
     """
 
-  return this
+  version = \
+  """
+    Docker Emulator version 0.1
+
+    Emulating:
+    Client version: 0.4.7
+    Server version: 0.4.7
+    Go version: go1.1
+    """
+
+
+
+return this
 
 

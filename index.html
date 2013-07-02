@@ -33,7 +33,7 @@
         <img src="img/docker-topicon.png">
         <h1>Learn Docker</h1>
 
-        <!--<a id="fullSizeClose" href="#" class="">close full screen mode</a>-->
+        <a id="fullSizeClose" href="#" class="closeButton"><img src="img/fullscreen_exit_32x32.png" title="close fullscreen"> </a>
     </div>
 
     <div id="main" class="fullsize">
@@ -54,15 +54,13 @@
                 </div>
             </div>
             <div id="results" class="">
-                <div class="circle">
-                    <svg xmlns="http://www.w3.org/2000/svg" version="1.1"
-                         style="width:40px; height:40px; position:relative; float: left; top:5; left:5; z-index:1;">
-                        <circle cx="50%" cy="50%" r="50%" fill="black" ></circle>
-                        <circle cx="50%" cy="50%" r="45%" fill="white" ></circle>
-                        <text x="50%" y="55%" text-anchor="middle" dominant-baseline="middle" fill="white">1</text>
-                    </svg>
-                </div>
-                <div class="text">
+                <svg xmlns="http://www.w3.org/2000/svg" version="1.1"
+                     style="width:40px; height:40px; position:relative; float: left; top:5; left:5; z-index:1;">
+                    <circle cx="50%" cy="50%" r="50%" stroke-width="2"  ></circle>
+                    <text x="50%" y="55%" text-anchor="middle" dominant-baseline="middle" fill="white">✔</text>
+                </svg>
+
+                <div id="resulttext" class="text">
 
                 </div>
             </div>

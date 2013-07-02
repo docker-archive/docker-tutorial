@@ -9,7 +9,7 @@
 (function() {
 
   (this.myTerminal = function() {
-    var bash, cmd_docker, cmd_run, docker, dockerCommands, pull, pull_no_results, pull_ubuntu, search, search_no_results, search_ubuntu, util_slow_lines, wait;
+    var bash, docker, dockerCommands, docker_cmd, pull, pull_no_results, pull_tutorial, pull_ubuntu, run_cmd, run_learn_tutorial, run_notfound, run_ubuntu, search, search_no_results, search_tutorial, search_ubuntu, util_slow_lines, version, wait;
     this.basesettings = {
       prompt: 'you@tutorial:~$ ',
       greetings: "Welcome to the interactive Docker tutorial. Enter 'docker' to begin"
@@ -23,6 +23,9 @@
     };
     this.finishedCallback = function(command) {
       console.debug("finished callback from " + command);
+    };
+    this.intermediateResults = function(string) {
+      console.debug("sent " + string);
     };
     /*
         Base interpreter
@@ -38,8 +41,11 @@
           return term.echo(command + ' is a pretty name');
         });
       }
-      if (command === 'hi') {
-        term.echo('complete');
+      if (command === 'r') {
+        location.reload('forceGet');
+      }
+      if (command === '#') {
+        term.echo('which question?');
       }
       if (command === 'cd') {
         bash(term, inputs);
@@ -144,7 +150,7 @@
       };
       if (!inputs[1]) {
         console.debug("no args");
-        echo(cmd_docker);
+        echo(docker_cmd);
         for (dockerCommand in dockerCommands) {
           description = dockerCommands[dockerCommand];
           echo("[[b;#fff;]" + dockerCommand + "]" + description + "");
@@ -156,15 +162,23 @@
       } else if (inputs[1] === "run") {
         if (inputs[2] === "ubuntu") {
           console.log("run ubuntu");
-          echo(results_run_ubuntu);
+          echo(run_ubuntu);
+        } else if (inputs[2] === "learn/tutorial") {
+          echo(run_learn_tutorial);
+          intermediateResults();
+        } else if (inputs[2]) {
+          echo(run_notfound(inputs[2]));
         } else {
           console.log("run");
-          echo(cmd_run);
+          echo(run_cmd);
         }
       } else if (inputs[1] === "search") {
         if (keyword = inputs[2]) {
           if (keyword === "ubuntu") {
             echo(search_ubuntu);
+          }
+          if (keyword === "tutorial") {
+            echo(search_tutorial);
           } else {
             echo(search_no_results(inputs[2]));
           }
@@ -175,21 +189,27 @@
         if (keyword = inputs[2]) {
           if (keyword === 'ubuntu') {
             result = util_slow_lines(term, pull_ubuntu, "", callback);
+          } else if (keyword === 'learn/tutorial') {
+            result = util_slow_lines(term, pull_tutorial, "", callback);
           } else {
             util_slow_lines(term, pull_no_results, keyword);
           }
         } else {
           echo(pull);
         }
+      } else if (inputs[1] === "version") {
+        echo(version);
       } else if (dockerCommands[inputs[1]]) {
         echo("" + inputs[1] + " is a valid argument, but not implemented");
       }
     };
     /*
         Some default variables / commands
+    
+        All items are sorted by alphabet
     */
 
-    cmd_docker = "Usage: docker [OPTIONS] COMMAND [arg...]\n-H=\"127.0.0.1:4243\": Host:port to bind/connect to\n\nA self-sufficient runtime for linux containers.\n\nCommands:\n";
+    docker_cmd = "Usage: docker [OPTIONS] COMMAND [arg...]\n-H=\"127.0.0.1:4243\": Host:port to bind/connect to\n\nA self-sufficient runtime for linux containers.\n\nCommands:\n";
     dockerCommands = {
       "attach": "    Attach to a running container",
       "build": "     Build a container from a Dockerfile",
@@ -225,13 +245,22 @@
       return "Pulling repository " + keyword + " from https://index.docker.io/v1\n2013/06/19 19:27:03 HTTP code: 404";
     };
     pull_ubuntu = "Pulling repository ubuntu from https://index.docker.io/v1\nPulling image 8dbd9e392a964056420e5d58ca5cc376ef18e2de93b5cc90e868a1bbc8318c1c (precise) from ubuntu\nPulling image b750fe79269d2ec9a3c593ef05b4332b1d1a02a62b4accb2c21d589ff2f5f2dc (12.10) from ubuntu\nPulling image 27cf784147099545 () from ubuntu";
-    cmd_run = "Usage: docker run [OPTIONS] IMAGE COMMAND [ARG...]\n\nRun a command in a new container\n\n-a=map[]: Attach to stdin, stdout or stderr.\n-c=0: CPU shares (relative weight)\n-d=false: Detached mode: leave the container running in the background\n-dns=[]: Set custom dns servers\n-e=[]: Set environment variables\n-h=\"\": Container host name\n-i=false: Keep stdin open even if not attached\n-m=0: Memory limit (in bytes)\n-p=[]: Expose a container's port to the host (use 'docker port' to see the actual mapping)\n-t=false: Allocate a pseudo-tty\n-u=\"\": Username or UID\n-v=map[]: Attach a data volume\n-volumes-from=\"\": Mount volumes from the specified container\n";
+    pull_tutorial = "Pulling repository learn/tutorial from https://index.docker.io/v1\nPulling image 8dbd9e392a964056420e5d58ca5cc376ef18e2de93b5cc90e868a1bbc8318c1c (precise) from ubuntu\nPulling image b750fe79269d2ec9a3c593ef05b4332b1d1a02a62b4accb2c21d589ff2f5f2dc (12.10) from ubuntu\nPulling image 27cf784147099545 () from tutorial";
+    run_cmd = "Usage: docker run [OPTIONS] IMAGE COMMAND [ARG...]\n\nRun a command in a new container\n\n-a=map[]: Attach to stdin, stdout or stderr.\n-c=0: CPU shares (relative weight)\n-d=false: Detached mode: leave the container running in the background\n-dns=[]: Set custom dns servers\n-e=[]: Set environment variables\n-h=\"\": Container host name\n-i=false: Keep stdin open even if not attached\n-m=0: Memory limit (in bytes)\n-p=[]: Expose a container's port to the host (use 'docker port' to see the actual mapping)\n-t=false: Allocate a pseudo-tty\n-u=\"\": Username or UID\n-v=map[]: Attach a data volume\n-volumes-from=\"\": Mount volumes from the specified container\n";
+    run_learn_tutorial = "2013/07/02 02:00:59 Error: No command specified";
+    run_ubuntu = "2013/07/02 02:00:59 Error: No command specified";
+    run_notfound = function(keyword) {
+      return "Pulling repository " + keyword + " from https://index.docker.io/v1\n2013/07/02 02:14:47 Error: No such image: " + keyword;
+    };
     search = "\nUsage: docker search NAME\n\nSearch the docker index for images\n";
     search_no_results = function(keyword) {
       return "Found 0 results matching your query (\"" + keyword + "\")\nNAME                DESCRIPTION";
     };
+    search_tutorial = "Found 1 results matching your query (\"tutorial\")\nNAME                      DESCRIPTION\nlearn/tutorial            An image for the interactive tutorial";
     search_ubuntu = "Found 22 results matching your query (\"ubuntu\")\nNAME                DESCRIPTION\nshykes/ubuntu\nbase                Another general use Ubuntu base image. Tag...\nubuntu              General use Ubuntu base image. Tags availa...\nboxcar/raring       Ubuntu Raring 13.04 suitable for testing v...\ndhrp/ubuntu\ncreack/ubuntu       Tags:\n12.04-ssh,\n12.10-ssh,\n12.10-ssh-l...\ncrohr/ubuntu              Ubuntu base images. Only lucid (10.04) for...\nknewton/ubuntu\npallet/ubuntu2\nerikh/ubuntu\nsamalba/wget              Test container inherited from ubuntu with ...\ncreack/ubuntu-12-10-ssh\nknewton/ubuntu-12.04\ntithonium/rvm-ubuntu      The base 'ubuntu' image, with rvm installe...\ndekz/build                13.04 ubuntu with build\nooyala/test-ubuntu\nooyala/test-my-ubuntu\nooyala/test-ubuntu2\nooyala/test-ubuntu3\nooyala/test-ubuntu4\nooyala/test-ubuntu5\nsurma/go                  Simple augmentation of the standard Ubuntu...\n";
-    return this;
+    return version = "Docker Emulator version 0.1\n\nEmulating:\nClient version: 0.4.7\nServer version: 0.4.7\nGo version: go1.1";
   })();
+
+  return this;
 
 }).call(this);

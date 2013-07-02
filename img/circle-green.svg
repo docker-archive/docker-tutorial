@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" version="1.1"
+     >
+    <!--<circle cx="50%" cy="50%" r="50%" fill="black" ></circle>-->
+    <circle cx="50%" cy="50%" r="45%" fill="green" ></circle>
+    <text x="50%" y="55%" text-anchor="middle" dominant-baseline="middle" fill="white">1</text>
+</svg>
