@@ -92,9 +92,9 @@
 
   q.push({
     html: "<h1>Interactive Shell</h1>\n<p>Now, since Docker provides you with the equivalent of a complete operating system you are able to get\nan interactive shell (tty) <em>inside of the container</em>. Your goal is to run the tutorial container you have\njust downloaded and get a shell inside of it.</p>\n<p>The command to run a container is <em>docker run</em>",
-    command_expected: ['docker', 'pull', 'learn/tutorial'],
-    result: "<p>Cool. Look at the results. You'll see that docker has downloaded a number of different layers</p>",
-    intermediateresults: "<p>You seem to be almost there. Did you use <em>-i and it</em>?</p>",
+    command_expected: ["docker", "run", "-i", "-t", "learn/tutorial", "/bin/bash"],
+    result: "<p>Great!! Now you have an interactive terminal</p>",
+    intermediateresults: ["<p>You seem to be almost there. Did you use <em>-i and -t</em>?</p>", "<p>You've got the arguments right. Did you get the command? Try <em>/bin/bash </em>?</p>"],
     tip: "don't forget to pull the full name of the repository e.g. 'learn/tutorial'"
   });
 
@@ -109,17 +109,28 @@
     return function() {
       console.debug("function called");
       $('#instructions .text').html(_q.html);
-      window.immediateCallback = function(input) {
-        console.log(input);
-        if (Object.equal(input, _q.command_expected)) {
-          results.set(_q.result);
+      window.immediateCallback = function(input, stop) {
+        var doNotExecute;
+        if (stop === true) {
+          doNotExecute = true;
         } else {
-          console.debug("wrong command received");
+          doNotExecute = false;
+        }
+        if (doNotExecute !== true) {
+          console.log("callback");
+          console.log(input);
+          if (Object.equal(input, _q.command_expected)) {
+            results.set(_q.result);
+          } else {
+
+          }
+        } else {
+
         }
       };
       window.intermediateResults = function(input) {
         var intermediate;
-        return results.set(_q.intermediateresults, intermediate = true);
+        return results.set(_q.intermediateresults[input], intermediate = true);
       };
     };
   };

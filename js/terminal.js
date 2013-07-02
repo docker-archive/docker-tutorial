@@ -9,7 +9,7 @@
 (function() {
 
   (this.myTerminal = function() {
-    var bash, docker, dockerCommands, docker_cmd, pull, pull_no_results, pull_tutorial, pull_ubuntu, run_cmd, run_learn_tutorial, run_notfound, run_ubuntu, search, search_no_results, search_tutorial, search_ubuntu, util_slow_lines, version, wait;
+    var bash, docker, dockerCommands, docker_cmd, pull, pull_no_results, pull_tutorial, pull_ubuntu, run_cmd, run_learn_tutorial, run_notfound, run_switches, run_ubuntu, search, search_no_results, search_tutorial, search_ubuntu, util_slow_lines, version, wait;
     this.basesettings = {
       prompt: 'you@tutorial:~$ ',
       greetings: "Welcome to the interactive Docker tutorial. Enter 'docker' to begin"
@@ -18,6 +18,7 @@
         Callback definitions. These can be overridden by functions anywhere else
     */
 
+    this.preventDefaultCallback = false;
     this.immediateCallback = function(command) {
       console.debug("immediate callback from " + command);
     };
@@ -36,9 +37,16 @@
       inputs = input.split(" ");
       command = inputs[0];
       if (command === 'hi') {
-        term.echo('hi there! What would you like to do today?');
+        term.echo('hi there! What is your name??');
         term.push(function(command, term) {
           return term.echo(command + ' is a pretty name');
+        });
+      }
+      if (command === 'shell') {
+        term.push(function(command, term) {
+          return term.echo(' is a pretty name');
+        }, {
+          prompt: '> $ '
         });
       }
       if (command === 'r') {
@@ -142,7 +150,7 @@
     */
 
     docker = function(term, inputs) {
-      var callback, description, dockerCommand, echo, insert, keyword, result;
+      var callback, commands, description, dockerCommand, echo, expected_switches, imagename, input, insert, j, keyword, parsed_input, result, switchArg, switchArgs, switches, _i, _len;
       echo = term.echo;
       insert = term.insert;
       callback = function() {
@@ -160,13 +168,57 @@
           prompt: "do $ "
         });
       } else if (inputs[1] === "run") {
-        if (inputs[2] === "ubuntu") {
+        switches = [];
+        switchArg = false;
+        switchArgs = [];
+        imagename = "";
+        commands = [];
+        j = 0;
+        for (_i = 0, _len = inputs.length; _i < _len; _i++) {
+          input = inputs[_i];
+          if (input.startsWith('-')) {
+            switches.push(input);
+            if (run_switches[input].length > 0) {
+              switchArg = true;
+            }
+          } else if (switchArg === true) {
+            switchArg = false;
+            switchArgs.push(input);
+          } else if (j > 1 && imagename === "") {
+            imagename = input;
+          } else if (imagename !== "") {
+            commands.push(input);
+          } else {
+
+          }
+          j++;
+        }
+        parsed_input = {
+          'switches': switches.sortBy(),
+          'switchArgs': switchArgs,
+          'imagename': imagename,
+          'commands': commands
+        };
+        console.debug(JSON.stringify(parsed_input, void 0, 2));
+        expected_switches = ['-i', '-t'];
+        if (imagename === "ubuntu") {
           console.log("run ubuntu");
           echo(run_ubuntu);
-        } else if (inputs[2] === "learn/tutorial") {
+        } else if (Object.equal(switches.sortBy(), expected_switches.sortBy())) {
+          if (imagename === "learn/tutorial" && commands[0] === "/bin/bash") {
+            immediateCallback(parsed_input, true);
+            term.push(function(command, term) {
+              return term.echo(' is a pretty shell');
+            }, {
+              prompt: '> $ '
+            });
+          } else {
+            intermediateResults(1);
+          }
+        } else if (imagename === "learn/tutorial") {
           echo(run_learn_tutorial);
-          intermediateResults();
-        } else if (inputs[2]) {
+          intermediateResults(0);
+        } else if (imagename) {
           echo(run_notfound(inputs[2]));
         } else {
           console.log("run");
@@ -239,6 +291,12 @@
       "tag": "       Tag an image into a repository",
       "version": "   Show the docker version information",
       "wait": "      Block until a container stops, then print its exit code"
+    };
+    run_switches = {
+      "-p": ['port'],
+      "-t": [],
+      "-i": [],
+      "-h": ['hostname']
     };
     pull = "Usage: docker pull NAME\n\nPull an image or a repository from the registry\n\n-registry=\"\": Registry to download from. Necessary if image is pulled by ID\n-t=\"\": Download tagged image in repository";
     pull_no_results = function(keyword) {

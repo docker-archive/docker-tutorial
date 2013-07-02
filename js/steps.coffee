@@ -48,6 +48,14 @@ results = {
     $('#resulttext').html(htmlText)
     $('#results').show()
     $('#buttonNext').removeAttr('disabled')
+  #
+  #    webterm.echo \
+  #    """
+  #           _
+  #        ,_(')<
+  #        \\\___)
+  #    """
+
   clear: ->
     $('#resulttext').html("")
     $('#results').hide()
@@ -60,16 +68,6 @@ results = {
 
 q = []
 
-#q.push ({
-#  html: """
-#  <h1>Welcome</h1>
-#  <p>Please type 'docker version'</p>
-#
-#  """
-#  command_expected: ['docker', 'version']
-#  result: "<p>Well done! Now you are ready to move on to the next assignment</p>"
-#  tip: "try typing `docker version"
-#})
 
 q.push ({
 html: """
@@ -118,15 +116,14 @@ html: """
       just downloaded and get a shell inside of it.</p>
       <p>The command to run a container is <em>docker run</em>
       """
-command_expected: ['docker', 'pull', 'learn/tutorial']
-result: """<p>Cool. Look at the results. You'll see that docker has downloaded a number of different layers</p>"""
-intermediateresults: """<p>You seem to be almost there. Did you use <em>-i and it</em>?</p>"""
+command_expected: ["docker", "run", "-i", "-t", "learn/tutorial", "/bin/bash"]
+result: """<p>Great!! Now you have an interactive terminal</p>"""
+intermediateresults: [
+  """<p>You seem to be almost there. Did you use <em>-i and -t</em>?</p>""",
+  """<p>You've got the arguments right. Did you get the command? Try <em>/bin/bash </em>?</p>"""
+  ]
 tip: """don't forget to pull the full name of the repository e.g. 'learn/tutorial'"""
 })
-
-
-
-
 
 
 ###
@@ -138,18 +135,28 @@ buildfunction = (q) ->
   return ->
     console.debug("function called")
     $('#instructions .text').html(_q.html)
-    window.immediateCallback = (input) ->
-      console.log (input)
-      if Object.equal(input, _q.command_expected)
-        results.set(_q.result)
+    window.immediateCallback = (input, stop) ->
+      if stop == true # prevent the next event from happening
+        doNotExecute = true
       else
-        console.debug("wrong command received")
-#        $('#results').show()
-#        $('#results.text').html(_q.partial_results)
-#        $('#buttonNext').removeAttr('disabled')
+        doNotExecute = false
+
+      if doNotExecute != true
+        console.log ("callback")
+        console.log (input)
+        if Object.equal(input, _q.command_expected)
+          results.set(_q.result)
+        else
+
+  #        console.debug("wrong command received")
+      else
+
+
+
       return
     window.intermediateResults = (input) ->
-      results.set(_q.intermediateresults, intermediate=true)
+#      alert "itermediate received"
+      results.set(_q.intermediateresults[input], intermediate=true)
     return
 
 

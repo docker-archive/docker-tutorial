@@ -16,6 +16,8 @@ do @myTerminal = ->
     Callback definitions. These can be overridden by functions anywhere else
   ###
 
+  @preventDefaultCallback = false
+
   @immediateCallback = (command) ->
     console.debug("immediate callback from #{command}")
     return
@@ -37,9 +39,14 @@ do @myTerminal = ->
     command = inputs[0]
 
     if command is 'hi'
-      term.echo 'hi there! What would you like to do today?'
+      term.echo 'hi there! What is your name??'
       term.push (command, term) ->
         term.echo command + ' is a pretty name'
+
+    if command is 'shell'
+      term.push (command, term) ->
+        term.echo ' is a pretty name'
+      , {prompt: '> $ '}
 
     if command is 'r'
       location.reload('forceGet')
@@ -73,9 +80,9 @@ do @myTerminal = ->
 
       return
 
-    immediateCallback(inputs)
-
   #  $('#terminal').terminal( interpreter, basesettings )
+
+    immediateCallback(inputs)
 
 
   ###
@@ -162,18 +169,70 @@ do @myTerminal = ->
       term.push('do', {prompt: "do $ "})
 #      term.pop()
 
+    #### Command run ####
+
     else if inputs[1] is "run"
-      if inputs[2] is "ubuntu"
+      switches = []
+      switchArg = false
+      switchArgs = []
+      imagename = ""
+      commands = []
+      j = 0
+
+      # parse args
+      for input in inputs
+        if input.startsWith('-')
+          switches.push(input)
+          if run_switches[input].length > 0
+            switchArg = true
+        else if switchArg == true
+          # reset switchArg
+          switchArg = false
+          switchArgs.push(input)
+        else if j > 1 and imagename == ""
+          # match wrong names
+          imagename = input
+        else if imagename != ""
+          commands.push (input)
+        else
+          # just docker run
+
+        j++
+
+
+      parsed_input = {
+        'switches': switches.sortBy(),
+        'switchArgs': switchArgs,
+        'imagename': imagename,
+        'commands': commands,
+      }
+
+      console.debug JSON.stringify(parsed_input, undefined, 2)
+
+      #check the args
+      expected_switches = ['-i', '-t']
+
+
+      if imagename is "ubuntu"
         console.log("run ubuntu")
         echo run_ubuntu
-      else if inputs[2] is "learn/tutorial"
+      else if Object.equal(switches.sortBy(), expected_switches.sortBy())
+        if imagename is "learn/tutorial" and commands[0] is "/bin/bash"
+          immediateCallback(parsed_input, true)
+          term.push (command, term) ->
+            term.echo ' is a pretty shell'
+          , {prompt: '> $ '}
+        else
+          intermediateResults(1)
+      else if imagename is "learn/tutorial"
         echo run_learn_tutorial
-        intermediateResults()
-      else if inputs[2]
+        intermediateResults(0)
+      else if imagename
         echo run_notfound(inputs[2])
       else
         console.log("run")
         echo (run_cmd)
+
 
     else if inputs[1] is "search"
       if keyword = inputs[2]
@@ -253,6 +312,11 @@ do @myTerminal = ->
     "version": "   Show the docker version information"
     "wait": "      Block until a container stops, then print its exit code"
 
+  run_switches =
+    "-p": ['port']
+    "-t": []
+    "-i": []
+    "-h": ['hostname']
 
   pull = \
     """

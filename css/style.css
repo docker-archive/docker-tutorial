@@ -143,6 +143,7 @@ h4 {
   border-radius: 5px;
   box-sizing: border-box;
   color: #106e34;
+  font-weight: bold;
 }
 .docker-btn {
   border: none;
