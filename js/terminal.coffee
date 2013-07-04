@@ -215,7 +215,7 @@ do @myTerminal = ->
 
       if imagename is "ubuntu"
         console.log("run ubuntu")
-        echo run_ubuntu
+        echo run_image_no_command
       else if Object.equal(switches.sortBy(), expected_switches.sortBy())
         if imagename is "learn/tutorial" and commands[0] is "/bin/bash"
           immediateCallback(parsed_input, true)
@@ -224,9 +224,16 @@ do @myTerminal = ->
           , {prompt: '> $ '}
         else
           intermediateResults(1)
-      else if imagename is "learn/tutorial"
+      else if imagename is "learn/tutorial" and switches.length
         echo run_learn_tutorial
         intermediateResults(0)
+      else if imagename is "learn/tutorial" and commands[0] is "/bin/bash"
+        echo run_learn_tutorial_echo_hello_world
+        intermediateResults(2)
+      else if imagename is "learn/tutorial" and commands[0] is "echo"
+        echo run_learn_tutorial_echo_hello_world
+      else if imagename is "learn/tutorial"
+        echo run_image_no_command
       else if imagename
         echo run_notfound(inputs[2])
       else
@@ -378,7 +385,12 @@ do @myTerminal = ->
     2013/07/02 02:00:59 Error: No command specified
     """
 
-  run_ubuntu = \
+  run_learn_tutorial_echo_hello_world = \
+    """
+    hello world
+    """
+
+  run_image_no_command = \
     """
     2013/07/02 02:00:59 Error: No command specified
     """

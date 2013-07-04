@@ -9,7 +9,7 @@
 (function() {
 
   (this.myTerminal = function() {
-    var bash, docker, dockerCommands, docker_cmd, pull, pull_no_results, pull_tutorial, pull_ubuntu, run_cmd, run_learn_tutorial, run_notfound, run_switches, run_ubuntu, search, search_no_results, search_tutorial, search_ubuntu, util_slow_lines, version, wait;
+    var bash, docker, dockerCommands, docker_cmd, pull, pull_no_results, pull_tutorial, pull_ubuntu, run_cmd, run_image_no_command, run_learn_tutorial, run_learn_tutorial_echo_hello_world, run_notfound, run_switches, search, search_no_results, search_tutorial, search_ubuntu, util_slow_lines, version, wait;
     this.basesettings = {
       prompt: 'you@tutorial:~$ ',
       greetings: "Welcome to the interactive Docker tutorial. Enter 'docker' to begin"
@@ -203,7 +203,7 @@
         expected_switches = ['-i', '-t'];
         if (imagename === "ubuntu") {
           console.log("run ubuntu");
-          echo(run_ubuntu);
+          echo(run_image_no_command);
         } else if (Object.equal(switches.sortBy(), expected_switches.sortBy())) {
           if (imagename === "learn/tutorial" && commands[0] === "/bin/bash") {
             immediateCallback(parsed_input, true);
@@ -215,9 +215,16 @@
           } else {
             intermediateResults(1);
           }
-        } else if (imagename === "learn/tutorial") {
+        } else if (imagename === "learn/tutorial" && switches.length) {
           echo(run_learn_tutorial);
           intermediateResults(0);
+        } else if (imagename === "learn/tutorial" && commands[0] === "/bin/bash") {
+          echo(run_learn_tutorial_echo_hello_world);
+          intermediateResults(2);
+        } else if (imagename === "learn/tutorial" && commands[0] === "echo") {
+          echo(run_learn_tutorial_echo_hello_world);
+        } else if (imagename === "learn/tutorial") {
+          echo(run_image_no_command);
         } else if (imagename) {
           echo(run_notfound(inputs[2]));
         } else {
@@ -306,7 +313,8 @@
     pull_tutorial = "Pulling repository learn/tutorial from https://index.docker.io/v1\nPulling image 8dbd9e392a964056420e5d58ca5cc376ef18e2de93b5cc90e868a1bbc8318c1c (precise) from ubuntu\nPulling image b750fe79269d2ec9a3c593ef05b4332b1d1a02a62b4accb2c21d589ff2f5f2dc (12.10) from ubuntu\nPulling image 27cf784147099545 () from tutorial";
     run_cmd = "Usage: docker run [OPTIONS] IMAGE COMMAND [ARG...]\n\nRun a command in a new container\n\n-a=map[]: Attach to stdin, stdout or stderr.\n-c=0: CPU shares (relative weight)\n-d=false: Detached mode: leave the container running in the background\n-dns=[]: Set custom dns servers\n-e=[]: Set environment variables\n-h=\"\": Container host name\n-i=false: Keep stdin open even if not attached\n-m=0: Memory limit (in bytes)\n-p=[]: Expose a container's port to the host (use 'docker port' to see the actual mapping)\n-t=false: Allocate a pseudo-tty\n-u=\"\": Username or UID\n-v=map[]: Attach a data volume\n-volumes-from=\"\": Mount volumes from the specified container\n";
     run_learn_tutorial = "2013/07/02 02:00:59 Error: No command specified";
-    run_ubuntu = "2013/07/02 02:00:59 Error: No command specified";
+    run_learn_tutorial_echo_hello_world = "hello world";
+    run_image_no_command = "2013/07/02 02:00:59 Error: No command specified";
     run_notfound = function(keyword) {
       return "Pulling repository " + keyword + " from https://index.docker.io/v1\n2013/07/02 02:14:47 Error: No such image: " + keyword;
     };

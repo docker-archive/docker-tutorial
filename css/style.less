@@ -1,5 +1,6 @@
 @informationblue: #008BB8;
-@tutorialTopHeight: 50px;
+@tutorialTopHeight: 60px;
+@greySuperLight: #E7E7E7;
 
 
 .debug {
@@ -21,14 +22,15 @@ body {
 
 
 p { font-size: 16px; font-size: 1.6rem; }
-h1 { font-size: 3.0rem; }
-h2 { font-size: 2.4rem; }
-h3 { font-size: 1.8rem; }
-h4 { font-size: 1.6rem; }
+h1 { font-size: 2.2rem; }
+h2 { font-size: 2.0rem; font-weight: bold;}
+h3 { font-size: 1.5rem; }
+h4 { font-size: 1.2rem; }
 
 p {
   margin-top: 0px;
   margin-bottom: 5px;
+  line-height: 1.3em;
 }
 
 h1, h2, h3, h4{
@@ -111,8 +113,11 @@ h3, h4 {
   }
 
   h1 {
-    font-size: 26px;
-    font-size: 2.6rem;
+    font-size: 22px;
+    font-size: 2.2rem;
+//    color: #E7E7E8;
+    color: white;
+    font-weight: normal;
   }
 }
 
@@ -136,7 +141,7 @@ h3, h4 {
   padding: 5px 10px 0 10px;
 
 
-  .text {
+  .text, .assignment {
     margin-left: 60px;
   }
 
@@ -147,6 +152,12 @@ h3, h4 {
 
 #instructions {
 //  .debug;
+  .assignment {
+    margin-top: 20px;
+    border: 2px grey solid;
+    padding: 15px;
+
+  }
 }
 
 #results {
@@ -175,10 +186,22 @@ h3, h4 {
 #tiptext {
   border: 1px grey solid;
   border-radius: 5px;
-  padding: 5px;
+  padding: 15px;
   box-sizing: border-box;
   color: #a9a9a9;
   font-style: italic;
+//  style="width: 100%; height: 100%"
+}
+
+#tiptext.showtip {
+    color: black !important;
+    font-style: normal !important;
+}
+
+#tiptexthidden {
+  display: none;
+  visibility: hidden;
+  height: 1px; width: 1px;
 }
 
 #resulttext {
@@ -197,7 +220,7 @@ h3, h4 {
 
 .docker-btn-large {
   font-size: 22px;
-  padding: 15px;
+  padding: 10px 15px 10px 15px;
 }
 
 .docker-btn-blue {
@@ -272,4 +295,26 @@ circle {
 
 #instructions {
   circle { fill: #FF8100; }
+}
+
+#results {
+  position: absolute;
+  z-index: 20;
+  background-color: @greySuperLight;
+  width: 400px;
+//  min-height: 130px;
+  padding: 10px;
+  position:absolute;
+  box-sizing: border-box;
+  right:0;
+  top: 0;
+  margin-top: 50px;
+
+  button {
+    position: relative;
+    float: right;
+//    margin-bottom: 15px;
+
+  }
+
 }
