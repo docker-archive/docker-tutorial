@@ -9,16 +9,6 @@
 
 @webterm = $('#terminal').terminal(interpreter, basesettings)
 
-$('#buttonNext').click ->
-  next()
-  $('#results').hide()
-
-$('#buttonPrevious').click ->
-  previous()
-  $('#results').hide()
-
-
-
 ###
   Start with the questions
 ###
@@ -31,12 +21,18 @@ next = () ->
   current_question++
   questions[current_question]()
   results.clear()
+  @webterm.focus()
+
+  if not $('#tipShownText').hasClass('hidden')
+    $('#tipShownText').addClass("hidden")
+    $('#tipHiddenText').removeClass("hidden").show()
   return
 
 previous = () ->
   current_question--
   questions[current_question]()
   results.clear()
+  @webterm.focus()
   return
 
 results = {
@@ -51,16 +47,8 @@ results = {
     window.setTimeout ( () ->
       $('#resulttext').html(htmlText)
       $('#results').fadeIn()
-  #    $('#results').fadeIn('fast')
       $('#buttonNext').removeAttr('disabled')
     ), 300
-  #
-  #    webterm.echo \
-  #    """
-  #           _
-  #        ,_(')<
-  #        \\\___)
-  #    """
 
   clear: ->
     $('#resulttext').html("")
@@ -122,7 +110,7 @@ assignment:
       <p>Please download the tutorial image you have just found</p>
       """
 command_expected: ['docker', 'pull', 'learn/tutorial']
-result: """<p>Cool. Look at the results. You'll see that docker has downloaded a number of different layers</p>"""
+result: """<p>Cool. Look at the results. You'll see that docker has downloaded a number of layers. In Docker all images (except the base image) are made up of several cumulative layers.</p>"""
 tip: """Don't forget to pull the full name of the repository e.g. 'learn/tutorial'"""
 })
 
@@ -138,7 +126,7 @@ html: """
       """
 assignment: """
       <h2>Assignment</h2>
-      <p>Make our freshly loaded image say "hello world"</p>
+      <p>Make our freshly loaded container image image output "hello world"</p>
       """
 command_expected: ["docker", "run", "learn/tutorial", "echo"]
 result: """<p>Great! Hellooooo World!</p>"""
@@ -146,9 +134,27 @@ intermediateresults: [
   """<p>You seem to be almost there. Did you give the command `echo "hello world"` """,
   """<p>You've got the arguments right. Did you get the command? Try <em>/bin/bash </em>?</p>"""
   ]
-tip: """Start by looking at the results of `docker run`, it shows which arguments exist"""
+tip: """Start by looking at the results of `docker run` it tells you which arguments exist"""
 })
 
+q.push ({
+html: """
+      <h2>Installing things in the container</h2>
+      <p>Next we are going to install a simple program in the container. The image is based upon ubuntu, so we can run
+      “apt-get install -y iputils-ping”. Docker will install this command in the container and exit, showing you the
+      container id.</p>
+      """
+assignment: """
+      <h2>Assignment</h2>
+      <p>Install 'ping' inside of the container.</p>
+      """
+command_expected: ["docker", "run", "learn/tutorial", "apt-get install -y netutils-ping"]
+result: """<p>That worked!</p>"""
+intermediateresults: [
+  """<p>This will work for ping, because it has no other dependencies. To get into the habit. Please add -y.</p>""",
+]
+tip: """don't forget to use -y for noninteractive mode installation"""
+})
 
 q.push ({
 html: """
@@ -162,7 +168,6 @@ assignment: """
       <h2>Assignment</h2>
       <p>Your goal is to run the tutorial container you have
       just downloaded and get a shell inside of it.</p>
-      <p>The command to run a container is <em>docker run</em></p>
       """
 command_expected: ["docker", "run", "-i", "-t", "learn/tutorial", "/bin/bash"]
 result: """<p>Great!! Now you have an interactive terminal</p>"""
@@ -177,6 +182,29 @@ tip: """Start by looking at the results of `docker run`, it shows which argument
 })
 
 
+q.push ({
+html: """
+      <h2>Save your changes</h2>
+      <p>After you make changes (by running a command inside a container) you probably want to save those changes.
+      This will enable you to later start from this point (savepoint) onwards.</p>
+      <p>With Docker the process of saving the state is called "committing". Commit basically saves the difference
+      between the old image and the new state. -Creating a layer. </p>
+      <p>You can only save containers which are stopped.</p>
+      """
+assignment: """
+      <h2>Assignment</h2>
+      <p>Save (commit) the container you created with ping installed. </p>
+      """
+command_expected: ["docker", "commit"]
+result: """<p>That worked!</p>"""
+intermediateresults: []
+tip: """don't forget to append the container id to commit"""
+})
+
+
+
+
+
 ###
   Transform question objects into functions
 ###
@@ -189,7 +217,7 @@ buildfunction = (q) ->
     $('#instructions').hide().fadeIn()
     $('#instructions .text').html(_q.html)
     $('#instructions .assignment').html(_q.assignment)
-    $('#tiptexthidden').html(_q.tip)
+    $('#tipShownText').html(_q.tip)
 
     window.immediateCallback = (input, stop) ->
       if stop == true # prevent the next event from happening
@@ -198,13 +226,27 @@ buildfunction = (q) ->
         doNotExecute = false
 
       if doNotExecute != true
-        console.log ("callback")
         console.log (input)
-        if Object.equal(input, _q.command_expected)
-          results.set(_q.result)
-        else
 
-  #        console.debug("wrong command received")
+#        if input.imageName && input.imageName == _q.imagenName
+#          console.debug("image correct")
+#
+#        if not input.switches.containsAllOfThese(_q.arguments)
+#          console.debug("image name incorrect")
+
+#        else if not input.arguments.containsAllOfThese(_q.arguments)
+#          console.debug("arguments incorrect")
+
+#        if Object.equal(input, _q.command_expected) # old
+
+        if input.containsAllOfThese(_q.command_expected)
+#
+#          parsed_input = @myTerminal.parseInput(input)
+#          console.debug JSON.stringify(parsed_input, undefined, 2)
+          results.set(_q.result)
+          console.debug "contains match"
+        else
+          console.debug("wrong command received")
       else
 
 
@@ -231,38 +273,41 @@ if (window.location.hash)
   try
     currentquestion = window.location.hash.split('#')[1].toNumber()
     questions[currentquestion]()
+    current_question = currentquestion
   catch err
     questions[0]()
 else
   questions[0]()
 
-$('#tiptext').click () ->
-    tiptext = $('#tiptext')
-    if not tiptext.hasClass('showtip')
-      tiptext.html($('#tiptexthidden').html())
-      tiptext.addClass("showtip").hide().fadeIn()
-
-
 $('#results').hide()
 
 
 ###
-  Make the resizing possible
+  Event handlers
 ###
 
+
+## next
+$('#buttonNext').click ->
+  next()
+  $('#results').hide()
+
+## previous
+$('#buttonPrevious').click ->
+  previous()
+  $('#results').hide()
+
+## fullsize
 $('#fullSizeOpen').click ->
   console.debug("going to fullsize mode")
-
   $('#overlay').addClass('fullsize')
   $('#main').addClass('fullsize')
   $('#tutorialTop').addClass('fullsize')
-
   webterm.resize()
 
+## leave fullsize
 $('#fullSizeClose').click ->
-
   leaveFullSizeMode()
-
 
 leaveFullSizeMode = () ->
   console.debug "leaving full-size mode"
@@ -270,3 +315,9 @@ leaveFullSizeMode = () ->
   $('#main').removeClass('fullsize')
   $('#tutorialTop').removeClass('fullsize')
   webterm.resize()
+
+## click on tips
+$('#tips').click () ->
+  if not $('#tipHiddenText').hasClass('hidden')
+    $('#tipHiddenText').addClass("hidden").hide()
+    $('#tipShownText').hide().removeClass("hidden").fadeIn()

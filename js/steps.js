@@ -15,16 +15,6 @@
 
   this.webterm = $('#terminal').terminal(interpreter, basesettings);
 
-  $('#buttonNext').click(function() {
-    next();
-    return $('#results').hide();
-  });
-
-  $('#buttonPrevious').click(function() {
-    previous();
-    return $('#results').hide();
-  });
-
   /*
     Start with the questions
   */
@@ -38,12 +28,18 @@
     current_question++;
     questions[current_question]();
     results.clear();
+    this.webterm.focus();
+    if (!$('#tipShownText').hasClass('hidden')) {
+      $('#tipShownText').addClass("hidden");
+      $('#tipHiddenText').removeClass("hidden").show();
+    }
   };
 
   previous = function() {
     current_question--;
     questions[current_question]();
     results.clear();
+    this.webterm.focus();
   };
 
   results = {
@@ -94,26 +90,44 @@
     html: "<h2>Downloading container images</h2>\n<p>Container images can be downloaded just as easily, using <em>docker pull.</em></p>\n<p>The name you specify is made up of two parts: the <em>username</em> and the <em>repository name</em>,\ndivided by a slash `/`.</p>\n<p>A group of special, trusted images can be retrieved by just their repository name. For example 'ubuntu'.</p>",
     assignment: "<h2>Assignment</h2>\n<p>Please download the tutorial image you have just found</p>",
     command_expected: ['docker', 'pull', 'learn/tutorial'],
-    result: "<p>Cool. Look at the results. You'll see that docker has downloaded a number of different layers</p>",
+    result: "<p>Cool. Look at the results. You'll see that docker has downloaded a number of layers. In Docker all images (except the base image) are made up of several cumulative layers.</p>",
     tip: "Don't forget to pull the full name of the repository e.g. 'learn/tutorial'"
   });
 
   q.push({
     html: "<h2>Hello world from a container</h2>\n<p>You should think about containers as an operating system in a box, except they do not need to be started\nbefore you can run commands in them.<p>\n<p>Expect that you will be able to run the usual commands such as </p>\n<p>The command `docker run` takes two arguments. An image name, and the command you want to execute within that\nimage.</p>",
-    assignment: "<h2>Assignment</h2>\n<p>Make our freshly loaded image say \"hello world\"</p>",
+    assignment: "<h2>Assignment</h2>\n<p>Make our freshly loaded container image image output \"hello world\"</p>",
     command_expected: ["docker", "run", "learn/tutorial", "echo"],
     result: "<p>Great! Hellooooo World!</p>",
     intermediateresults: ["<p>You seem to be almost there. Did you give the command `echo \"hello world\"` ", "<p>You've got the arguments right. Did you get the command? Try <em>/bin/bash </em>?</p>"],
-    tip: "Start by looking at the results of `docker run`, it shows which arguments exist"
+    tip: "Start by looking at the results of `docker run` it tells you which arguments exist"
+  });
+
+  q.push({
+    html: "<h2>Installing things in the container</h2>\n<p>Next we are going to install a simple program in the container. The image is based upon ubuntu, so we can run\n“apt-get install -y iputils-ping”. Docker will install this command in the container and exit, showing you the\ncontainer id.</p>",
+    assignment: "<h2>Assignment</h2>\n<p>Install 'ping' inside of the container.</p>",
+    command_expected: ["docker", "run", "learn/tutorial", "apt-get install -y netutils-ping"],
+    result: "<p>That worked!</p>",
+    intermediateresults: ["<p>This will work for ping, because it has no other dependencies. To get into the habit. Please add -y.</p>"],
+    tip: "don't forget to use -y for noninteractive mode installation"
   });
 
   q.push({
     html: "<h2>Interactive Shell</h2>\n<p>Now, since Docker provides you with the equivalent of a complete operating system you are able to get\nan interactive shell (tty) <em>inside</em> of the container.</p>\n<p>Since we want a prompt in the container, we need to start the shell program in the container. </p>\n<p>You may never have manually started it before, but a popular one typically lives at `/bin/bash`</p>",
-    assignment: "<h2>Assignment</h2>\n<p>Your goal is to run the tutorial container you have\njust downloaded and get a shell inside of it.</p>\n<p>The command to run a container is <em>docker run</em></p>",
+    assignment: "<h2>Assignment</h2>\n<p>Your goal is to run the tutorial container you have\njust downloaded and get a shell inside of it.</p>",
     command_expected: ["docker", "run", "-i", "-t", "learn/tutorial", "/bin/bash"],
     result: "<p>Great!! Now you have an interactive terminal</p>",
     intermediateresults: ["<p>You seem to be almost there. Did you use <em>-i and -t</em>?</p>", "<p>You've got the arguments right. Did you get the command? Try <em>/bin/bash </em>?</p>", "<p>You have the command right, but the shell exits immediately, before printing anything</p>\n<p>You will need to attach your terminal to the containers' terminal.</p>"],
     tip: "Start by looking at the results of `docker run`, it shows which arguments exist"
+  });
+
+  q.push({
+    html: "<h2>Save your changes</h2>\n<p>After you make changes (by running a command inside a container) you probably want to save those changes.\nThis will enable you to later start from this point (savepoint) onwards.</p>\n<p>With Docker the process of saving the state is called \"committing\". Commit basically saves the difference\nbetween the old image and the new state. -Creating a layer. </p>\n<p>You can only save containers which are stopped.</p>",
+    assignment: "<h2>Assignment</h2>\n<p>Save (commit) the container you created with ping installed. </p>",
+    command_expected: ["docker", "commit"],
+    result: "<p>That worked!</p>",
+    intermediateresults: [],
+    tip: "don't forget to append the container id to commit"
   });
 
   /*
@@ -129,7 +143,7 @@
       $('#instructions').hide().fadeIn();
       $('#instructions .text').html(_q.html);
       $('#instructions .assignment').html(_q.assignment);
-      $('#tiptexthidden').html(_q.tip);
+      $('#tipShownText').html(_q.tip);
       window.immediateCallback = function(input, stop) {
         var doNotExecute;
         if (stop === true) {
@@ -138,12 +152,12 @@
           doNotExecute = false;
         }
         if (doNotExecute !== true) {
-          console.log("callback");
           console.log(input);
-          if (Object.equal(input, _q.command_expected)) {
+          if (input.containsAllOfThese(_q.command_expected)) {
             results.set(_q.result);
+            console.debug("contains match");
           } else {
-
+            console.debug("wrong command received");
           }
         } else {
 
@@ -171,6 +185,7 @@
     try {
       currentquestion = window.location.hash.split('#')[1].toNumber();
       questions[currentquestion]();
+      current_question = currentquestion;
     } catch (err) {
       questions[0]();
     }
@@ -178,21 +193,22 @@
     questions[0]();
   }
 
-  $('#tiptext').click(function() {
-    var tiptext;
-    tiptext = $('#tiptext');
-    if (!tiptext.hasClass('showtip')) {
-      tiptext.html($('#tiptexthidden').html());
-      return tiptext.addClass("showtip").hide().fadeIn();
-    }
-  });
-
   $('#results').hide();
 
   /*
-    Make the resizing possible
+    Event handlers
   */
 
+
+  $('#buttonNext').click(function() {
+    next();
+    return $('#results').hide();
+  });
+
+  $('#buttonPrevious').click(function() {
+    previous();
+    return $('#results').hide();
+  });
 
   $('#fullSizeOpen').click(function() {
     console.debug("going to fullsize mode");
@@ -213,5 +229,12 @@
     $('#tutorialTop').removeClass('fullsize');
     return webterm.resize();
   };
+
+  $('#tips').click(function() {
+    if (!$('#tipHiddenText').hasClass('hidden')) {
+      $('#tipHiddenText').addClass("hidden").hide();
+      return $('#tipShownText').hide().removeClass("hidden").fadeIn();
+    }
+  });
 
 }).call(this);
