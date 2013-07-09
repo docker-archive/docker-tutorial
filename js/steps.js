@@ -106,10 +106,37 @@
   q.push({
     html: "<h2>Installing things in the container</h2>\n<p>Next we are going to install a simple program in the container. The image is based upon ubuntu, so we can run\n“apt-get install -y iputils-ping”. Docker will install this command in the container and exit, showing you the\ncontainer id.</p>",
     assignment: "<h2>Assignment</h2>\n<p>Install 'ping' inside of the container.</p>",
-    command_expected: ["docker", "run", "learn/tutorial", "apt-get install -y netutils-ping"],
+    command_expected: ["docker", "run", "learn/tutorial", "apt-get", "install", "-y", "ping"],
     result: "<p>That worked!</p>",
     intermediateresults: ["<p>This will work for ping, because it has no other dependencies. To get into the habit. Please add -y.</p>"],
     tip: "don't forget to use -y for noninteractive mode installation"
+  });
+
+  q.push({
+    html: "<h2>Save your changes</h2>\n<p>After you make changes (by running a command inside a container) you probably want to save those changes.\nThis will enable you to later start from this point (savepoint) onwards.</p>\n<p>With Docker the process of saving the state is called <em>committing</em>. Commit basically saves the difference\nbetween the old image and the new state. The result is a new layer.</p>\n<p>You can only save containers which are stopped.</p>",
+    assignment: "<h2>Assignment</h2>\n<p>Save (commit) the container you created by installing ping. Save it with the repository name `learn/ping` </p>",
+    command_expected: ["docker", "commit", 'learn/ping'],
+    result: "<p>That worked! Please take note that Docker has returned a new ID. This id is the <em>image id</em>.\nYou will need it next.</p>",
+    intermediateresults: ["You have not specified a repository name. This is not wrong, but giving your images a name\nmake them much easier to work with."],
+    tip: "<ul>\n<li>Don't forget to append the container id to commit</li>\n<li>You can find the container id by running ps -a -l again.</li>\n</ul>"
+  });
+
+  q.push({
+    html: "<h2>Run your new image</h2>\n<p>Now you have basically setup a complete, self contained environment with the 'ping' program installed. </p>\n<p>Your image can now be run on any host that runs docker.</p>\n<p>Lets run this image on this machine.</p>",
+    assignment: "<h2>Assignment</h2>\n<p>Run the ping program to ping www.google.com</p>\n",
+    command_expected: ["docker", "run", 'learn/ping', 'ping', 'www.google.com'],
+    result: "<p>That worked! Note that normally you can use Ctrl-C to disconnect. The container will keep running. This\ncontainer will disconnect automatically.</p>",
+    intermediateresults: ["You have not specified a repository name. This is not wrong, but giving your images a name\nmake them much easier to work with."],
+    tip: "<ul>\n<li>Make sure to use the repository name learn/ping to run ping with</li>\n</ul>"
+  });
+
+  q.push({
+    html: "<h2>Push the image to the registry</h2>\n<p>Now you have verified that your new application container works as it should, you can share it.</p>\n<p>Docker comes with a complete image sharing service, you can push your image there for yourself and others\nto retrieve.</p>",
+    assignment: "<h2>Assignment</h2>\n<p>Push your container image to the repository</p>\n",
+    command_expected: ["docker", "push"],
+    result: "<p>Yeah! You are all done!</p>",
+    intermediateresults: [" "],
+    tip: "<ul>\n<li>Docker images will show you which images are currently on your host</li>\n<li>You can only push images to your own namespace.</li>\n<li>For this tutorial we assume you are already logged in as the 'learn' user..</li>\n</ul>"
   });
 
   q.push({
@@ -119,15 +146,6 @@
     result: "<p>Great!! Now you have an interactive terminal</p>",
     intermediateresults: ["<p>You seem to be almost there. Did you use <em>-i and -t</em>?</p>", "<p>You've got the arguments right. Did you get the command? Try <em>/bin/bash </em>?</p>", "<p>You have the command right, but the shell exits immediately, before printing anything</p>\n<p>You will need to attach your terminal to the containers' terminal.</p>"],
     tip: "Start by looking at the results of `docker run`, it shows which arguments exist"
-  });
-
-  q.push({
-    html: "<h2>Save your changes</h2>\n<p>After you make changes (by running a command inside a container) you probably want to save those changes.\nThis will enable you to later start from this point (savepoint) onwards.</p>\n<p>With Docker the process of saving the state is called \"committing\". Commit basically saves the difference\nbetween the old image and the new state. -Creating a layer. </p>\n<p>You can only save containers which are stopped.</p>",
-    assignment: "<h2>Assignment</h2>\n<p>Save (commit) the container you created with ping installed. </p>",
-    command_expected: ["docker", "commit"],
-    result: "<p>That worked!</p>",
-    intermediateresults: [],
-    tip: "don't forget to append the container id to commit"
   });
 
   /*

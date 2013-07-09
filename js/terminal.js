@@ -13,7 +13,7 @@
 (function() {
 
   (this.myTerminal = function() {
-    var bash, commit, commit_containerid, commit_id_does_not_exist, docker, dockerCommands, docker_cmd, parseInput, ps, pull, pull_no_results, pull_tutorial, pull_ubuntu, run_apt_get, run_apt_get_install_iputils_ping, run_cmd, run_image_no_command, run_learn_tutorial, run_learn_tutorial_echo_hello_world, run_notfound, run_switches, search, search_no_results, search_tutorial, search_ubuntu, util_slow_lines, version, wait;
+    var bash, commit, commit_containerid, commit_id_does_not_exist, docker, dockerCommands, docker_cmd, parseInput, ps, ps_a_l, pull, pull_no_results, pull_tutorial, pull_ubuntu, run_apt_get, run_apt_get_install_iputils_ping, run_cmd, run_image_wrong_command, run_learn_no_command, run_learn_tutorial_echo_hello_world, run_notfound, run_ping_www_google_com, run_switches, search, search_no_results, search_tutorial, search_ubuntu, util_slow_lines, version, wait;
     this.basesettings = {
       prompt: 'you@tutorial:~$ ',
       greetings: "Welcome to the interactive Docker tutorial"
@@ -216,7 +216,7 @@
       echo = term.echo;
       insert = term.insert;
       if (!inputs[1]) {
-
+        return console.log("none");
       } else {
         argument = inputs[1];
         if (argument.beginsWith('..')) {
@@ -231,12 +231,13 @@
     */
 
     docker = function(term, inputs) {
-      var callback, commands, description, dockerCommand, echo, expected_switches, imagename, insert, keyword, parsed_input, result, swargs, switches;
+      var callback, command, commands, description, dockerCommand, echo, expected_switches, imagename, insert, keyword, parsed_input, result, swargs, switches;
       echo = term.echo;
       insert = term.insert;
       callback = function() {
         return this.finishedCallback(inputs);
       };
+      command = inputs[1];
       if (!inputs[1]) {
         console.debug("no args");
         echo(docker_cmd);
@@ -244,15 +245,25 @@
           description = dockerCommands[dockerCommand];
           echo("[[b;#fff;]" + dockerCommand + "]" + description + "");
         }
-      } else if (inputs[1] === 'do') {
+      } else if (inputs[1] === "do") {
         term.push('do', {
           prompt: "do $ "
         });
-      } else if (inputs[1] === "ps") {
-        echo(ps);
+      } else if (command === "ps") {
+        if (inputs.containsAllOfThese(['-a', '-l'])) {
+          echo(ps_a_l);
+        } else {
+          echo(ps);
+        }
       } else if (inputs[1] === "commit") {
-        parsed_input = parseInput(inputs);
-        echo(commit);
+        if (inputs[2] === '6982a9948422' && inputs[3]) {
+          util_slow_lines(term, commit_containerid, "", callback);
+        } else if (inputs[2] === '6982a9948422') {
+          util_slow_lines(term, commit_containerid, "", callback);
+          intermediateResults(0);
+        } else {
+          echo(commit);
+        }
       } else if (inputs[1] === "run") {
         parsed_input = parseInput(inputs);
         switches = parsed_input.switches;
@@ -262,39 +273,38 @@
         expected_switches = ['-i', '-t'];
         console.log("commands");
         console.log(commands);
+        console.log(imagename);
         if (imagename === "ubuntu") {
           console.log("run ubuntu");
-          echo(run_image_no_command(commands[0]));
-        } else if (switches.containsAllOfThese(expected_switches)) {
-          if (imagename === "learn/tutorial" && commands[0] === "/bin/bash") {
-            immediateCallback(parsed_input, true);
-            term.push((function(command, term) {
-              if (command) {
-                echo("this shell is not implemented. Enter 'exit' to exit.");
-              }
-            }), {
-              prompt: 'root@687bbbc4231b:/# '
-            });
+          echo(run_image_wrong_command(commands[0]));
+        } else if (imagename === "learn/tutorial") {
+          if (switches.length > 0) {
+            echo(run_learn_no_command);
+            intermediateResults(0);
+          } else if (commands[0] === "/bin/bash") {
+            echo(run_learn_tutorial_echo_hello_world);
+            intermediateResults(2);
+          } else if (commands[0] === "echo") {
+            echo(run_learn_tutorial_echo_hello_world);
+          } else if (commands.containsAllOfThese(['apt-get', 'install', '-y', 'iputils-ping'])) {
+            echo(run_apt_get_install_iputils_ping);
+          } else if (commands.containsAllOfThese(['apt-get', 'install', 'iputils-ping'])) {
+            echo(run_apt_get_install_iputils_ping);
+            intermediateResults(0);
+          } else if (commands.containsAllOfThese(['apt-get', 'install', 'ping'])) {
+            echo(run_apt_get_install_iputils_ping);
+            intermediateResults(0);
+          } else if (commands[0] === "apt-get") {
+            echo(run_apt_get);
+          } else if (commands[0]) {
+            echo(run_image_wrong_command(commands[0]));
           } else {
-            intermediateResults(1);
+            echo(run_learn_no_command);
           }
-        } else if (imagename === "learn/tutorial" && switches.length) {
-          echo(run_learn_tutorial);
-          intermediateResults(0);
-        } else if (imagename === "learn/tutorial" && commands[0] === "/bin/bash") {
-          echo(run_learn_tutorial_echo_hello_world);
-          intermediateResults(2);
-        } else if (imagename === "learn/tutorial" && commands[0] === "echo") {
-          echo(run_learn_tutorial_echo_hello_world);
-        } else if (imagename === "learn/tutorial" && commands.containsAllOfThese(['apt-get', 'install', '-y', 'iputils-ping'])) {
-          echo(run_apt_get_install_iputils_ping);
-        } else if (imagename === "learn/tutorial" && commands.containsAllOfThese(['apt-get', 'install', 'iputils-ping'])) {
-          echo(run_apt_get_install_iputils_ping);
-          intermediateResults(0);
-        } else if (imagename === "learn/tutorial" && commands[0] === "apt-get") {
-          echo(run_apt_get);
-        } else if (imagename === "learn/tutorial" && commands[0]) {
-          echo(run_image_no_command(commands[0]));
+        } else if (imagename === "learn/ping") {
+          if (commands.containsAllOfThese(["ping", "www.google.com"])) {
+            util_slow_lines(term, run_ping_www_google_com, "", callback);
+          }
         } else if (imagename) {
           echo(run_notfound(inputs[2]));
         } else {
@@ -305,8 +315,7 @@
         if (keyword = inputs[2]) {
           if (keyword === "ubuntu") {
             echo(search_ubuntu);
-          }
-          if (keyword === "tutorial") {
+          } else if (keyword === "tutorial") {
             echo(search_tutorial);
           } else {
             echo(search_no_results(inputs[2]));
@@ -381,6 +390,7 @@
     };
     commit_containerid = "effb66b31edb";
     ps = "ID                  IMAGE                                  COMMAND                CREATED             STATUS              PORTS\ne087bc23f8d5        dhrp/dockerbuilder-test-29414:latest   ping orange1.koffied   2 days ago          Up 2 days           49156->80\nfca0152982a0        dhrp/dockerbuilder-test-02959:latest   ping orange1.koffied   2 days ago          Up 2 days\nebd8c2aaeed3        dhrp/dockerbuilder-test-02959:latest   ping orange1.koffied   2 days ago          Up 2 days\n1a93e427d337        crosbymichael/dockerui:latest          /dockerui -e=http://   3 days ago          Up 3 days           49153->9000\n880f3a93a0f7        dhrp/dockerbuilder-test-02959:latest   ping orange1.koffied   3 days ago          Up 3 days";
+    ps_a_l = "ID                  IMAGE               COMMAND                CREATED             STATUS              PORTS\n6982a9948422        ubuntu:12.04        apt-get install ping   1 minute ago        Exit 0";
     pull = "Usage: docker pull NAME\n\nPull an image or a repository from the registry\n\n-registry=\"\": Registry to download from. Necessary if image is pulled by ID\n-t=\"\": Download tagged image in repository";
     pull_no_results = function(keyword) {
       return "Pulling repository " + keyword + " from https://index.docker.io/v1\n2013/06/19 19:27:03 HTTP code: 404";
@@ -390,14 +400,15 @@
     run_cmd = "Usage: docker run [OPTIONS] IMAGE COMMAND [ARG...]\n\nRun a command in a new container\n\n-a=map[]: Attach to stdin, stdout or stderr.\n-c=0: CPU shares (relative weight)\n-d=false: Detached mode: leave the container running in the background\n-dns=[]: Set custom dns servers\n-e=[]: Set environment variables\n-h=\"\": Container host name\n-i=false: Keep stdin open even if not attached\n-m=0: Memory limit (in bytes)\n-p=[]: Expose a container's port to the host (use 'docker port' to see the actual mapping)\n-t=false: Allocate a pseudo-tty\n-u=\"\": Username or UID\n-v=map[]: Attach a data volume\n-volumes-from=\"\": Mount volumes from the specified container\n";
     run_apt_get = "apt 0.8.16~exp12ubuntu10 for amd64 compiled on Apr 20 2012 10:19:39\nUsage: apt-get [options] command\n       apt-get [options] install|remove pkg1 [pkg2 ...]\n       apt-get [options] source pkg1 [pkg2 ...]\n\napt-get is a simple command line interface for downloading and\ninstalling packages. The most frequently used commands are update\nand install.\n\nCommands:\n   update - Retrieve new lists of packages\n   upgrade - Perform an upgrade\n   install - Install new packages (pkg is libc6 not libc6.deb)\n   remove - Remove packages\n   autoremove - Remove automatically all unused packages\n   purge - Remove packages and config files\n   source - Download source archives\n   build-dep - Configure build-dependencies for source packages\n   dist-upgrade - Distribution upgrade, see apt-get(8)\n   dselect-upgrade - Follow dselect selections\n   clean - Erase downloaded archive files\n   autoclean - Erase old downloaded archive files\n   check - Verify that there are no broken dependencies\n   changelog - Download and display the changelog for the given package\n   download - Download the binary package into the current directory\n\nOptions:\n  -h  This help text.\n  -q  Loggable output - no progress indicator\n  -qq No output except for errors\n  -d  Download only - do NOT install or unpack archives\n  -s  No-act. Perform ordering simulation\n  -y  Assume Yes to all queries and do not prompt\n  -f  Attempt to correct a system with broken dependencies in place\n  -m  Attempt to continue if archives are unlocatable\n  -u  Show a list of upgraded packages as well\n  -b  Build the source package after fetching it\n  -V  Show verbose version numbers\n  -c=? Read this configuration file\n  -o=? Set an arbitrary configuration option, eg -o dir::cache=/tmp\nSee the apt-get(8), sources.list(5) and apt.conf(5) manual\npages for more information and options.\n                       This APT has Super Cow Powers.\n";
     run_apt_get_install_iputils_ping = "Reading package lists...\nBuilding dependency tree...\nThe following NEW packages will be installed:\n  iputils-ping\n0 upgraded, 1 newly installed, 0 to remove and 0 not upgraded.\nNeed to get 56.1 kB of archives.\nAfter this operation, 143 kB of additional disk space will be used.\nGet:1 http://archive.ubuntu.com/ubuntu/ precise/main iputils-ping amd64 3:20101006-1ubuntu1 [56.1 kB]\ndebconf: delaying package configuration, since apt-utils is not installed\nFetched 56.1 kB in 1s (50.3 kB/s)\nSelecting previously unselected package iputils-ping.\n(Reading database ... 7545 files and directories currently installed.)\nUnpacking iputils-ping (from .../iputils-ping_3%3a20101006-1ubuntu1_amd64.deb) ...\nSetting up iputils-ping (3:20101006-1ubuntu1) ...";
-    run_learn_tutorial = "2013/07/02 02:00:59 Error: No command specified";
+    run_learn_no_command = "2013/07/02 02:00:59 Error: No command specified";
     run_learn_tutorial_echo_hello_world = "hello world";
-    run_image_no_command = function(keyword) {
+    run_image_wrong_command = function(keyword) {
       return "2013/07/08 23:13:30 Unable to locate " + keyword;
     };
     run_notfound = function(keyword) {
       return "Pulling repository " + keyword + " from https://index.docker.io/v1\n2013/07/02 02:14:47 Error: No such image: " + keyword;
     };
+    run_ping_www_google_com = "64 bytes from nuq05s02-in-f20.1e100.net (74.125.239.148): icmp_req=1 ttl=55 time=2.23 ms\n64 bytes from nuq05s02-in-f20.1e100.net (74.125.239.148): icmp_req=2 ttl=55 time=2.30 ms\n64 bytes from nuq05s02-in-f20.1e100.net (74.125.239.148): icmp_req=3 ttl=55 time=2.27 ms\n64 bytes from nuq05s02-in-f20.1e100.net (74.125.239.148): icmp_req=4 ttl=55 time=2.30 ms\n64 bytes from nuq05s02-in-f20.1e100.net (74.125.239.148): icmp_req=5 ttl=55 time=2.25 ms\n64 bytes from nuq05s02-in-f20.1e100.net (74.125.239.148): icmp_req=6 ttl=55 time=2.29 ms\n64 bytes from nuq05s02-in-f20.1e100.net (74.125.239.148): icmp_req=7 ttl=55 time=2.23 ms\n64 bytes from nuq05s02-in-f20.1e100.net (74.125.239.148): icmp_req=8 ttl=55 time=2.30 ms\n64 bytes from nuq05s02-in-f20.1e100.net (74.125.239.148): icmp_req=9 ttl=55 time=2.35 ms\n-> This would normally just keep going. However, this emulator does not support Ctrl-C, so we quit here.";
     search = "\nUsage: docker search NAME\n\nSearch the docker index for images\n";
     search_no_results = function(keyword) {
       return "Found 0 results matching your query (\"" + keyword + "\")\nNAME                DESCRIPTION";

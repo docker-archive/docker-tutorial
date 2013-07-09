@@ -221,6 +221,7 @@ do @myTerminal = ->
     insert = term.insert
 
     if not inputs[1]
+      console.log("none")
 
     else
       argument = inputs[1]
@@ -232,36 +233,42 @@ do @myTerminal = ->
   ###
     Docker program
   ###
-
   docker = (term, inputs) ->
 
     echo = term.echo
     insert = term.insert
     callback = () -> @finishedCallback(inputs)
+    command = inputs[1]
 
-
+    # no command
     if not inputs[1]
       console.debug "no args"
       echo docker_cmd
       for dockerCommand, description of dockerCommands
         echo "[[b;#fff;]" + dockerCommand + "]" + description + ""
 
-    else if inputs[1] is 'do'
+    else if inputs[1] is "do"
       term.push('do', {prompt: "do $ "})
 
-    #### Command ps ####
-    else if inputs[1] is "ps"
-      echo ps
+    # command ps
+    else if command is "ps"
+      if inputs.containsAllOfThese(['-a', '-l'])
+        echo ps_a_l
+      else
+        echo ps
 
-    #### Command commit ####
+    # Command commit
     else if inputs[1] is "commit"
-      parsed_input = parseInput(inputs)
-      echo commit
+      if inputs[2] is '6982a9948422' and inputs[3]
+        util_slow_lines(term, commit_containerid, "", callback )
+      else if inputs[2] is '6982a9948422'
+        util_slow_lines(term, commit_containerid, "", callback )
+        intermediateResults(0)
+      else
+        echo commit
 
 
-
-    #### Command run ####
-
+    # Command run
     else if inputs[1] is "run"
       # parse all input so we have a json object
       parsed_input = parseInput(inputs)
@@ -277,36 +284,50 @@ do @myTerminal = ->
       console.log "commands"
       console.log commands
 
+      console.log imagename
+
       if imagename is "ubuntu"
         console.log("run ubuntu")
-        echo run_image_no_command(commands[0])
-      else if switches.containsAllOfThese(expected_switches)
-        if imagename is "learn/tutorial" and commands[0] is "/bin/bash"
-          immediateCallback(parsed_input, true)
-          term.push ( (command, term) ->
-            if command
-              echo """this shell is not implemented. Enter 'exit' to exit."""
-            return
-          ), {prompt: 'root@687bbbc4231b:/# '}
+        echo run_image_wrong_command(commands[0])
+#      else if switches.containsAllOfThese(expected_switches)
+#        if imagename is "learn/tutorial" and commands[0] is "/bin/bash"
+#          immediateCallback(parsed_input, true)
+#          term.push ( (command, term) ->
+#            if command
+#              echo """this shell is not implemented. Enter 'exit' to exit."""
+#            return
+#          ), {prompt: 'root@687bbbc4231b:/# '}
+#        else
+#          intermediateResults(1)
+      else if imagename is "learn/tutorial"
+        if switches.length > 0
+          echo run_learn_no_command
+          intermediateResults(0)
+        else if commands[0] is "/bin/bash"
+          echo run_learn_tutorial_echo_hello_world
+          intermediateResults(2)
+        else if commands[0] is "echo"
+          echo run_learn_tutorial_echo_hello_world
+        else if commands.containsAllOfThese(['apt-get', 'install', '-y', 'iputils-ping'])
+          echo run_apt_get_install_iputils_ping
+        else if commands.containsAllOfThese(['apt-get', 'install', 'iputils-ping'])
+          echo run_apt_get_install_iputils_ping
+          intermediateResults(0)
+        else if commands.containsAllOfThese(['apt-get', 'install', 'ping'])
+          echo run_apt_get_install_iputils_ping
+          intermediateResults(0)
+        else if commands[0] is "apt-get"
+          echo run_apt_get
+        else if commands[0]
+          echo run_image_wrong_command(commands[0])
         else
-          intermediateResults(1)
-      else if imagename is "learn/tutorial" and switches.length
-        echo run_learn_tutorial
-        intermediateResults(0)
-      else if imagename is "learn/tutorial" and commands[0] is "/bin/bash"
-        echo run_learn_tutorial_echo_hello_world
-        intermediateResults(2)
-      else if imagename is "learn/tutorial" and commands[0] is "echo"
-        echo run_learn_tutorial_echo_hello_world
-      else if imagename is "learn/tutorial" and commands.containsAllOfThese(['apt-get', 'install', '-y', 'iputils-ping'])
-        echo run_apt_get_install_iputils_ping
-      else if imagename is "learn/tutorial" and commands.containsAllOfThese(['apt-get', 'install', 'iputils-ping'])
-        echo run_apt_get_install_iputils_ping
-        intermediateResults(0)
-      else if imagename is "learn/tutorial" and commands[0] is "apt-get"
-        echo run_apt_get
-      else if imagename is "learn/tutorial" and commands[0]
-        echo run_image_no_command(commands[0])
+          echo run_learn_no_command
+
+      else if imagename is "learn/ping"
+        if commands.containsAllOfThese(["ping", "www.google.com"])
+          util_slow_lines(term, run_ping_www_google_com, "", callback )
+
+
       else if imagename
         echo run_notfound(inputs[2])
       else
@@ -318,7 +339,7 @@ do @myTerminal = ->
       if keyword = inputs[2]
         if keyword is "ubuntu"
           echo search_ubuntu
-        if keyword is "tutorial"
+        else if keyword is "tutorial"
           echo search_tutorial
         else
           echo search_no_results(inputs[2])
@@ -427,6 +448,12 @@ do @myTerminal = ->
     ebd8c2aaeed3        dhrp/dockerbuilder-test-02959:latest   ping orange1.koffied   2 days ago          Up 2 days
     1a93e427d337        crosbymichael/dockerui:latest          /dockerui -e=http://   3 days ago          Up 3 days           49153->9000
     880f3a93a0f7        dhrp/dockerbuilder-test-02959:latest   ping orange1.koffied   3 days ago          Up 3 days
+    """
+
+  ps_a_l = \
+    """
+    ID                  IMAGE               COMMAND                CREATED             STATUS              PORTS
+    6982a9948422        ubuntu:12.04        apt-get install ping   1 minute ago        Exit 0
     """
 
   pull = \
@@ -549,7 +576,7 @@ do @myTerminal = ->
     Setting up iputils-ping (3:20101006-1ubuntu1) ...
     """
 
-  run_learn_tutorial = \
+  run_learn_no_command = \
     """
     2013/07/02 02:00:59 Error: No command specified
     """
@@ -559,7 +586,7 @@ do @myTerminal = ->
     hello world
     """
 
-  run_image_no_command = (keyword) ->
+  run_image_wrong_command = (keyword) ->
     """
     2013/07/08 23:13:30 Unable to locate #{keyword}
     """
@@ -568,6 +595,20 @@ do @myTerminal = ->
     """
     Pulling repository #{keyword} from https://index.docker.io/v1
     2013/07/02 02:14:47 Error: No such image: #{keyword}
+    """
+
+  run_ping_www_google_com = \
+    """
+    64 bytes from nuq05s02-in-f20.1e100.net (74.125.239.148): icmp_req=1 ttl=55 time=2.23 ms
+    64 bytes from nuq05s02-in-f20.1e100.net (74.125.239.148): icmp_req=2 ttl=55 time=2.30 ms
+    64 bytes from nuq05s02-in-f20.1e100.net (74.125.239.148): icmp_req=3 ttl=55 time=2.27 ms
+    64 bytes from nuq05s02-in-f20.1e100.net (74.125.239.148): icmp_req=4 ttl=55 time=2.30 ms
+    64 bytes from nuq05s02-in-f20.1e100.net (74.125.239.148): icmp_req=5 ttl=55 time=2.25 ms
+    64 bytes from nuq05s02-in-f20.1e100.net (74.125.239.148): icmp_req=6 ttl=55 time=2.29 ms
+    64 bytes from nuq05s02-in-f20.1e100.net (74.125.239.148): icmp_req=7 ttl=55 time=2.23 ms
+    64 bytes from nuq05s02-in-f20.1e100.net (74.125.239.148): icmp_req=8 ttl=55 time=2.30 ms
+    64 bytes from nuq05s02-in-f20.1e100.net (74.125.239.148): icmp_req=9 ttl=55 time=2.35 ms
+    -> This would normally just keep going. However, this emulator does not support Ctrl-C, so we quit here.
     """
 
   search = \
