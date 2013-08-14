@@ -618,7 +618,7 @@ should have been. Leave feedback if you find things confusing.
 
   pull_no_results = (keyword) ->
     """
-    Pulling repository #{keyword} from https://index.docker.io/v1
+    Pulling repository #{keyword}
     2013/06/19 19:27:03 HTTP code: 404
     """
 
@@ -786,6 +786,7 @@ should have been. Leave feedback if you find things confusing.
 
   run_ping_www_google_com = \
     """
+    PING www.google.com (74.125.239.129) 56(84) bytes of data.
     64 bytes from nuq05s02-in-f20.1e100.net (74.125.239.148): icmp_req=1 ttl=55 time=2.23 ms
     64 bytes from nuq05s02-in-f20.1e100.net (74.125.239.148): icmp_req=2 ttl=55 time=2.30 ms
     64 bytes from nuq05s02-in-f20.1e100.net (74.125.239.148): icmp_req=3 ttl=55 time=2.27 ms
@@ -862,8 +863,8 @@ should have been. Leave feedback if you find things confusing.
     Docker Emulator version 0.1
 
     Emulating:
-    Client version: 0.4.7
-    Server version: 0.4.7
+    Client version: 0.5.3
+    Server version: 0.5.3
     Go version: go1.1
     """
 

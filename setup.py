@@ -4,7 +4,7 @@ from setuptools import find_packages
 
 setup(
     name='DockerTutorial',
-    version='0.1.1',
+    version='0.1.2',
     author=u'Thatcher Peskens',
     author_email='thatcher@dotcloud.com',
     packages=find_packages(),

@@ -43,10 +43,10 @@ def api(request):
     if not request.session.exists(request.session.session_key):
         request.session.create()
 
-    session = Session.objects.get(pk=request.session.session_key)
+    session = Session.objects.filter(pk=request.session.session_key).latest('pk')
 
     try:
-        user = TutorialUser.objects.get(session_key=session.session_key)
+        user = TutorialUser.objects.filter(session_key=session.session_key).latest('pk')
     except ObjectDoesNotExist:
         user = TutorialUser.objects.create(session_key=session.session_key)
 

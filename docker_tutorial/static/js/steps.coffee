@@ -240,6 +240,10 @@ intermediateresults:
           <li><a href="http://twitter.com/docker" target="_blank" >Follow us on twitter (opens in new window)</a></li>
           <li><a href="#" onClick="leaveFullSizeMode()">Close this tutorial, and continue with the rest of the getting started.</a></li>
         </ul>""")
+
+      data = { type: EVENT_TYPES.complete }
+      logEvent(data)
+
       return """<p>All done!. You are now pushing a container image to the index. You can see that push, just like pull, happens layer by layer.</p>"""
   ]
 tip: """<ul>
@@ -251,6 +255,7 @@ tip: """<ul>
 finishedCallback: () ->
   webterm.clear()
   webterm.echo( myTerminal() )
+
 
 })
 
@@ -275,6 +280,7 @@ EVENT_TYPES =
   start: "start"
   command: "command"
   next: "next"
+  peek: "peek"
   feedback: "feedback"
   complete: "complete"
 
@@ -347,10 +353,17 @@ $('#fullSizeOpen').click ->
   $('.hide-when-small').css({ display: 'inherit' })
   $('.hide-when-full').css({ display: 'none' })
 
+  next(0)
+
   webterm.resize()
   data = { type: EVENT_TYPES.start }
-  logEvent(data)
-  next(0)
+
+  # send the next event after a short timeout, so it doesn't come at the same time as the next() event
+  # in the beginning. Othewise two sessions will appear to have been started.
+  # This will make the order to appear wrong, but that's not much of an issue.
+
+  setTimeout(logEvent(data), 1100)
+
 
 ## leave fullsize
 $('#fullSizeClose').click ->
@@ -371,6 +384,9 @@ $('#command').click () ->
   if not $('#commandHiddenText').hasClass('hidden')
     $('#commandHiddenText').addClass("hidden").hide()
     $('#commandShownText').hide().removeClass("hidden").fadeIn()
+
+  data = { type: EVENT_TYPES.peek }
+  logEvent(data)
 
 
 
@@ -443,8 +459,6 @@ results = {
     $('#results').fadeOut('slow')
 #    $('#buttonNext').addAttr('disabled')
 }
-
-
 
 
 

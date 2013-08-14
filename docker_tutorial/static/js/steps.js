@@ -120,9 +120,15 @@
     result: "",
     intermediateresults: [
       function() {
+        var data;
+
         $('#instructions .assignment').hide();
         $('#tips, #command').hide();
         $('#instructions .text').html("<h3>Congratulations!</h3>\n<p>You have mastered the basic docker commands!</p>\n<p><strong>Your next steps</strong></p>\n<ul>\n  <li><a href=\"/news_signup/\" target=\"_blank\" >Register for news and updates on Docker (opens in new window)</a></li>\n  <li><a href=\"http://twitter.com/docker\" target=\"_blank\" >Follow us on twitter (opens in new window)</a></li>\n  <li><a href=\"#\" onClick=\"leaveFullSizeMode()\">Close this tutorial, and continue with the rest of the getting started.</a></li>\n</ul>");
+        data = {
+          type: EVENT_TYPES.complete
+        };
+        logEvent(data);
         return "<p>All done!. You are now pushing a container image to the index. You can see that push, just like pull, happens layer by layer.</p>";
       }
     ],
@@ -147,6 +153,7 @@
     start: "start",
     command: "command",
     next: "next",
+    peek: "peek",
     feedback: "feedback",
     complete: "complete"
   };
@@ -232,12 +239,12 @@
     $('.hide-when-full').css({
       display: 'none'
     });
+    next(0);
     webterm.resize();
     data = {
       type: EVENT_TYPES.start
     };
-    logEvent(data);
-    return next(0);
+    return setTimeout(logEvent(data), 1100);
   };
 
   $('#fullSizeClose').click(function() {
@@ -257,10 +264,16 @@
   };
 
   $('#command').click(function() {
+    var data;
+
     if (!$('#commandHiddenText').hasClass('hidden')) {
       $('#commandHiddenText').addClass("hidden").hide();
-      return $('#commandShownText').hide().removeClass("hidden").fadeIn();
+      $('#commandShownText').hide().removeClass("hidden").fadeIn();
     }
+    data = {
+      type: EVENT_TYPES.peek
+    };
+    return logEvent(data);
   });
 
   /*
