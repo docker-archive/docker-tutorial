@@ -1,0 +1,21 @@
+{
+    questions: [
+        {
+            "html": "<h2>Getting started</h2> <p>There are actually two programs, a Docker daemon, it manages al the containers, and the Docker client.
+      The client acts as a remote control on the daemon. On most systems, like in this emulation, both run on the
+      same host.</p>"
+        }
+html: """
+
+      """
+assignment: """
+      <h2>Assignment</h2>
+      <p>Check which Docker version is running</p>
+      <p>This will help you verify the daemon is running. If you see which version is running you know you are all set.</p>
+      """
+tip: "try typing `docker` to see the full list of accepted arguments"
+command_expected: ['docker', 'version']
+result: """<p>Well done! Let's move to the next assignment.</p>"""
+}
+
+]

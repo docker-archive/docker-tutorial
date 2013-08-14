@@ -1,0 +1,36 @@
+{% load staticfiles %}
+
+<!DOCTYPE html>
+<html>
+<head>
+{#    <script src="http://code.jquery.com/jquery-1.10.1.min.js"></script>#}
+{#    <link rel="stylesheet" type="text/css" href="{% static "css/bootstrap-custom.css" %}">#}
+{#    <link rel="stylesheet" type="text/css" href="{% static "css/main.css" %}">#}
+
+{#    <link href="{% static 'lib/css/jquery.terminal.css' %}" rel="stylesheet"/>#}
+{#    <link rel="stylesheet" href="{% static 'css/tutorial-style.css' %}" />#}
+
+    <style>
+        text {
+            font-family: "Arial";
+            font-weight: bold;
+        }
+
+    </style>
+
+    <title></title>
+</head>
+<body>
+
+<div class="circle">
+<span id="question-number" class="">
+    <svg xmlns="http://www.w3.org/2000/svg" version="1.1"
+         style="width:50px; height:50px; position:relative; float: left; top:5; left:5; z-index:1;">
+        <circle cx="50%" cy="50%" r="50%" stroke-width="2" fill="#FF8100" ></circle>
+        <text x="50%" y="50%" text-anchor="middle" dominant-baseline="central" fill="white">1</text>
+    </svg>
+</span>
+</div>
+
+</body>
+</html>

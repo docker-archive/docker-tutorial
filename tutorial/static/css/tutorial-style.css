@@ -1,0 +1,406 @@
+.debug {
+  border: 2px red dotted;
+  background: #361919;
+  /* Fall-back for browsers that don't support rgba */
+
+  background: rgba(54, 25, 25, 0.5);
+  box-sizing: border-box;
+}
+.tutorial p {
+  margin-top: 0px;
+  margin-bottom: 5px;
+  line-height: 1.3em;
+}
+.tutorial h1,
+.tutorial h2,
+.tutorial h3,
+.tutorial h4 {
+  margin-top: 5px;
+  margin-bottom: 7px;
+  color: #394D54;
+}
+.tutorial h3 {
+  font-size: 24px;
+}
+.tutorial h4 {
+  color: #008bb8;
+}
+#command .box {
+  border: 1px grey solid;
+  border-radius: 5px;
+  padding: 15px;
+  box-sizing: border-box;
+  color: #a9a9a9;
+  font-style: italic;
+}
+#commandShownText,
+#tipShownText {
+  color: black !important;
+  font-style: normal !important;
+}
+#command .hidden,
+#tips .hidden {
+  display: none;
+  visibility: hidden;
+  height: 1px;
+  width: 1px;
+}
+#ajax {
+  position: absolute;
+  bottom: 0;
+  margin: 20px;
+}
+#resulttext {
+  border-radius: 5px;
+  box-sizing: border-box;
+  color: #106e34;
+  font-weight: bold;
+}
+#feedback {
+  font-size: 0.4em;
+  border: 1px #444444 solid;
+  background-color: black;
+  position: absolute;
+  right: 0;
+  bottom: 0px;
+  margin-bottom: 5px;
+}
+#feedback input {
+  margin: 5px;
+  border-radius: 0px;
+  position: relative;
+  width: 400px;
+  background-color: #dcdcdc;
+}
+#feedback button {
+  margin: 5px 5px 5px 0;
+  height: 30px;
+}
+#actions button {
+  width: 45%;
+}
+.hidden {
+  display: none;
+  visibility: hidden;
+  height: 1px;
+  width: 1px;
+}
+/* styles for when it is not fullsize */
+#overlay {
+  position: relative;
+  width: 100%;
+}
+#overlay.startsize {
+  border: 3px solid #7fafc1;
+  height: 300px;
+  padding: 15px;
+}
+#overlay.fullsize {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  width: auto;
+  height: auto;
+  background-color: white;
+  z-index: 1982;
+}
+#tutorialTop {
+  display: none;
+  position: absolute;
+  height: 70px;
+  left: 0;
+  right: 0;
+  width: 100%;
+  background-color: #394D54;
+}
+#tutorialTop img {
+  margin-bottom: 20px;
+  display: inline-block;
+}
+#tutorialTop h1,
+#tutorialTop h2 {
+  display: inline-block;
+  color: white;
+  margin-top: 0px;
+  margin-bottom: 0px;
+}
+#tutorialTop h1 {
+  font-size: 22px;
+  color: white;
+  font-weight: normal;
+  margin-top: 20px;
+}
+#main {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+}
+#leftside.fullsize {
+  box-sizing: border-box;
+  width: 35%;
+  position: absolute;
+  display: block;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  margin-top: 70px;
+  overflow-y: scroll;
+}
+#rightside {
+  margin-top: 70px;
+}
+#instructions,
+#results,
+#actions,
+#tips,
+#command {
+  padding: 5px 10px 0 10px;
+}
+#instructions .text,
+#results .text,
+#actions .text,
+#tips .text,
+#command .text,
+#instructions .assignment,
+#results .assignment,
+#actions .assignment,
+#tips .assignment,
+#command .assignment,
+#instructions .tiptext,
+#results .tiptext,
+#actions .tiptext,
+#tips .tiptext,
+#command .tiptext {
+  margin-left: 60px;
+}
+#instructions .text,
+#results .text,
+#actions .text,
+#tips .text,
+#command .text {
+  font-size: 16px;
+}
+#instructions circle {
+  fill: #FF8100;
+}
+#results {
+  z-index: 20;
+  background-color: #e7e7e7;
+  width: 400px;
+  padding: 10px;
+  position: absolute;
+  box-sizing: border-box;
+  right: 0;
+  top: 0;
+  margin-top: 100px;
+}
+#results circle {
+  fill: green;
+}
+#results.intermediate circle {
+  fill: #008bb8;
+}
+#results button {
+  position: relative;
+  float: right;
+  margin-top: 10px;
+}
+#instructions .assignment {
+  margin-top: 20px;
+  border: 2px grey solid;
+  padding: 15px;
+  padding-top: 5px;
+}
+.circle {
+  position: relative;
+  float: left;
+  font-size: 18px;
+  margin-top: 15px;
+}
+#terminal {
+  box-sizing: border-box;
+  position: absolute;
+  display: block;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 35%;
+}
+#terminal.smallsize {
+  margin: 10px;
+  margin-bottom: 65px;
+}
+#terminal.fullsize {
+  margin: 0;
+  margin-right: 15px;
+  margin-top: 70px;
+  padding-bottom: 0px;
+  margin-bottom: 65px;
+}
+#terminal-extenstion {
+  box-sizing: border-box;
+  position: absolute;
+  display: block;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 35%;
+  background-color: black;
+  margin-bottom: 0px;
+}
+#terminal-extenstion.smallsize {
+  margin: 10px;
+}
+#terminal-extenstion.fullsize {
+  margin: 0;
+  margin-top: 70px;
+}
+#terminal a {
+  color: #AAA;
+  text-decoration: none;
+  font-weight: normal;
+}
+#starttext {
+  width: 200px;
+  margin: 10px;
+}
+.hide-when-small {
+  display: none;
+}
+.docker-btn {
+  border: none;
+  color: white;
+}
+.docker-btn-large {
+  font-size: 22px;
+  padding: 10px 15px 10px 15px;
+}
+.docker-btn-blue {
+  border: none;
+  color: white;
+  background: #008bb8;
+  /* Old browsers */
+
+  background: -moz-linear-gradient(top, #008bb8 0%, #00617f 100%);
+  /* FF3.6+ */
+
+  background: -webkit-gradient(linear, left top, left bottom, color-stop(0%, #008bb8), color-stop(100%, #00617f));
+  /* Chrome,Safari4+ */
+
+  background: -webkit-linear-gradient(top, #008bb8 0%, #00617f 100%);
+  /* Chrome10+,Safari5.1+ */
+
+  background: -o-linear-gradient(top, #008bb8 0%, #00617f 100%);
+  /* Opera 11.10+ */
+
+  background: -ms-linear-gradient(top, #008bb8 0%, #00617f 100%);
+  /* IE10+ */
+
+  background: linear-gradient(to bottom, #008bb8 0%, #00617f 100%);
+  /* W3C */
+
+  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#008bb8', endColorstr='#00617f', GradientType=0);
+  /* IE6-9 */
+
+}
+.docker-btn-blue:enabled:active {
+  border: none;
+  color: white;
+  background: #00617f;
+  /* Old browsers */
+
+  background: -moz-linear-gradient(top, #00617f 0%, #008bb8 100%);
+  /* FF3.6+ */
+
+  background: -webkit-gradient(linear, left top, left bottom, color-stop(0%, #00617f), color-stop(100%, #008bb8));
+  /* Chrome,Safari4+ */
+
+  background: -webkit-linear-gradient(top, #00617f 0%, #008bb8 100%);
+  /* Chrome10+,Safari5.1+ */
+
+  background: -o-linear-gradient(top, #00617f 0%, #008bb8 100%);
+  /* Opera 11.10+ */
+
+  background: -ms-linear-gradient(top, #00617f 0%, #008bb8 100%);
+  /* IE10+ */
+
+  background: linear-gradient(to bottom, #00617f 0%, #008bb8 100%);
+  /* W3C */
+
+  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#00617f', endColorstr='#008bb8', GradientType=0);
+  /* IE6-9 */
+
+}
+.docker-btn-blue:disabled {
+  color: white;
+  background: #4f727c;
+  /* Old browsers */
+
+  background: -moz-linear-gradient(top, #4f727c 0%, #89acb7 100%);
+  /* FF3.6+ */
+
+  background: -webkit-gradient(linear, left top, left bottom, color-stop(0%, #4f727c), color-stop(100%, #89acb7));
+  /* Chrome,Safari4+ */
+
+  background: -webkit-linear-gradient(top, #4f727c 0%, #89acb7 100%);
+  /* Chrome10+,Safari5.1+ */
+
+  background: -o-linear-gradient(top, #4f727c 0%, #89acb7 100%);
+  /* Opera 11.10+ */
+
+  background: -ms-linear-gradient(top, #4f727c 0%, #89acb7 100%);
+  /* IE10+ */
+
+  background: linear-gradient(to bottom, #4f727c 0%, #89acb7 100%);
+  /* W3C */
+
+  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#4f727c', endColorstr='#89acb7', GradientType=0);
+  /* IE6-9 */
+
+}
+#tutorialTop .closeButton {
+  position: relative;
+  float: right;
+  margin: 6px;
+  width: 18px;
+  height: 18px;
+}
+#progress-indicator {
+  margin-top: 20px;
+  margin-right: 20px;
+  float: right;
+  cursor: hand;
+}
+.progress-marker {
+  position: relative;
+  float: left;
+  margin-right: 5px;
+  cursor: hand;
+}
+.progress-marker svg {
+  width: 30px;
+  height: 30px;
+}
+.progress-marker circle {
+  fill: #eaeaea;
+}
+.progress-marker text {
+  fill: black;
+}
+.progress-marker.complete circle {
+  fill: green;
+}
+.progress-marker:hover circle {
+  fill: #01b0ee;
+}
+.progress-marker:active circle {
+  fill: #ff810a;
+}
+.progress-marker.active circle {
+  fill: #ff810a;
+}
