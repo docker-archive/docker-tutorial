@@ -1,1 +1,3 @@
 include *.txt
+recursive-include docker_tutorial/static *
+recursive-include docker_tutorial/templates *
