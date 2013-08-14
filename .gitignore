@@ -1,2 +1,4 @@
 .idea
 DockerTutorial.egg-info
+MANIFEST
+dist/

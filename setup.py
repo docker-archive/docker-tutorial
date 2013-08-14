@@ -13,7 +13,4 @@ setup(
     description='An interactive learning environment to get familiar with the Docker cli',
     long_description=open('README.txt').read(),
     include_package_data=True,
-    install_requires=[
-        "South >= 0.8.1",
-    ]
 )

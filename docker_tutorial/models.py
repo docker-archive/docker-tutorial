@@ -20,6 +20,7 @@ class TutorialEvent(models.Model):
     COMMAND = 'command'
     NEXT = 'next'
     FEEDBACK = 'feedback'
+    PEEK = 'peek'
     COMPLETE = 'complete'
 
 
@@ -29,7 +30,8 @@ class TutorialEvent(models.Model):
         (COMMAND, u'Command given'),
         (NEXT, u'Next Question'),
         (FEEDBACK, u'Feedback'),
-        (COMPLETE, u'Tutorial Complete'),
+        (PEEK, u'Peek'),
+        (COMPLETE, u'Tutorial Complete')
     )
 
     user = models.ForeignKey(TutorialUser)
