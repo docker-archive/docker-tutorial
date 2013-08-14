@@ -6,6 +6,107 @@
   background: rgba(54, 25, 25, 0.5);
   box-sizing: border-box;
 }
+/*
+  Styles largely duplicates from the docker website
+*/
+.tutorial {
+  font-family: "Cabin", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-size: 14px;
+  line-height: 20px;
+  color: #333333;
+}
+.tutorial h1,
+.tutorial h2,
+.tutorial h3,
+.tutorial h4,
+.tutorial h5,
+.tutorial h6 {
+  margin: 10px 0;
+  font-family: inherit;
+  font-weight: normal;
+  line-height: 20px;
+  color: inherit;
+  text-rendering: optimizelegibility;
+}
+.tutorial h1,
+.tutorial h2,
+.tutorial h3 {
+  line-height: 40px;
+}
+.tutorial img {
+  max-width: 100%;
+  width: auto\9;
+  height: auto;
+  vertical-align: middle;
+  border: 0;
+  -ms-interpolation-mode: bicubic;
+}
+.tutorial select,
+.tutorial textarea,
+.tutorial input[type="text"],
+.tutorial input[type="password"],
+.tutorial input[type="datetime"],
+.tutorial input[type="datetime-local"],
+.tutorial input[type="date"],
+.tutorial input[type="month"],
+.tutorial input[type="time"],
+.tutorial input[type="week"],
+.tutorial input[type="number"],
+.tutorial input[type="email"],
+.tutorial input[type="url"],
+.tutorial input[type="search"],
+.tutorial input[type="tel"],
+.tutorial input[type="color"],
+.tutorial .uneditable-input {
+  display: inline-block;
+  height: 20px;
+  padding: 4px 6px;
+  margin-bottom: 10px;
+  font-size: 14px;
+  line-height: 20px;
+  color: #555555;
+  -webkit-border-radius: 4px;
+  -moz-border-radius: 4px;
+  border-radius: 4px;
+  vertical-align: middle;
+}
+.tutorial button,
+.tutorial input,
+.tutorial select,
+.tutorial textarea {
+  margin: 0;
+  font-size: 100%;
+  vertical-align: middle;
+}
+.tutorial label,
+.tutorial input,
+.tutorial button,
+.tutorial select,
+.tutorial textarea {
+  font-size: 14px;
+  font-weight: normal;
+  line-height: 20px;
+}
+.tutorial code,
+.tutorial pre {
+  padding: 0 3px 2px;
+  font-family: Monaco, Menlo, Consolas, "Courier New", monospace;
+  font-size: 12px;
+  color: #333333;
+  -webkit-border-radius: 3px;
+  -moz-border-radius: 3px;
+  border-radius: 3px;
+}
+.tutorial code {
+  padding: 2px 4px;
+  color: #d14;
+  background-color: #f7f7f9;
+  border: 1px solid #e1e1e8;
+  white-space: nowrap;
+}
+/*
+  New (non dupe) styles
+*/
 .tutorial p {
   margin-top: 0px;
   margin-bottom: 5px;

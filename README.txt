@@ -15,6 +15,13 @@ However, this app is made to also be usable inside other Django applications. Al
 add git+https://github.com/dhrp/docker-tutorial.git#egg=DockerTutorial-dev to your requirements.txt
 and it will be installed by pip upon pip install -r requirements.txt
 
+To include it
+* Make sure your "host" app uses the same python environment
+* In your "host" app settings include "docker_tutorial"
+* in a template {% include 'tutorial/snippet.html' %}
+* in your urls.py add url(r'^tutorial/', include('docker_tutorial.urls')),
+
+
 When you want to make changes
 -----------------------------
 
@@ -30,8 +37,5 @@ When you want to make changes
 This will setup the symlinks such that you don't need to run setup.py every time you want to see a
 change. i.e. your local repository is now linked into the environment.
 
-Now
-* In your "host" app, include "docker_tutorial" and in a template {% include 'tutorial/snippet.html' %}
-* Make sure your "host" app uses the same environment and it should all just work.
 
 Happy coding!

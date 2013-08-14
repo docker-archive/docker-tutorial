@@ -66,22 +66,7 @@ do @myTerminal = ->
       term.echo 'which question?'
 
     else if command is 'test'
-      term.echo 'ok'
-      arrA = ['aap', 'noot', 'rat']
-      arrB = ['aap', 'noot', 'mies']
-
-      valid = arrA.every( (value) ->
-#        term.echo value
-#        term.echo arrB.indexOf(value)
-        if arrB.indexOf(value) == -1
-          term.echo value.indexOf(arrB)
-          term.echo value
-          return false
-        else
-          return true
-      )
-
-      term.echo valid
+      term.echo 'I have to keep testing myself.'
 
     else if command is 'cd'
       bash(term, inputs)
@@ -112,9 +97,9 @@ do @myTerminal = ->
 
     immediateCallback(inputs)
 
-  ###
+  ###  =======================================
     Common utils
-  ###
+  =======================================  ###
 
   String.prototype.beginsWith = (string) ->
     ###
@@ -252,6 +237,7 @@ do @myTerminal = ->
   ###
     Docker program
   ###
+
   Docker = (term, inputs) ->
 
     echo = term.echo
@@ -699,7 +685,6 @@ should have been. Leave feedback if you find things confusing.
     -u="": Username or UID
     -v=map[]: Attach a data volume
     -volumes-from="": Mount volumes from the specified container
-
     """
 
   run_apt_get = \
@@ -866,6 +851,11 @@ should have been. Leave feedback if you find things confusing.
     surma/go                  Simple augmentation of the standard Ubuntu...
 
     """
+
+  testing = \
+  """
+  Testing leads to failure, and failure leads to understanding. ~Burt Rutan
+  """
 
   version = \
   """
