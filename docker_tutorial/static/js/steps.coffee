@@ -325,13 +325,15 @@ logEvent = (data, feedback) ->
 
 
 ## next
-$('#buttonNext').click ->
+$('#buttonNext').click (e) ->
+
+  # disable the button to prevent spacebar to hit it when typing in the terminal
+  this.setAttribute('disabled','disabled')
+  console.log(e)
   next()
-  $('#results').hide()
 
 $('#buttonFinish').click ->
   window.open(COMPLETE_URL)
-
 
 ## previous
 $('#buttonPrevious').click ->
@@ -365,13 +367,14 @@ $('#fullSizeOpen').click ->
   next(0)
 
   webterm.resize()
-  data = { type: EVENT_TYPES.start }
 
   # send the next event after a short timeout, so it doesn't come at the same time as the next() event
   # in the beginning. Othewise two sessions will appear to have been started.
   # This will make the order to appear wrong, but that's not much of an issue.
 
-  setTimeout(logEvent(data), 1100)
+  setTimeout( () ->
+    logEvent( { type: EVENT_TYPES.start } )
+  , 3000)
 
 
 ## leave fullsize

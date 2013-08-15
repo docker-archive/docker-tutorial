@@ -10,7 +10,9 @@
 
 do @myTerminal = ->
 
-  #  id = terminal
+  # Which terminal emulator version are we
+  EMULATOR_VERSION = "0.1.3"
+
 
   @basesettings = {
     prompt: 'you@tutorial:~$ ',
@@ -157,7 +159,8 @@ do @myTerminal = ->
       if input.startsWith('-') and imagename == ""
         switches.push(input)
         if switches.length > 0
-          switchArg = true
+          if not ['-i', '-t', '-d'].containsAllOfThese([input])
+            switchArg = true
       else if switchArg == true
         # reset switchArg
         switchArg = false
@@ -310,27 +313,30 @@ do @myTerminal = ->
       imagename = parsed_input.imageName
       commands = parsed_input.commands
 
-      #check the args
-      expected_switches = ['-i', '-t']
-
       console.log "commands"
       console.log commands
+      console.log "switches"
+      console.log switches
 
-      console.log imagename
+      console.log "parsed input"
+      console.log parsed_input
+      console.log "imagename: #{imagename}"
 
       if imagename is "ubuntu"
-        console.log("run ubuntu")
-        echo run_image_wrong_command(commands[0])
-#      else if switches.containsAllOfThese(expected_switches)
-#        if imagename is "learn/tutorial" and commands[0] is "/bin/bash"
-#          immediateCallback(parsed_input, true)
-#          term.push ( (command, term) ->
-#            if command
-#              echo """this shell is not implemented. Enter 'exit' to exit."""
-#            return
-#          ), {prompt: 'root@687bbbc4231b:/# '}
-#        else
-#          intermediateResults(1)
+        if switches.containsAllOfTheseParts(['-i', '-t'])
+          if commands.containsAllOfTheseParts(['bash'])
+  #          immediateCallback(parsed_input, true)
+            term.push ( (command, term) ->
+              if command
+                echo """this shell is not implemented. Enter 'exit' to exit."""
+              return
+            ), {prompt: 'root@687bbbc4231b:/# '}
+          else
+            echo run_image_wrong_command(commands)
+
+        else
+          echo run_flag_defined_not_defined(switches)
+
       else if imagename is "learn/tutorial"
         if switches.length > 0
           echo run_learn_no_command
@@ -399,7 +405,7 @@ do @myTerminal = ->
         echo pull
 
     else if inputs[1] is "version"
-      echo (version)
+      echo (version())
 
 
     else if DockerCommands[inputs[1]]
@@ -760,6 +766,11 @@ should have been. Leave feedback if you find things confusing.
       E: Unable to locate package #{keyword}
     """
 
+  run_flag_defined_not_defined = (keyword) ->
+    """
+    2013/08/15 22:19:14 flag provided but not defined: #{keyword}
+    """
+
   run_learn_no_command = \
     """
     2013/07/02 02:00:59 Error: No command specified
@@ -858,9 +869,9 @@ should have been. Leave feedback if you find things confusing.
   Testing leads to failure, and failure leads to understanding. ~Burt Rutan
   """
 
-  version = \
-  """
-    Docker Emulator version 0.1
+  version = () ->
+    """
+    Docker Emulator version #{EMULATOR_VERSION}
 
     Emulating:
     Client version: 0.5.3

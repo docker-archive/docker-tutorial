@@ -11,8 +11,9 @@
 
 (function() {
   (this.myTerminal = function() {
-    var Docker, DockerCommands, Docker_cmd, Docker_logo, bash, commit, commit_containerid, commit_id_does_not_exist, help, images, inspect, inspect_no_such_container, inspect_ping_container, parseInput, ping, ps, ps_a, ps_l, pull, pull_no_results, pull_tutorial, pull_ubuntu, push, push_container_learn_ping, push_wrong_name, run_apt_get, run_apt_get_install_iputils_ping, run_apt_get_install_unknown_package, run_cmd, run_image_wrong_command, run_learn_no_command, run_learn_tutorial_echo_hello_world, run_notfound, run_ping_www_google_com, run_switches, search, search_no_results, search_tutorial, search_ubuntu, testing, util_slow_lines, version, wait;
+    var Docker, DockerCommands, Docker_cmd, Docker_logo, EMULATOR_VERSION, bash, commit, commit_containerid, commit_id_does_not_exist, help, images, inspect, inspect_no_such_container, inspect_ping_container, parseInput, ping, ps, ps_a, ps_l, pull, pull_no_results, pull_tutorial, pull_ubuntu, push, push_container_learn_ping, push_wrong_name, run_apt_get, run_apt_get_install_iputils_ping, run_apt_get_install_unknown_package, run_cmd, run_flag_defined_not_defined, run_image_wrong_command, run_learn_no_command, run_learn_tutorial_echo_hello_world, run_notfound, run_ping_www_google_com, run_switches, search, search_no_results, search_tutorial, search_ubuntu, testing, util_slow_lines, version, wait;
 
+    EMULATOR_VERSION = "0.1.3";
     this.basesettings = {
       prompt: 'you@tutorial:~$ ',
       greetings: "Welcome to the interactive Docker tutorial"
@@ -154,7 +155,9 @@
         if (input.startsWith('-') && imagename === "") {
           switches.push(input);
           if (switches.length > 0) {
-            switchArg = true;
+            if (!['-i', '-t', '-d'].containsAllOfThese([input])) {
+              switchArg = true;
+            }
           }
         } else if (switchArg === true) {
           switchArg = false;
@@ -241,7 +244,7 @@
     */
 
     Docker = function(term, inputs) {
-      var DockerCommand, callback, command, commands, description, echo, expected_switches, i, imagename, insert, keyword, parsed_input, result, swargs, switches;
+      var DockerCommand, callback, command, commands, description, echo, i, imagename, insert, keyword, parsed_input, result, swargs, switches;
 
       echo = term.echo;
       insert = term.insert;
@@ -307,13 +310,29 @@
         swargs = parsed_input.switchArgs;
         imagename = parsed_input.imageName;
         commands = parsed_input.commands;
-        expected_switches = ['-i', '-t'];
         console.log("commands");
         console.log(commands);
-        console.log(imagename);
+        console.log("switches");
+        console.log(switches);
+        console.log("parsed input");
+        console.log(parsed_input);
+        console.log("imagename: " + imagename);
         if (imagename === "ubuntu") {
-          console.log("run ubuntu");
-          echo(run_image_wrong_command(commands[0]));
+          if (switches.containsAllOfTheseParts(['-i', '-t'])) {
+            if (commands.containsAllOfTheseParts(['bash'])) {
+              term.push((function(command, term) {
+                if (command) {
+                  echo("this shell is not implemented. Enter 'exit' to exit.");
+                }
+              }), {
+                prompt: 'root@687bbbc4231b:/# '
+              });
+            } else {
+              echo(run_image_wrong_command(commands));
+            }
+          } else {
+            echo(run_flag_defined_not_defined(switches));
+          }
         } else if (imagename === "learn/tutorial") {
           if (switches.length > 0) {
             echo(run_learn_no_command);
@@ -380,7 +399,7 @@
           echo(pull);
         }
       } else if (inputs[1] === "version") {
-        echo(version);
+        echo(version());
       } else if (DockerCommands[inputs[1]]) {
         echo("" + inputs[1] + " is a valid argument, but not implemented");
       } else {
@@ -465,6 +484,9 @@
     run_apt_get_install_unknown_package = function(keyword) {
       return "Reading package lists...\nBuilding dependency tree...\nE: Unable to locate package " + keyword;
     };
+    run_flag_defined_not_defined = function(keyword) {
+      return "2013/08/15 22:19:14 flag provided but not defined: " + keyword;
+    };
     run_learn_no_command = "2013/07/02 02:00:59 Error: No command specified";
     run_learn_tutorial_echo_hello_world = function(commands) {
       var command, string, _i, _len, _ref;
@@ -492,7 +514,9 @@
     search_tutorial = "Found 1 results matching your query (\"tutorial\")\nNAME                      DESCRIPTION\nlearn/tutorial            An image for the interactive tutorial";
     search_ubuntu = "Found 22 results matching your query (\"ubuntu\")\nNAME                DESCRIPTION\nshykes/ubuntu\nbase                Another general use Ubuntu base image. Tag...\nubuntu              General use Ubuntu base image. Tags availa...\nboxcar/raring       Ubuntu Raring 13.04 suitable for testing v...\ndhrp/ubuntu\ncreack/ubuntu       Tags:\n12.04-ssh,\n12.10-ssh,\n12.10-ssh-l...\ncrohr/ubuntu              Ubuntu base images. Only lucid (10.04) for...\nknewton/ubuntu\npallet/ubuntu2\nerikh/ubuntu\nsamalba/wget              Test container inherited from ubuntu with ...\ncreack/ubuntu-12-10-ssh\nknewton/ubuntu-12.04\ntithonium/rvm-ubuntu      The base 'ubuntu' image, with rvm installe...\ndekz/build                13.04 ubuntu with build\nooyala/test-ubuntu\nooyala/test-my-ubuntu\nooyala/test-ubuntu2\nooyala/test-ubuntu3\nooyala/test-ubuntu4\nooyala/test-ubuntu5\nsurma/go                  Simple augmentation of the standard Ubuntu...\n";
     testing = "Testing leads to failure, and failure leads to understanding. ~Burt Rutan";
-    version = "Docker Emulator version 0.1\n\nEmulating:\nClient version: 0.5.3\nServer version: 0.5.3\nGo version: go1.1";
+    version = function() {
+      return "Docker Emulator version " + EMULATOR_VERSION + "\n\nEmulating:\nClient version: 0.5.3\nServer version: 0.5.3\nGo version: go1.1";
+    };
     return Docker_logo = '              _ _       _                    _\n__      _____| | |   __| | ___  _ __   ___  | |\n\\\ \\\ /\\\ / / _ \\\ | |  / _` |/ _ \\\| \'_ \\\ / _ \\\ | |\n \\\ V  V /  __/ | | | (_| | (_) | | | |  __/ |_|\n  \\\_/\\\_/ \\\___|_|_|  \\\__,_|\\\___/|_| |_|\\\___| (_)\n                                              \n\n\n\n                        ##        .\n                  ## ## ##       ==\n               ## ## ## ##      ===\n           /""""""""""""""""\\\___/ ===\n      ~~~ {~~ ~~~~ ~~~ ~~~~ ~~ ~ /  ===- ~~~\n           \\\______ o          __/\n             \\\    \\\        __/\n              \\\____\\\______/\n\n              |          |\n           __ |  __   __ | _  __   _\n          /  \\\| /  \\\ /   |/  / _\\\ |\n          \\\__/| \\\__/ \\\__ |\\\_ \\\__  |\n\n';
   })();
 

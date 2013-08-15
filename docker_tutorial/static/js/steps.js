@@ -194,9 +194,10 @@
   */
 
 
-  $('#buttonNext').click(function() {
-    next();
-    return $('#results').hide();
+  $('#buttonNext').click(function(e) {
+    this.setAttribute('disabled', 'disabled');
+    console.log(e);
+    return next();
   });
 
   $('#buttonFinish').click(function() {
@@ -229,8 +230,6 @@
   });
 
   this.goFullScreen = function() {
-    var data;
-
     console.debug("going to fullsize mode");
     $('.togglesize').removeClass('startsize').addClass('fullsize');
     $('.hide-when-small').css({
@@ -241,10 +240,11 @@
     });
     next(0);
     webterm.resize();
-    data = {
-      type: EVENT_TYPES.start
-    };
-    return setTimeout(logEvent(data), 1100);
+    return setTimeout(function() {
+      return logEvent({
+        type: EVENT_TYPES.start
+      });
+    }, 3000);
   };
 
   $('#fullSizeClose').click(function() {
