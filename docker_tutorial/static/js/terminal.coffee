@@ -325,7 +325,6 @@ do @myTerminal = ->
       if imagename is "ubuntu"
         if switches.containsAllOfTheseParts(['-i', '-t'])
           if commands.containsAllOfTheseParts(['bash'])
-  #          immediateCallback(parsed_input, true)
             term.push ( (command, term) ->
               if command
                 echo """this shell is not implemented. Enter 'exit' to exit."""
@@ -333,10 +332,8 @@ do @myTerminal = ->
             ), {prompt: 'root@687bbbc4231b:/# '}
           else
             echo run_image_wrong_command(commands)
-
         else
           echo run_flag_defined_not_defined(switches)
-
       else if imagename is "learn/tutorial"
         if switches.length > 0
           echo run_learn_no_command
@@ -368,6 +365,8 @@ do @myTerminal = ->
       else if imagename is "learn/ping"
         if commands.containsAllOfTheseParts(["ping", "google.com"])
           util_slow_lines(term, run_ping_www_google_com, "", callback )
+        else if commands[0] is "ping" and commands[1]
+          echo run_ping_not_google(commands[1])
         else if commands[0] is "ping"
           echo ping
         else if commands[0]
@@ -375,13 +374,11 @@ do @myTerminal = ->
         else
           echo run_learn_no_command
 
-
       else if imagename
         echo run_notfound(inputs[2])
       else
         console.log("run")
         echo run_cmd
-
 
     else if inputs[1] is "search"
       if keyword = inputs[2]
@@ -405,7 +402,8 @@ do @myTerminal = ->
         echo pull
 
     else if inputs[1] is "version"
-      echo (version())
+#      console.log(version)
+      echo docker_version()
 
 
     else if DockerCommands[inputs[1]]
@@ -795,6 +793,11 @@ should have been. Leave feedback if you find things confusing.
     2013/07/02 02:14:47 Error: No such image: #{keyword}
     """
 
+  run_ping_not_google = (keyword) ->
+    """
+    ping: unknown host #{keyword}
+    """
+
   run_ping_www_google_com = \
     """
     PING www.google.com (74.125.239.129) 56(84) bytes of data.
@@ -869,7 +872,7 @@ should have been. Leave feedback if you find things confusing.
   Testing leads to failure, and failure leads to understanding. ~Burt Rutan
   """
 
-  version = () ->
+  docker_version = () ->
     """
     Docker Emulator version #{EMULATOR_VERSION}
 

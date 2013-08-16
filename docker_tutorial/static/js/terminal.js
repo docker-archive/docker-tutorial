@@ -11,7 +11,7 @@
 
 (function() {
   (this.myTerminal = function() {
-    var Docker, DockerCommands, Docker_cmd, Docker_logo, EMULATOR_VERSION, bash, commit, commit_containerid, commit_id_does_not_exist, help, images, inspect, inspect_no_such_container, inspect_ping_container, parseInput, ping, ps, ps_a, ps_l, pull, pull_no_results, pull_tutorial, pull_ubuntu, push, push_container_learn_ping, push_wrong_name, run_apt_get, run_apt_get_install_iputils_ping, run_apt_get_install_unknown_package, run_cmd, run_flag_defined_not_defined, run_image_wrong_command, run_learn_no_command, run_learn_tutorial_echo_hello_world, run_notfound, run_ping_www_google_com, run_switches, search, search_no_results, search_tutorial, search_ubuntu, testing, util_slow_lines, version, wait;
+    var Docker, DockerCommands, Docker_cmd, Docker_logo, EMULATOR_VERSION, bash, commit, commit_containerid, commit_id_does_not_exist, docker_version, help, images, inspect, inspect_no_such_container, inspect_ping_container, parseInput, ping, ps, ps_a, ps_l, pull, pull_no_results, pull_tutorial, pull_ubuntu, push, push_container_learn_ping, push_wrong_name, run_apt_get, run_apt_get_install_iputils_ping, run_apt_get_install_unknown_package, run_cmd, run_flag_defined_not_defined, run_image_wrong_command, run_learn_no_command, run_learn_tutorial_echo_hello_world, run_notfound, run_ping_not_google, run_ping_www_google_com, run_switches, search, search_no_results, search_tutorial, search_ubuntu, testing, util_slow_lines, wait;
 
     EMULATOR_VERSION = "0.1.3";
     this.basesettings = {
@@ -361,6 +361,8 @@
         } else if (imagename === "learn/ping") {
           if (commands.containsAllOfTheseParts(["ping", "google.com"])) {
             util_slow_lines(term, run_ping_www_google_com, "", callback);
+          } else if (commands[0] === "ping" && commands[1]) {
+            echo(run_ping_not_google(commands[1]));
           } else if (commands[0] === "ping") {
             echo(ping);
           } else if (commands[0]) {
@@ -399,7 +401,7 @@
           echo(pull);
         }
       } else if (inputs[1] === "version") {
-        echo(version());
+        echo(docker_version());
       } else if (DockerCommands[inputs[1]]) {
         echo("" + inputs[1] + " is a valid argument, but not implemented");
       } else {
@@ -506,6 +508,9 @@
     run_notfound = function(keyword) {
       return "Pulling repository " + keyword + " from https://index.docker.io/v1\n2013/07/02 02:14:47 Error: No such image: " + keyword;
     };
+    run_ping_not_google = function(keyword) {
+      return "ping: unknown host " + keyword;
+    };
     run_ping_www_google_com = "PING www.google.com (74.125.239.129) 56(84) bytes of data.\n64 bytes from nuq05s02-in-f20.1e100.net (74.125.239.148): icmp_req=1 ttl=55 time=2.23 ms\n64 bytes from nuq05s02-in-f20.1e100.net (74.125.239.148): icmp_req=2 ttl=55 time=2.30 ms\n64 bytes from nuq05s02-in-f20.1e100.net (74.125.239.148): icmp_req=3 ttl=55 time=2.27 ms\n64 bytes from nuq05s02-in-f20.1e100.net (74.125.239.148): icmp_req=4 ttl=55 time=2.30 ms\n64 bytes from nuq05s02-in-f20.1e100.net (74.125.239.148): icmp_req=5 ttl=55 time=2.25 ms\n64 bytes from nuq05s02-in-f20.1e100.net (74.125.239.148): icmp_req=6 ttl=55 time=2.29 ms\n64 bytes from nuq05s02-in-f20.1e100.net (74.125.239.148): icmp_req=7 ttl=55 time=2.23 ms\n64 bytes from nuq05s02-in-f20.1e100.net (74.125.239.148): icmp_req=8 ttl=55 time=2.30 ms\n64 bytes from nuq05s02-in-f20.1e100.net (74.125.239.148): icmp_req=9 ttl=55 time=2.35 ms\n-> This would normally just keep going. However, this emulator does not support Ctrl-C, so we quit here.";
     search = "\nUsage: Docker search NAME\n\nSearch the Docker index for images\n";
     search_no_results = function(keyword) {
@@ -514,7 +519,7 @@
     search_tutorial = "Found 1 results matching your query (\"tutorial\")\nNAME                      DESCRIPTION\nlearn/tutorial            An image for the interactive tutorial";
     search_ubuntu = "Found 22 results matching your query (\"ubuntu\")\nNAME                DESCRIPTION\nshykes/ubuntu\nbase                Another general use Ubuntu base image. Tag...\nubuntu              General use Ubuntu base image. Tags availa...\nboxcar/raring       Ubuntu Raring 13.04 suitable for testing v...\ndhrp/ubuntu\ncreack/ubuntu       Tags:\n12.04-ssh,\n12.10-ssh,\n12.10-ssh-l...\ncrohr/ubuntu              Ubuntu base images. Only lucid (10.04) for...\nknewton/ubuntu\npallet/ubuntu2\nerikh/ubuntu\nsamalba/wget              Test container inherited from ubuntu with ...\ncreack/ubuntu-12-10-ssh\nknewton/ubuntu-12.04\ntithonium/rvm-ubuntu      The base 'ubuntu' image, with rvm installe...\ndekz/build                13.04 ubuntu with build\nooyala/test-ubuntu\nooyala/test-my-ubuntu\nooyala/test-ubuntu2\nooyala/test-ubuntu3\nooyala/test-ubuntu4\nooyala/test-ubuntu5\nsurma/go                  Simple augmentation of the standard Ubuntu...\n";
     testing = "Testing leads to failure, and failure leads to understanding. ~Burt Rutan";
-    version = function() {
+    docker_version = function() {
       return "Docker Emulator version " + EMULATOR_VERSION + "\n\nEmulating:\nClient version: 0.5.3\nServer version: 0.5.3\nGo version: go1.1";
     };
     return Docker_logo = '              _ _       _                    _\n__      _____| | |   __| | ___  _ __   ___  | |\n\\\ \\\ /\\\ / / _ \\\ | |  / _` |/ _ \\\| \'_ \\\ / _ \\\ | |\n \\\ V  V /  __/ | | | (_| | (_) | | | |  __/ |_|\n  \\\_/\\\_/ \\\___|_|_|  \\\__,_|\\\___/|_| |_|\\\___| (_)\n                                              \n\n\n\n                        ##        .\n                  ## ## ##       ==\n               ## ## ## ##      ===\n           /""""""""""""""""\\\___/ ===\n      ~~~ {~~ ~~~~ ~~~ ~~~~ ~~ ~ /  ===- ~~~\n           \\\______ o          __/\n             \\\    \\\        __/\n              \\\____\\\______/\n\n              |          |\n           __ |  __   __ | _  __   _\n          /  \\\| /  \\\ /   |/  / _\\\ |\n          \\\__/| \\\__/ \\\__ |\\\_ \\\__  |\n\n';
