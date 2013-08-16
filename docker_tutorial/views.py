@@ -16,7 +16,6 @@ def endpoint(request):
     """
 
     return render_to_response("base/home.html", {
-        "form": form,
         }, context_instance=RequestContext(request))
 
 
@@ -71,3 +70,35 @@ def api(request):
     #     "form": form,
         # 'username': username
         # }, context_instance=RequestContext(request))
+
+def stats(request):
+
+
+    users = {}
+    users['started'] = TutorialUser.objects.all().count()
+    users['completed'] = TutorialEvent.objects.filter(type='complete').count()
+
+
+    i = 0
+    answered = {}
+    while i < 9:
+        number = TutorialEvent.objects.filter(type='next', question=i).count()
+        answered[i] = number
+        i = i + 1
+
+
+    # find which question people look for the answer
+    i = 0
+    peeks = {}
+    while i < 9:
+        number = TutorialEvent.objects.filter(type='peek', question=i).count()
+        peeks[i] = number
+        i = i + 1
+
+
+    return render_to_response("tutorial/stats.html", {
+        'users': users,
+        'peeks': peeks,
+        'answered': answered
+    }, context_instance=RequestContext(request))
+

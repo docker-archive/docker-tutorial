@@ -1,0 +1,26 @@
+
+<h3>General numbers</h3>
+<ul>
+<li>{{ users.started }} started</li>
+
+<li>{{ users.completed }} completed
+</li>
+</ul>
+
+
+<h3>How far did people get?</h3>
+<ol start="0">
+{% for question, number in answered.items %}
+    <li><div style="width: {{number}}px; background-color: #008BB8">{{ number }}</div> </li>
+{% endfor %}
+</ol>
+
+
+
+<h3>How many people check for the answer, and which?</h3>
+<ol start="0">
+{% for question, number in peeks.items %}
+    <li><div style="width: {{number}}px; background-color: #008BB8">{{ number }}</div></li>
+{% endfor %}
+</ol>
+

@@ -1,7 +1,7 @@
 from django.conf.urls import patterns, include, url
 from django.views.generic import TemplateView
 
-from views import testpage, api
+from views import testpage, api, stats
 
 # Uncomment the next two lines to enable the admin:
 # from django.contrib import admin
@@ -12,6 +12,7 @@ urlpatterns = patterns('',
     # Examples:
     url(r'^$', testpage, name='tutorial_testpage'),
     url(r'^api/$', api, name='tutorial_api'),
+    url(r'^stats/$', stats, name='stats'),
     # url(r'^$', TemplateView.as_view(template_name='tutorial/snippet.html'), name='tutorial'),
     # url(r'^wwwdocker/', include('wwwdocker.foo.urls')),
 
