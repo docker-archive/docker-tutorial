@@ -82,7 +82,7 @@
         return "You have not specified the correct repository name to commit to (learn/ping). This works, but giving your images a name\nmakes them much easier to work with.";
       }
     ],
-    tip: "<ul>\n<li>Giving just <code>docker commit</code> will show you the possible arguments.</li>\n<li>You will need to specify the container to commit by the ID you found</li>\n<li>You don't need to copy (type) the entire ID. Three or four characters are usually enough.</li>\n<li>Giving just <code>docker commit</code> will show you the possible arguments.</li>\n</ul>"
+    tip: "<ul>\n<li>Giving just <code>docker commit</code> will show you the possible arguments.</li>\n<li>You will need to specify the container to commit by the ID you found</li>\n<li>You don't need to copy (type) the entire ID. Three or four characters are usually enough.</li>\n</ul>"
   });
 
   q.push({

@@ -6,6 +6,7 @@ from django.views.decorators.csrf import csrf_exempt, csrf_protect
 from django.core.exceptions import ObjectDoesNotExist
 from django.http import HttpResponse
 from .models import *
+import json
 
 from django.contrib.sessions.models import Session
 
@@ -95,6 +96,15 @@ def stats(request):
         peeks[i] = number
         i = i + 1
 
+
+    outputformat = request.GET.get("format", None)
+    if outputformat:
+        response = {}
+        response['users'] = users
+        response['peeks'] = peeks
+        response['answered'] = answered
+        jsonresponse = json.dumps(response)
+        return HttpResponse(jsonresponse, mimetype="application/json")
 
     return render_to_response("tutorial/stats.html", {
         'users': users,

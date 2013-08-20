@@ -149,7 +149,6 @@ tip: """<ul>
      <li>Giving just <code>docker commit</code> will show you the possible arguments.</li>
      <li>You will need to specify the container to commit by the ID you found</li>
      <li>You don't need to copy (type) the entire ID. Three or four characters are usually enough.</li>
-     <li>Giving just <code>docker commit</code> will show you the possible arguments.</li>
      </ul>"""
 })
 
