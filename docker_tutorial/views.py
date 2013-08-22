@@ -111,4 +111,3 @@ def stats(request):
         'peeks': peeks,
         'answered': answered
     }, context_instance=RequestContext(request))
-

@@ -1,0 +1,513 @@
+{% extends 'dockerfile/_dockerfile.html' %}
+{% load staticfiles %}{% load google_analytics %}{% load navactive %}
+
+{% block page_js %}
+    {{ block.super }}
+    <script src="{% static 'js/dockerfile_tutorial_level1.js' %}"></script>
+{% endblock page_js %}
+
+
+{% block content %}
+
+
+<div class="container">
+<div class="row" >
+    <div class="span12 text-center">
+        <div class="copy-headline">
+            <h1>Dockerfile tutorial</h1>
+
+        </div>
+    </div>
+</div>
+<div class="row" >
+    <div class="span12 paper">
+        <div id="" class="span8 offset2">
+	
+	<h2>Level 1 - FROM, RUN, #, MAINTAINER</h2>
+	
+	<p>
+In this section we will cover the most important instructions: <code><a href="http://docs.docker.io/en/latest/use/builder/#from" target="_blank">FROM</a></code> and <code><a href="http://docs.docker.io/en/latest/use/builder/#run" target="_blank">RUN</a></code>.
+We will also see how to use the <code><a href="http://docs.docker.io/en/latest/commandline/command/build/" target="_blank">docker build</a></code> command and how to specify the <a href="http://docs.docker.io/en/latest/use/builder/#maintainer" target="_blank">maintainer</a> of the Dockerfile and how to insert comments.
+</p>
+
+<h3>Dockerfile instructions</h3>
+<p>
+All Dockerfile instructions look like this:
+	</p>
+
+
+	<pre>INSTRUCTION arguments</pre>
+
+
+<p>
+Instructions are not case sensitive, but we recommend to use capital letters.
+</p>
+
+<h3>The FROM instruction</h3>
+
+<p>
+The first instruction of every Dockerfile needs to be the <code>FROM</code> instruction
+</p>
+
+<pre>FROM image</pre>
+
+<p>
+It sets the <a href="http://docs.docker.io/en/latest/terms/image/" target="_blank">base image</a> for subsequent instructions.<br />
+Example:
+</p>
+<pre>FROM ubuntu</pre>
+<p>
+In this example, we chose ubuntu as our base image. ubuntu is a “General use Ubuntu base image” provided by the Docker team.
+You can find a list of available images from the command line by using the <a href="http://docs.docker.io/en/latest/commandline/command/search/" target="_blank">docker search</a> command.<br />
+Example:
+</p>
+<pre class="terminal">
+<span class="command">root@precise64:/home/vagrant/dockerfiles# docker search centos</span>
+Found 14 results matching your query ("centos")
+NAME                             DESCRIPTION
+centos
+backjlack/centos-6.4-x86_64
+creack/centos
+mbkan/lamp                       centos with ssh, LAMP, PHPMyAdmin(root password 'toor' and MySQL root password 'sysadmin'). Auto starts sshd, MySQL and Apache. Just launch us...
+zenosslabs/centos
+slantview/centos-chef-solo       CentOS 6.4 with chef-solo.
+tchap/centos-epel                The official centos image having EPEL added among its repositories.
+backjlack/centos                 This repository contains the following images: Centos 5.9 (more to be added soon)
+oss17888/centos6.4
+markl/centos
+troygoode/centos-node-hello
+austin/centos-base
+estrai/centos32                  Centos 5.9 32-bit based on an OpenVZ image.
+comodit/centos
+</pre>
+<p>
+So let’s say you want to use centos as you base image, you can for instance use the following line:</p>
+<pre>
+FROM centos
+</pre>
+<p>
+	You can also browse available images from Docker and the community online: <a href="http://index.docker.io" target="_blank">index.docker.io</a>
+</p>
+<h3>The RUN instruction</h3>
+<p>
+The <code>RUN</code> instruction will execute any commands on the current image and commit the results. The resulting committed image will be used for the next step in the Dockerfile.<br />
+Layering RUN instructions and generating commits conforms to the core concepts of Docker where commits are cheap and containers can be created from any point in an image’s history, much like source control.</p>
+<pre>
+RUN command
+</pre>
+<p>
+<code>RUN command</code> is equivalent to the docker commands: <code>docker run image command</code> + <code>docker commit container_id</code>,
+Where image would be replaced automatically with the current image, and container_id would be the result of the previous <code>RUN</code> instruction.<br />
+Example:</p>
+<pre>
+RUN apt-get install -y memcached
+</pre>
+</p>
+As we saw earlier, we need to have the <code>FROM</code> instruction before any <code>RUN</code> instruction, so that docker knows from which base image to start running the instruction on. For instance:
+</p>
+<pre>
+FROM ubuntu
+RUN apt-get install -y memcached
+</pre>
+<p>
+This example creates an image with memcached installed on the ubuntu image. It is the equivalent to the following command lines:
+</p>
+<pre class="terminal">
+<span class="command">root@precise64:/home/vagrant/dockerfiles# docker run ubuntu apt-get install -y memcached</span>
+[…]
+[=> container id is 9fb69e798e67]
+<span class="command">root@precise64:/home/vagrant/dockerfiles# docker commit 9fb69e798e67</span>
+6742949a1bae
+</pre>
+
+<h3>docker build</h3>
+<p>
+Once you have your Dockerfile ready, you can use the docker build command to create your image from it. There are different ways to use this command:
+<ol>
+<li>
+	If your Dockerfile is in your current directory you can use <code>docker build .</code>
+</li>
+<li>
+	From stdin. For instance: <code>docker build - < Dockerfile</code>
+</li>
+<li>
+	From gitHub. For instance: <code>docker build github.com/creack/docker-firefox</code><br />
+	In this last example, docker will clone the github repository and use it as context. The Dockerfile at the root of the repository will be used to create the image.
+</li>
+</ol>
+<p>
+Let’s run our last Dockerfile example.
+</p>
+<pre class="terminal">
+<span class="command">root@precise64:/home/vagrant/dockerfiles# cat Dockerfile</span>
+FROM ubuntu
+RUN apt-get install -y memcached
+<span class="command">root@precise64:/home/vagrant/dockerfiles# docker build .</span>
+Uploading context 20480 bytes
+Step 1 : FROM ubuntu
+Pulling repository ubuntu
+Pulling image 8dbd9e392a964056420e5d58ca5cc376ef18e2de93b5cc90e868a1bbc8318c1c (precise) from ubuntu
+Pulling image b750fe79269d2ec9a3c593ef05b4332b1d1a02a62b4accb2c21d589ff2f5f2dc (quantal) from ubuntu
+Pulling b750fe79269d2ec9a3c593ef05b4332b1d1a02a62b4accb2c21d589ff2f5f2dc metadata
+Pulling b750fe79269d2ec9a3c593ef05b4332b1d1a02a62b4accb2c21d589ff2f5f2dc fs layer
+Downloading 10.24 kB/10.24 kB (100%)
+Pulling 27cf784147099545 metadata
+Pulling 27cf784147099545 fs layer
+Downloading 10.24 kB/10.24 kB (100%)
+Pulling 27cf784147099545 metadata
+Pulling 27cf784147099545 fs layer
+Downloading 94.86 MB/94.86 MB (100%)
+ ---> 8dbd9e392a96
+Step 2 : RUN apt-get install -y memcached
+ ---> Running in dedc7af62d9f
+Reading package lists...
+Building dependency tree...
+The following extra packages will be installed:
+  libclass-isa-perl libevent-2.0-5 libgdbm3 libswitch-perl netbase perl
+  perl-modules
+Suggested packages:
+  libcache-memcached-perl libmemcached perl-doc libterm-readline-gnu-perl
+  libterm-readline-perl-perl make libpod-plainer-perl
+The following NEW packages will be installed:
+  libclass-isa-perl libevent-2.0-5 libgdbm3 libswitch-perl memcached netbase
+  perl perl-modules
+0 upgraded, 8 newly installed, 0 to remove and 0 not upgraded.
+Need to get 8070 kB of archives.
+After this operation, 32.8 MB of additional disk space will be used.
+Get:1 http://archive.ubuntu.com/ubuntu/ precise/main libgdbm3 amd64 1.8.3-10 [35.3 kB]
+Get:2 http://archive.ubuntu.com/ubuntu/ precise/main netbase all 4.47ubuntu1 [15.0 kB]
+Get:3 http://archive.ubuntu.com/ubuntu/ precise/main libclass-isa-perl all 0.36-3 [11.9 kB]
+Get:4 http://archive.ubuntu.com/ubuntu/ precise/main libevent-2.0-5 amd64 2.0.16-stable-1 [127 kB]
+Get:5 http://archive.ubuntu.com/ubuntu/ precise/main perl-modules all 5.14.2-6ubuntu2 [3369 kB]
+Get:6 http://archive.ubuntu.com/ubuntu/ precise/main perl amd64 5.14.2-6ubuntu2 [4417 kB]
+Get:7 http://archive.ubuntu.com/ubuntu/ precise/main libswitch-perl all 2.16-2 [19.2 kB]
+Get:8 http://archive.ubuntu.com/ubuntu/ precise/main memcached amd64 1.4.13-0ubuntu2 [75.3 kB]
+debconf: delaying package configuration, since apt-utils is not installed
+Fetched 8070 kB in 7s (1136 kB/s)
+Selecting previously unselected package libgdbm3.
+(Reading database ... 7545 files and directories currently installed.)
+Unpacking libgdbm3 (from .../libgdbm3_1.8.3-10_amd64.deb) ...
+Selecting previously unselected package netbase.
+Unpacking netbase (from .../netbase_4.47ubuntu1_all.deb) ...
+Selecting previously unselected package libclass-isa-perl.
+Unpacking libclass-isa-perl (from .../libclass-isa-perl_0.36-3_all.deb) ...
+Selecting previously unselected package libevent-2.0-5.
+Unpacking libevent-2.0-5 (from .../libevent-2.0-5_2.0.16-stable-1_amd64.deb) ...
+Selecting previously unselected package perl-modules.
+Unpacking perl-modules (from .../perl-modules_5.14.2-6ubuntu2_all.deb) ...
+Selecting previously unselected package perl.
+Unpacking perl (from .../perl_5.14.2-6ubuntu2_amd64.deb) ...
+Selecting previously unselected package libswitch-perl.
+Unpacking libswitch-perl (from .../libswitch-perl_2.16-2_all.deb) ...
+Selecting previously unselected package memcached.
+Unpacking memcached (from .../memcached_1.4.13-0ubuntu2_amd64.deb) ...
+Setting up libgdbm3 (1.8.3-10) ...
+Setting up netbase (4.47ubuntu1) ...
+Setting up libclass-isa-perl (0.36-3) ...
+Setting up libevent-2.0-5 (2.0.16-stable-1) ...
+Setting up perl-modules (5.14.2-6ubuntu2) ...
+Setting up perl (5.14.2-6ubuntu2) ...
+update-alternatives: using /usr/bin/prename to provide /usr/bin/rename (rename) in auto mode.
+Setting up memcached (1.4.13-0ubuntu2) ...
+Starting memcached: memcached.
+Setting up libswitch-perl (2.16-2) ...
+Processing triggers for libc-bin ...
+ldconfig deferred processing now taking place
+ ---> 1dcfa24c8ca6
+Successfully built 1dcfa24c8ca6
+</pre>
+<p>
+You can see your newly created image <code>1dcfa24c8ca6</code> in the ouput of <code>docker images</code>:
+</p>
+<pre class="terminal">
+<span class="command">root@precise64:/home/vagrant/dockerfiles# docker images</span>
+REPOSITORY          TAG                 ID                  CREATED              SIZE
+ubuntu              12.04               8dbd9e392a96        4 months ago         131.5 MB (virtual 131.5 MB)
+ubuntu              12.10               b750fe79269d        4 months ago         24.65 kB (virtual 180.1 MB)
+ubuntu              latest              8dbd9e392a96        4 months ago         131.5 MB (virtual 131.5 MB)
+ubuntu              precise             8dbd9e392a96        4 months ago         131.5 MB (virtual 131.5 MB)
+ubuntu              quantal             b750fe79269d        4 months ago         24.65 kB (virtual 180.1 MB)
+&lt;none&gt;              &lt;none&gt;               1275893fed44        9 minutes ago        12.3 kB (virtual 566.4 MB)
+&lt;none&gt;               &lt;none&gt;               1dcfa24c8ca6        About a minute ago   52.27 MB (virtual 183.8 MB)
+</pre>
+<p>
+	Note that it does not have a name yet. Let’s name it with the command <code>docker tag</code>.
+</p>
+<pre class="terminal">
+<span class="command">root@precise64:/home/vagrant/dockerfiles# docker tag 1dcfa24c8ca6 memcached</span>
+<span class="command">root@precise64:/home/vagrant/dockerfiles# docker images</span>
+REPOSITORY          TAG                 ID                  CREATED             SIZE
+ubuntu              12.04               8dbd9e392a96        4 months ago        131.5 MB (virtual 131.5 MB)
+ubuntu              12.10               b750fe79269d        4 months ago        24.65 kB (virtual 180.1 MB)
+ubuntu              latest              8dbd9e392a96        4 months ago        131.5 MB (virtual 131.5 MB)
+ubuntu              precise             8dbd9e392a96        4 months ago        131.5 MB (virtual 131.5 MB)
+ubuntu              quantal             b750fe79269d        4 months ago        24.65 kB (virtual 180.1 MB)
+memcached           latest              1dcfa24c8ca6        4 minutes ago       52.27 MB (virtual 183.8 MB)
+&lt;none&gt;              &lt;none&gt;             1275893fed44        12 minutes ago      12.3 kB (virtual 566.4 MB)
+</pre>
+<p>
+The good news is that <code>docker build</code> comes with the option <code>-t</code> with which you can directly tag the (last) image created with the Dockerfile. So we could have used <code>docker build -t memcached .</code> directly.
+</p>
+<pre class="terminal">
+<span class="command">root@precise64:/home/vagrant/dockerfiles# docker build -t memcached_new .</span>
+Uploading context 20480 bytes
+Step 1 : FROM ubuntu
+[…]
+Step 2 : RUN apt-get install -y memcached
+[…]
+Successfully built 1dcfa24c8ca6
+<span class="command">root@precise64:/home/vagrant/dockerfiles# docker images</span>
+REPOSITORY          TAG                 ID                  CREATED             SIZE
+ubuntu              12.04               8dbd9e392a96        4 months ago        131.5 MB (virtual 131.5 MB)
+ubuntu              12.10               b750fe79269d        4 months ago        24.65 kB (virtual 180.1 MB)
+ubuntu              latest              8dbd9e392a96        4 months ago        131.5 MB (virtual 131.5 MB)
+ubuntu              precise             8dbd9e392a96        4 months ago        131.5 MB (virtual 131.5 MB)
+ubuntu              quantal             b750fe79269d        4 months ago        24.65 kB (virtual 180.1 MB)
+memcached_new       latest              1dcfa24c8ca6        4 minutes ago       52.27 MB (virtual 183.8 MB)
+&lt;none&gt;              &lt;none&gt;              1275893fed44        4 minutes ago      12.3 kB (virtual 566.4 MB)
+</pre>
+
+<h3>Creating a memcached image with a Dockerfile</h3>
+<p>
+We have written almost all of it in the previous sections.
+</p>
+<pre>
+FROM ubuntu
+RUN apt-get install -y memcached
+</pre>
+<p>
+But we want to ensure that the ubuntu package repository is up to date. With the command line we would do:</p>
+<pre class="terminal">
+<span class="command">root@precise64:/home/vagrant/dockerfiles# echo "deb http://archive.ubuntu.com/ubuntu precise main universe" > /etc/apt/sources.list</span>
+<span class="command">root@precise64:/home/vagrant/dockerfiles# apt-get update</span>
+</pre>
+<p>
+Within the Dockerfile, we will use the <code>RUN</code> instruction.
+</p>
+<pre>
+RUN echo "deb http://archive.ubuntu.com/ubuntu precise main universe" > /etc/apt/sources.list
+RUN apt-get update
+</pre>
+<p>
+So our final Dockerfile looks like this:
+</p>
+<pre>
+FROM ubuntu
+RUN echo "deb http://archive.ubuntu.com/ubuntu precise main universe" > /etc/apt/sources.list
+RUN apt-get update
+RUN apt-get install -y memcached
+</pre>
+<p>
+Note that this Dockerfile would be equivalent to the following command lines:</p>
+<pre class="terminal">
+<span class="command">root@precise64:/home/vagrant/dockerfiles# docker run ubuntu echo "deb http://archive.ubuntu.com/ubuntu precise main universe" > /etc/apt/sources.list</span>
+[…]
+[=> container id is 72d2a39bc64d]
+<span class="command">root@precise64:/home/vagrant/dockerfiles# docker commit 72d2a39bc64d</span>
+d7a97544c0c7
+<span class="command">root@precise64:/home/vagrant/dockerfiles# docker run d7a97544c0c7 apt-get update</span>
+[…]
+[=> container id is 66b22a0ef7c9]
+<span class="command">root@precise64:/home/vagrant/dockerfiles# docker run 66b22a0ef7c9 apt-get install -y memcached</span>
+[…]
+[=> container id is 9fb69e798e67]
+<span class="command">root@precise64:/home/vagrant/dockerfiles# docker commit 9fb69e798e67</span>
+6742949a1bae
+</pre>
+<p>
+Let’s create our image. We will use the <code>-t</code> option with <code>docker build</code> in order to give a name to our image.
+</p>
+<pre class="terminal">
+<span class="command">root@precise64:/home/vagrant/dockerfiles# cat Dockerfile</span>
+FROM ubuntu
+RUN echo "deb http://archive.ubuntu.com/ubuntu precise main universe" > /etc/apt/sources.list
+RUN apt-get update
+RUN apt-get install -y memcached
+root@precise64:/home/vagrant/dockerfiles# docker build -t brand_new_memcached - < Dockerfile
+Uploading context 2048 bytes
+Step 1 : FROM ubuntu
+ ---> 8dbd9e392a96
+Step 2 : RUN echo "deb http://archive.ubuntu.com/ubuntu precise main universe" > /etc/apt/sources.list
+ ---> Using cache
+ ---> 913c2344b312
+Step 3 : RUN apt-get update
+ ---> Using cache
+ ---> 0a77b6e48393
+Step 4 : RUN apt-get install -y memcached
+ ---> Running in d1eadc19edc6
+Reading package lists...
+Building dependency tree...
+The following extra packages will be installed:
+  libclass-isa-perl libevent-2.0-5 libgdbm3 libswitch-perl netbase perl
+  perl-modules
+[…]
+Starting memcached: memcached.
+Setting up libswitch-perl (2.16-2) ...
+Processing triggers for libc-bin ...
+ldconfig deferred processing now taking place
+ ---> 782a37534312
+Successfully built 782a37534312
+</pre>
+<p>
+The id of the image is 782a37534312 but it already has a name as we can verify with docker images:
+</p>
+<pre class="terminal">
+<span class="command">root@precise64:/home/vagrant/dockerfiles# docker images</span>
+REPOSITORY            TAG                 ID                  CREATED             SIZE
+memcached_new         latest              1dcfa24c8ca6        12 minutes ago      52.27 MB (virtual 183.8 MB)
+brand_new_memcached   latest              782a37534312        54 seconds ago      74.7 MB (virtual 350.7 MB)
+ubuntu                12.04               8dbd9e392a96        4 months ago        131.5 MB (virtual 131.5 MB)
+ubuntu                12.10               b750fe79269d        4 months ago        24.65 kB (virtual 180.1 MB)
+ubuntu                latest              8dbd9e392a96        4 months ago        131.5 MB (virtual 131.5 MB)
+ubuntu                precise             8dbd9e392a96        4 months ago        131.5 MB (virtual 131.5 MB)
+ubuntu                quantal             b750fe79269d        4 months ago        24.65 kB (virtual 180.1 MB)
+memcached             latest              1dcfa24c8ca6        12 minutes ago      52.27 MB (virtual 183.8 MB)
+&lt;none&gt;                &lt;none&gt;             1275893fed44        21 minutes ago      12.3 kB (virtual 566.4 MB)
+</pre>
+<p>
+Congratulations! You just created your first image with a Dockerfile :)</p>
+<p>
+You can verify that memcached is installed in your image by running these commands:</p>
+<pre class="terminal">
+<span class="command">root@precise64:/home/vagrant/dockerfiles# docker run -i -t brand_new_memcached /bin/bash</span>
+<span class="command">root@c28a2c4be825:/# memcached</span>
+can't run as root without the -u switch
+</pre>
+
+<h3>Commenting</h3>
+<p>
+Code should always be commented. The same rule applies to the Dockerfile.
+A character <code>#</code> at the beginning of a line defines a comment. The comments are not exectuted. Comments are not mandatory, but we recommend to use them to:
+<ul>
+<li>Give a title and/or describe the purpose of the Dockerfile</li>
+<li>Give version of your Dockerfile</li>
+<li>Comment the Dockerfile lines / instructions</li>
+<li>…</li>
+</ul>
+So the Dockerfile to create a memcached image becomes:</p>
+<pre>
+# Memcached
+#
+# VERSION       1.0
+
+# use the ubuntu base image provided by dotCloud
+FROM ubuntu
+
+# make sure the package repository is up to date
+RUN echo "deb http://archive.ubuntu.com/ubuntu precise main universe" > /etc/apt/sources.list
+RUN apt-get update
+
+# install memcached
+RUN apt-get install -y memcached
+</pre>
+
+<h3>The MAINTAINER instruction</h3>
+<p>
+As you could expect, the <code>MAINTAINER</code> instruction is used to specify name / contact of the person maintaining the Dockerfile.<br />
+Example:
+</p>
+<pre>
+MAINTAINER Guillaume J. Charmes, guillaume@dotcloud.com
+</pre>
+<p>
+The final version of the Dockerfile becomes</p>
+<pre>
+# Memcached
+#
+# VERSION       1.0
+
+# use the ubuntu base image provided by dotCloud
+FROM ubuntu
+MAINTAINER Guillaume J. Charmes guillaume@dotcloud.com
+# make sure the package repository is up to date
+RUN echo "deb http://archive.ubuntu.com/ubuntu precise main universe" > /etc/apt/sources.list
+RUN apt-get update
+
+# install memcached
+RUN apt-get install -y memcached
+</pre>
+
+<h3>Test your Dockerfile skills - Level 1</h3>
+<h4>Questions</h4>
+
+<div name="level1_questions">
+	What is the Dockerfile instruction to specify the base image ?<br />
+	<div class="alert alert-error" id="level1_error0" style="display:none;">The right answer was <code>FROM</code></div>
+	<input type="text" id="level1_q0"/><br />
+	What is the Dockerfile instruction to execute any commands on the current image and commit the results?<br />
+	<div class="alert alert-error" id="level1_error1" style="display:none;">The right answer was <code>RUN</code></div>
+	<input type="text" id="level1_q1"/><br />
+	What is the Dockerfile instruction to specify the maintainer of the Dockerfile?<br />
+	<div class="alert alert-error" id="level1_error2" style="display:none;">The right answer was <code>MAINTAINER</code></div>
+	<input type="text" id="level1_q2"/><br />
+	What is the character used to add comment in Dockerfiles?<br />
+	<div class="alert alert-error" id="level1_error3" style="display:none;">The right answer was <code>#</code></div>
+	<input type="text" id="level1_q3"/><br />
+	<div class="alert alert-success" id="all_good" style="display:none;">Congratulations, you made no mistake!<br />
+	Tell the world <a href="https://twitter.com/share" class="twitter-share-button" data-url="https://www.docker.io/dockerfile-tutorial-level1" data-text="I just successfully completed the 'Questions' challenge from - level 1' from the #Dockerfile tutorial. Can you do it?" data-via="docker" data-hashtags="docker">Tweet</a><br />
+	And try the next challenge: <a href="#fill_the_dockerfile">Fill the Dockerfile</a>
+	</div>
+	<div class="alert alert-error" id="no_good" style="display:none;">Your Dockerfile skills are not yet perfect, try to take the time to read this tutorial again.</div>
+	<div class="alert alert-block" id="some_good" style="display:none;">Your almost there! Read carefully the sections corresponding to your errors, and take the test again!</div>
+	<button class="btn btn-primary" id="check_level1_questions">Check your answers</button>
+</div>
+
+<a name="fill_the_dockerfile"></a>
+<h4>Fill the Dockerfile</h4>
+<p>
+Your best friend Eric Bardin sent you a Dockerfile, but some parts were lost in the ocean. Can you find the missing parts?
+</p>
+<div class="form-inline">
+<pre>
+# This is a Dockerfile to create an image with Memcached and Emacs installed.
+#
+# VERSION       1.0
+
+# use the ubuntu base image provided by dotCloud
+<input type="text" class="input-small" id="from" /> ub<input type="text" class="input-small" id="ubuntu" />
+
+<input type="text" class="input-small" id="maintainer" /> E<input type="text" class="input-small" id="eric" /> B<input type="text" class="input-small" id="bardin" />, eric.bardin@dotcloud.com
+
+# make sure the package repository is up to date
+<input type="text" class="input-small" id="run0"/> echo "deb http://archive.ubuntu.com/ubuntu precise main universe" > /etc/apt/sources.list
+<input type="text" class="input-small" id="run1" /> apt-get update
+
+# install memcached
+RUN apt-get install -y <input type="text" class="input-small" id="memcached" />
+
+# install emacs
+<input type="text" class="input-small" id="run2"/> apt-get install -y emacs23
+
+</pre>
+</div>
+<div class="alert alert-success" id="dockerfile_ok" style="display:none;">Congratulations, you successfully restored Eric's Dockerfile! You are ready to containerize the world!.<br />
+Tell the world! <a href="https://twitter.com/share" class="twitter-share-button" data-url="https://www.docker.io/dockerfile-tutorial-level1" data-text="I just successfully completed the 'Fill the Dockerfile' challenge from - level 1' from the #Dockerfile tutorial. Can you do it?" data-via="docker" data-hashtags="docker">Tweet</a>
+</div>
+<div class="alert alert-error" id="dockerfile_ko" style="display:none;">Wooops, there are one or more errors in the Dockerfile. Try again.</div>
+<button class="btn btn-primary" id="check_level1_fill">Check the Dockerfile</button></p>
+
+<h3>What's next?</h3>
+<p>
+We will be posting Level 2 next week. Follow us on twitter and/or enter your email address to be alerted!<br />
+<a href="https://twitter.com/docker" class="twitter-follow-button" data-show-count="false">Follow @docker</a>
+<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script>
+</p>
+	<div>
+		<div class="alert alert-success" id="email_registered" style="display:none;">Email registered.</div>
+		<div class="alert alert-error" id="email_invalid" style="display:none;">Wrong email format. Please check your email.</div>
+		<div class="alert alert-block" id="email_already_registered" style="display:none;">Your email is already registered.</div>
+		Email: <input type="text" id="email"/> <button class="btn btn-primary" id="send_email">Alert me when you post new levels</button></p>
+
+	</div>
+
+        </div>
+    </div>
+
+<!--<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script>-->
+
+</div>
+</div> <!-- endblock container -->
+
+
+
+{% endblock %}
