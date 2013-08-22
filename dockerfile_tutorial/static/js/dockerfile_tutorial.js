@@ -8,9 +8,9 @@ function clean_input(i)
 	return (i.trim());
 }
 
-function dockerfile_log(level, name, errors)
+function dockerfile_log(level, item, errors)
 {
-	var logUrl = 'dockerfile_tutorial_log.php';
+	var logUrl = '/tutorial/api/dockerfile_event/';
 	$.ajax({
 			url: logUrl,
 			type: "POST",
@@ -18,7 +18,7 @@ function dockerfile_log(level, name, errors)
 			data: {
 				'errors': errors,
 				'level': level,
-				'name': name,
+				'item': item,
 			},
 		}).done( function() { } );
 }
@@ -30,6 +30,13 @@ function validate_email(email)
 } 
 
 $(document).ready(function() {
+
+    /* prepare to send the csrf-token on each ajax-request */
+    var csrftoken = $.cookie('csrftoken');
+    $.ajaxSetup({
+        headers: { 'X-CSRFToken': csrftoken }
+    });
+
     $("#send_email").click( function()
     {
         $('#email_invalid').hide();
@@ -43,16 +50,13 @@ $(document).ready(function() {
             return (false);
         }
 
-        var emailUrl = '../subscribe/';
-        var csrftoken = $.cookie('csrftoken');
-        console.log (csrftoken);
+        var emailUrl = '/tutorial/api/subscribe/';
 
         $.ajax({
                 url: emailUrl,
                 type: "POST",
                 cache:false,
                 data: {
-                    'csrfmiddlewaretoken': csrftoken,
                     'email': email,
                     'from_level': 1,
                 },

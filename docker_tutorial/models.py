@@ -1,17 +1,22 @@
 __author__ = 'thatcher'
 
 from django.db import models
-from django.contrib.sessions.models import Session
 from datetime import datetime
 
 
 class TutorialUser(models.Model):
     session_key = models.CharField(max_length=80)
     timestamp = models.DateTimeField(auto_now=True, default=datetime.now)
-    label = models.CharField(max_length=80, default='', blank=True, null=True)
+    label = models.CharField(max_length=80, default='', blank=True)
+    http_user_agent = http_accept_encoding = models.CharField(max_length=256, default='', blank=True)
+    http_remote_address = models.CharField(max_length=32, default='', blank=True)
+    http_accept_language = models.CharField(max_length=128, default='', blank=True)
+    http_accept_encoding = models.CharField(max_length=128, default='', blank=True)
+    http_referrer = models.CharField(max_length=128, default='', blank=True)
 
     def __unicode__(self):
         return u"%s" % (self.id)
+
 
 class TutorialEvent(models.Model):
 
@@ -48,3 +53,33 @@ class TutorialEvent(models.Model):
 
     def __unicode__(self):
         return str(self.id)
+
+
+class DockerfileEvent(models.Model):
+
+    user = models.ForeignKey(TutorialUser)
+    item = models.CharField(max_length=15, blank=False)
+    timestamp = models.DateTimeField(auto_now=True)
+    level = models.IntegerField(null=True, blank=True)
+    errors = models.IntegerField(null=True, blank=True)
+
+    @property
+    def time_elapsed(self):
+        time_elapsed = self.timestamp - TutorialEvent.objects.filter(user=self.user).order_by('pk')[0].timestamp
+        return time_elapsed.seconds
+
+    def __unicode__(self):
+        return str(self.id)
+
+class Subscriber(models.Model):
+
+    email = models.EmailField(max_length=80)
+    user = models.ForeignKey(TutorialUser)
+    timestamp = models.DateTimeField(auto_now=True)
+    from_level = models.IntegerField()
+
+    class Meta:
+        unique_together = ("email", "from_level")
+
+    def __unicode__(self):
+        return u"{}".format(self.email)

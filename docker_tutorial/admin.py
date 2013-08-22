@@ -1,10 +1,7 @@
 from django.contrib import admin
-# from django.contrib.auth.models import User
-# from django.contrib.auth.admin import UserAdmin
-# from django.contrib.sessions.
-
 from django.contrib.sessions.models import Session
 from .models import *
+
 
 class SessionAdmin(admin.ModelAdmin):
     def _session_data(self, obj):
@@ -20,10 +17,17 @@ class TutorialEventInline(admin.TabularInline):
     extra = 0
 
 
+class DockerfileEvenInline(admin.TabularInline):
+    model = DockerfileEvent
+    readonly_fields = ('timestamp', 'level', 'item', 'errors', )
+    fields = ['level', 'item', 'errors', 'timestamp']
+    extra = 0
+
+
 class TutorialUserAdmin(admin.ModelAdmin):
     model = TutorialUser
     list_display = ['id', 'session_key', 'label', 'timestamp']
-    inlines = [TutorialEventInline]
+    inlines = [TutorialEventInline, DockerfileEvenInline]
 admin.site.register(TutorialUser, TutorialUserAdmin)
 
 
@@ -39,9 +43,22 @@ class TutorialEventFeedback(TutorialEvent):
     class Meta:
         proxy = True
 
+
 class TutorialEventFeedbackAdmin(admin.ModelAdmin):
     model = TutorialEvent
     readonly_fields = ('id', 'timestamp', 'time_elapsed')
     list_display = ['id', 'user', 'question', 'feedback', 'timestamp']
     list_filter = ('type',)
 admin.site.register(TutorialEventFeedback, TutorialEventFeedbackAdmin)
+
+
+class SubscriberAdmin(admin.ModelAdmin):
+    model = Subscriber
+    list_display = ['email', 'from_level']
+admin.site.register(Subscriber, SubscriberAdmin)
+
+
+class DockerfileEventAdmin(admin.ModelAdmin):
+    model = DockerfileEvent
+    list_display = ['id', 'timestamp', 'item', 'level', 'errors']
+admin.site.register(DockerfileEvent, DockerfileEventAdmin)
