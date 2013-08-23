@@ -4,11 +4,11 @@ from django.shortcuts import render_to_response, get_object_or_404
 from django.template import RequestContext
 from django.views.decorators.csrf import csrf_exempt, csrf_protect
 from django.core.exceptions import ObjectDoesNotExist
+from django.contrib.sessions.models import Session
 from django.http import HttpResponse
 from .models import TutorialUser, TutorialEvent, DockerfileEvent, Subscriber
 import json
 
-from django.contrib.sessions.models import Session
 
 
 def get_user_for_request(request):
@@ -97,10 +97,14 @@ def dockerfile_event(request):
         # event.timestamp ; is automatically set
         event.save()
 
-    return HttpResponse('1')
+    return HttpResponse('0')
 
 
 def subscribe(request):
+    """
+    Save the users' email. -- Mainly / only meant for notifying them of the availability of
+    a next tutorial
+    """
 
     user = get_user_for_request(request)
 
