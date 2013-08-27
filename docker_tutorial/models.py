@@ -10,8 +10,8 @@ class TutorialUser(models.Model):
     label = models.CharField(max_length=80, default='', blank=True)
     http_user_agent = http_accept_encoding = models.CharField(max_length=256, default='', blank=True)
     http_remote_address = models.CharField(max_length=32, default='', blank=True)
+    http_real_remote_address = models.CharField(max_length=32, default='', blank=True)
     http_accept_language = models.CharField(max_length=128, default='', blank=True)
-    http_accept_encoding = models.CharField(max_length=128, default='', blank=True)
     http_referrer = models.CharField(max_length=128, default='', blank=True)
 
     def __unicode__(self):

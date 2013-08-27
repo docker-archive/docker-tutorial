@@ -30,7 +30,7 @@ def get_user_for_request(request):
             session_key=session.session_key,
             http_user_agent=request.META.get('HTTP_USER_AGENT', None),
             http_remote_address=request.META.get('REMOTE_ADDR', None),
-            http_accept_encoding=request.META.get('HTTP_ACCEPT_ENCODING', None),
+            http_real_remote_address=request.META.get('X-Real-Ip', None),
             http_accept_language=request.META.get('HTTP_ACCEPT_LANGUAGE', None),
             http_referrer=request.META.get('HTTP_REFERER', None)
         )
