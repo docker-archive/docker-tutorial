@@ -158,3 +158,27 @@ def stats(request):
         'peeks': peeks,
         'answered': answered
     }, context_instance=RequestContext(request))
+
+def get_metrics(request):
+
+    users = {}
+
+    # TutorialUsers = TutorialUser.objects.all()
+    # users['started_interactive'] = TutorialUsers.filter(TutorialEvent__count > 0)
+    # users['completed'] = TutorialEvent.objects.filter(type='complete').count()
+
+    interactive_start_count = TutorialEvent.objects.values_list('user').distinct().count()
+    interactive_complete_count = TutorialEvent.objects.values_list('user','type').filter(type=TutorialEvent.COMPLETE).distinct().count()
+
+    dockerfile_tutorial_count = DockerfileEvent.objects.values_list('user').distinct().count()
+    dockerfile_tutorial_complete_level1 = DockerfileEvent.objects.values_list('user', 'level', 'errors').filter(errors=0).distinct().count()
+
+    response = []
+    response.append({'name': 'tutorial_interactive_started', 'value_i': interactive_start_count})
+    response.append({'name': 'tutorial_interactive_completed', 'value_i': interactive_complete_count})
+    response.append({'name': 'dockerfile_tutorial_total', 'value_i': dockerfile_tutorial_count})
+    response.append({'name': 'tutorial_dockerfile_completed_level1', 'value_i': dockerfile_tutorial_complete_level1})
+
+    jsonresponse = json.dumps(response)
+
+    return HttpResponse(jsonresponse, mimetype="application/json")
