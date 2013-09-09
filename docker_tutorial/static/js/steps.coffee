@@ -121,7 +121,7 @@ intermediateresults: [
 ]
 tip: """
      <p>Don't forget to use -y for noninteractive mode installation</p>
-     <p>Not specifieng -y on the apt-get install command will fail for most commands because it expects you to accept
+     <p>Not specifying -y on the apt-get install command will fail for most commands because it expects you to accept
      (y/n) but you cannot respond.
      </p>
      """
