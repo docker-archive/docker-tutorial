@@ -16,6 +16,7 @@ urlpatterns = patterns('',
 
     url(r'^dockerfile/$', ensure_csrf_cookie(TemplateView.as_view(template_name='dockerfile/introduction.html')), name='dockerfile'),
     url(r'^dockerfile/level1/$', ensure_csrf_cookie(TemplateView.as_view(template_name='dockerfile/level1.html')), name='dockerfile_level1'),
+    url(r'^dockerfile/level2/$', ensure_csrf_cookie(TemplateView.as_view(template_name='dockerfile/level2.html')), name='dockerfile_level2'),
 
 )
 
