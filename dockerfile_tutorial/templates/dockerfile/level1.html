@@ -480,30 +480,23 @@ RUN apt-get install -y <input type="text" class="input-small" id="memcached" />
 
 </pre>
 </div>
-<div class="alert alert-success" id="dockerfile_ok" style="display:none;">Congratulations, you successfully restored Eric's Dockerfile! You are ready to containerize the world!.<br />
-Tell the world! <a href="https://twitter.com/share" class="twitter-share-button" data-url="http://www.docker.io/learn/dockerfile/level1/" data-text="I just successfully completed the 'Fill the Dockerfile' challenge of the #Dockerfile tutorial Level 1" data-via="docker" >Tweet</a>
-</div>
-<div class="alert alert-error" id="dockerfile_ko" style="display:none;">Wooops, there are one or more errors in the Dockerfile. Try again.</div>
-<button class="btn btn-primary" id="check_level1_fill">Check the Dockerfile</button></p>
 
-<h3>What's next?</h3>
-<p>
-We will be posting Level 2 next week. Follow us on twitter and/or enter your email address to be alerted!<br />
-<a href="https://twitter.com/docker" class="twitter-follow-button" data-show-count="false">Follow @docker</a>
-<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script>
-</p>
-	<div>
-		<div class="alert alert-success" id="email_registered" style="display:none;">Email registered.</div>
-		<div class="alert alert-error" id="email_invalid" style="display:none;">Wrong email format. Please check your email.</div>
-		<div class="alert alert-block" id="email_already_registered" style="display:none;">Your email is already registered.</div>
-		Email: <input type="text" id="email"/> <button class="btn btn-primary" id="send_email">Alert me when you post new levels</button></p>
+    <div class="alert alert-success" id="dockerfile_ok" style="display:none;">Congratulations, you successfully restored Eric's Dockerfile! You are ready to containerize the world!.<br />
+    Tell the world! <a href="https://twitter.com/share" class="twitter-share-button" data-url="http://www.docker.io/learn/dockerfile/level1/" data-text="I just successfully completed the 'Fill the Dockerfile' challenge of the #Dockerfile tutorial Level 1" data-via="docker" >Tweet</a>
+    </div>
+    <div class="alert alert-error" id="dockerfile_ko" style="display:none;">Wooops, there are one or more errors in the Dockerfile. Try again.</div>
+    <button class="btn btn-primary" id="check_level1_fill">Check the Dockerfile</button></p>
 
-	</div>
-    <p>In the meantime, check out this <a href="http://crosbymichael.com/dockerfile-best-practices.html">blog post</a> by Michael Crosby that describes Dockerfile Best Practices.</p>
+    <h3>What's next?</h3>
+
+    <p>In the next level we will go into more detail of how specify which command should be executed when the container starts,
+    which user to use and how expose a particular port.</p>
+
+    <a title="getting started" class="btn btn-primary" href="{% url 'dockerfile_level2' %} ">Go to the next level</a>
+
 
         </div>
     </div>
-
 <!--<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script>-->
 
 </div>
