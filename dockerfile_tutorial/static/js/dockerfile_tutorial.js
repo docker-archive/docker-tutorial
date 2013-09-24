@@ -58,7 +58,7 @@ $(document).ready(function() {
                 cache:false,
                 data: {
                     'email': email,
-                    'from_level': 1,
+                    'from_level': $(this).data('level')
                 },
             }).done( function(data ) {
                     if (data == 1) // already registered
