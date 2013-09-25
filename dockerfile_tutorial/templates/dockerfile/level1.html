@@ -131,8 +131,8 @@ Once you have your Dockerfile ready, you can use the docker build command to cre
 	From stdin. For instance: <code>docker build - < Dockerfile</code>
 </li>
 <li>
-	From gitHub. For instance: <code>docker build github.com/creack/docker-firefox</code><br />
-	In this last example, docker will clone the github repository and use it as context. The Dockerfile at the root of the repository will be used to create the image.
+	From GitHub. For instance: <code>docker build github.com/creack/docker-firefox</code><br />
+	In this last example, docker will clone the GitHub repository and use it as context. The Dockerfile at the root of the repository will be used to create the image.
 </li>
 </ol>
 <p>
@@ -377,11 +377,11 @@ can't run as root without the -u switch
 <h3>Commenting</h3>
 <p>
 Code should always be commented. The same rule applies to the Dockerfile.
-A character <code>#</code> at the beginning of a line defines a comment. The comments are not exectuted. Comments are not mandatory, but we recommend to use them to:
+A character <code>#</code> at the beginning of a line defines a comment. The comments are not exectuted. Comments are not mandatory, but we recommend using them to:
 <ul>
 <li>Give a title and/or describe the purpose of the Dockerfile</li>
-<li>Give version of your Dockerfile</li>
-<li>Comment the Dockerfile lines / instructions</li>
+<li>Give the version of your Dockerfile</li>
+<li>Comment individual Dockerfile lines and instructions</li>
 <li>…</li>
 </ul>
 So the Dockerfile to create a memcached image becomes:</p>
@@ -403,7 +403,7 @@ RUN apt-get install -y memcached
 
 <h3>The MAINTAINER instruction</h3>
 <p>
-As you could expect, the <code>MAINTAINER</code> instruction is used to specify name / contact of the person maintaining the Dockerfile.<br />
+As you could expect, the <code>MAINTAINER</code> instruction is used to specify name and contact information of the maintainer of the Dockerfile.<br />
 Example:
 </p>
 <pre>
@@ -418,7 +418,7 @@ The final version of the Dockerfile becomes</p>
 
 # use the ubuntu base image provided by dotCloud
 FROM ubuntu
-MAINTAINER Guillaume J. Charmes guillaume@dotcloud.com
+MAINTAINER Guillaume J. Charmes, guillaume@dotcloud.com
 # make sure the package repository is up to date
 RUN echo "deb http://archive.ubuntu.com/ubuntu precise main universe" > /etc/apt/sources.list
 RUN apt-get update
