@@ -183,7 +183,7 @@ html: """
       <h3>Check your running image</h3>
       <p>You now have a running container. Let's see what is going on.</p>
       <p>Using <code>docker ps</code> we can see a list of all running containers, and using <code>docker inspect</code>
-      we can see all sorts of usefull information about this container.</p>
+      we can see all sorts of useful information about this container.</p>
       """
 assignment: """
       <h3>Assignment</h3>
