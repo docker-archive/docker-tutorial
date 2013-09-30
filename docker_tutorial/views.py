@@ -127,20 +127,24 @@ def stats(request):
 
     users = {}
     users['started'] = TutorialUser.objects.all().count()
-    users['completed'] = TutorialEvent.objects.filter(type='complete').count()
+    users['completed'] = TutorialEvent.objects.values_list('user', 'type').filter(type='complete').distinct().count()
 
     i = 0
     answered = {}
     while i < 9:
-        number = TutorialEvent.objects.filter(type='next', question=i).count()
+        number = TutorialEvent.objects.values_list('user', 'type', 'question').filter(type='next', question=i).distinct().count()
         answered[i] = number
         i = i + 1
+
+    # Append the completed, because question 9 has no 'next'
+    answered[9] = users['completed']
+
 
     # find which question people look for the answer
     i = 0
     peeks = {}
-    while i < 9:
-        number = TutorialEvent.objects.filter(type='peek', question=i).count()
+    while i < 10:
+        number = TutorialEvent.objects.values_list('user', 'type', 'question').filter(type='peek', question=i).distinct().count()
         peeks[i] = number
         i = i + 1
 
