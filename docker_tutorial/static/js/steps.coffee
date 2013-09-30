@@ -121,7 +121,7 @@ intermediateresults: [
 ]
 tip: """
      <p>Don't forget to use -y for noninteractive mode installation</p>
-     <p>Not specifieng -y on the apt-get install command will fail for most commands because it expects you to accept
+     <p>Not specifying -y on the apt-get install command will fail for most commands because it expects you to accept
      (y/n) but you cannot respond.
      </p>
      """
@@ -183,7 +183,7 @@ html: """
       <h3>Check your running image</h3>
       <p>You now have a running container. Let's see what is going on.</p>
       <p>Using <code>docker ps</code> we can see a list of all running containers, and using <code>docker inspect</code>
-      we can see all sorts of usefull information about this container.</p>
+      we can see all sorts of useful information about this container.</p>
       """
 assignment: """
       <h3>Assignment</h3>
