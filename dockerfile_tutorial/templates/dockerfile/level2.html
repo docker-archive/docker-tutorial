@@ -227,7 +227,7 @@ USER daemon
 The EXPOSE instruction
 </h3>
 <p>
-The <code>EXPOSE</code> instruction sets ports to be publicly exposed when running the image. This is functionally equivalent to running <code>docker commit -run '{"PortSpecs": ["<port>", "<port2>"]}'</code> outside of the builder.
+The <code>EXPOSE</code> instruction sets ports to be exposed when running the image.
 </p>
 <h4>
 Memcached
@@ -334,20 +334,20 @@ Step 8 : EXPOSE 11211
 Successfully built 42a44756989e
 </pre>
 <p>
-Now let’s launch it.
+Now let’s launch it. We use the <code>-p</code> flag to publish the port publicly.
 </p>
 
-<pre class="terminal"><span class="command">root@precise64:/home/vagrant/dockerfiles/tutorial1# docker run memcached</span>
+<pre class="terminal"><span class="command">root@precise64:/home/vagrant/dockerfiles/tutorial1# docker run -p 11211 memcached</span>
 
 </pre>
 <p>
 Memcached is running :) Now which port should we use to access it from outside the container?
-As we asked for it with the <code>EXPOSE</code> instruction, the container is exposing the <code>11211</code> port to our system. We can use the <code>docker ps</code> command in order to get the port we should use from outside the container to access Memcached inside the container.
+As we asked for it with the <code>EXPOSE</code> instruction, the container is exposing the <code>11211</code> port, and we used <code>-p</code> publish it to our system. We can use the <code>docker ps</code> command in order to get the port we should use from outside the container to access Memcached inside the container.
 </p>
 
 <pre class="terminal"><span class="command">root@precise64:/home/vagrant/dockerfiles/tutorial1# docker ps</span>
-ID                  IMAGE               COMMAND             CREATED             STATUS              PORTS
-1aa7a504438c        memcached:latest    memcached           2 minutes ago       Up 2 minutes        49153->11211
+ID                  IMAGE               COMMAND             CREATED             STATUS              PORTS                           NAMES
+1aa7a504438c        memcached:latest    memcached           2 minutes ago       Up 2 minutes        0.0.0.0:49153->11211/tcp        blue_whale
 </pre>
 <p>
 In this example the column <code>PORTS</code> shows that we should use the port <code>49153</code>.<br />
@@ -407,7 +407,7 @@ Congratulations! You just used your first containerized Memcached server :)
 	<div style="display:none;" id="level2_error1" class="alert alert-error">The right answer was <code>RUN</code></div>
 	<input type="text" id="level2_q1"><br>
 
-	Which Dockerfile instruction sets ports to be publicly exposed when running the image?<br>
+	Which Dockerfile instruction sets ports to be exposed when running the image?<br>
 	<div style="display:none;" id="level2_error6" class="alert alert-error">The right answer was <code>EXPOSE</code></div>
 	<input type="text" id="level2_q6"><br>
 
