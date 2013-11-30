@@ -85,8 +85,8 @@ Let’s try it!
 #
 # VERSION       0.42
 
-# use the base image provided by dotCloud
-FROM base
+# use the ubuntu base image provided by dotCloud
+FROM ubuntu
 
 MAINTAINER Victor Coisne victor.coisne@dotcloud.com
 
@@ -94,9 +94,9 @@ MAINTAINER Victor Coisne victor.coisne@dotcloud.com
 ENTRYPOINT echo "Whale you be my container"
 <span class="command">root@precise64:/home/vagrant/dockerfiles/tutorial1# docker build -t whaleyoubemycontainer - < Dockerfile_whale_you_be_my_container</span>
 Uploading context 2048 bytes
-Step 1 : FROM base
-Pulling repository base
- ---> b750fe79269dlayersantl) from base, endpoint: https://cdn-registry-1.docker.io/v1/
+Step 1 : FROM ubuntu
+Pulling repository ubuntu
+ ---> b750fe79269dlayersantl) from ubuntu, endpoint: https://cdn-registry-1.docker.io/v1/
 Step 2 : MAINTAINER Victor Coisne victor.coisne@dotcloud.com
  ---> Running in 2fd00b89982b
  ---> a2163a4bb4e6
@@ -129,8 +129,8 @@ The <code>ENTRYPOINT</code> instruction helps to configure a container that you 
 #
 # VERSION       0.42
 
-# use the base image provided by dotCloud
-FROM base
+# use the ubuntu base image provided by dotCloud
+FROM ubuntu
 
 MAINTAINER Victor Coisne victor.coisne@dotcloud.com
 
@@ -138,7 +138,7 @@ MAINTAINER Victor Coisne victor.coisne@dotcloud.com
 ENTRYPOINT ["wc", "-l"]
 <span class="command">root@precise64:/home/vagrant/dockerfiles/tutorial1# docker build -t wc - < Dockerfile_wc</span>
 Uploading context 2048 bytes
-Step 1 : FROM base
+Step 1 : FROM ubuntu
  ---> b750fe79269d
 Step 2 : MAINTAINER Victor Coisne victor.coisne@dotcloud.com
  ---> Using cache
