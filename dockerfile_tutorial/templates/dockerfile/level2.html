@@ -182,7 +182,7 @@ ENTRYPOINT ["memcached", "-u", "daemon"]
 The USER instruction
 </h3>
 <p>
-As we have seen earlier with Memcached, you may need to run the <code>ENTRYPOINT</code> commands as a different user than root. In the previous example, Memcached already has the option to run as another user. But it is not the case for all services/programs. Here comes the <code>USER</code> instruction. As you may have already understood, The <code>USER</code> instruction sets the username or UID to use when running the image.
+As we have seen earlier with Memcached, you may need to run the <code>ENTRYPOINT</code> commands as a different user than root. In the previous example, Memcached already has the option to run as another user. But it is not the case for all services/programs. Here comes the <code>USER</code> instruction. As you may have already understood, the <code>USER</code> instruction sets the username or UID to use when running the image.
 With this new instruction, instead of this</p>
 <pre>
 ENTRYPOINT ["memcached", "-u", "daemon"]
