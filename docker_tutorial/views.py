@@ -18,7 +18,7 @@ def get_user_for_request(request):
     returns this tutorialUser
     """
 
-    if not (request.session.session_key is not None and not request.session.exists(request.session.session_key)):
+    if request.session.session_key is None or not request.session.exists(request.session.session):
         request.session.create()
 
     session = Session.objects.filter(pk=request.session.session_key).latest('pk')
