@@ -74,7 +74,7 @@ def api(request):
         event.type = request.POST.get('type', TutorialEvent.NONE)
         # event.timestamp ; is automatically set
         event.question = request.POST.get('question', None)
-        event.command = request.POST.get('command', "")
+        event.command = request.POST.get('command', "")[:79]  # Trim the string to max 80 characters.
         event.feedback = request.POST.get('feedback', "")
         event.save()
 
