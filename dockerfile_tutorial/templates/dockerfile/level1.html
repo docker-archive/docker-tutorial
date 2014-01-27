@@ -308,7 +308,9 @@ d7a97544c0c7
 <span class="command">root@precise64:/home/vagrant/dockerfiles# docker run d7a97544c0c7 apt-get update</span>
 […]
 [=> container id is 66b22a0ef7c9]
-<span class="command">root@precise64:/home/vagrant/dockerfiles# docker run 66b22a0ef7c9 apt-get install -y memcached</span>
+<span class="command">root@precise64:/home/vagrant/dockerfiles# docker commit 66b22a0ef7c9</span>
+a5f142a604b3
+<span class="command">root@precise64:/home/vagrant/dockerfiles# docker run a5f142a604b3 apt-get install -y memcached</span>
 […]
 [=> container id is 9fb69e798e67]
 <span class="command">root@precise64:/home/vagrant/dockerfiles# docker commit 9fb69e798e67</span>
