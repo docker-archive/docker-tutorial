@@ -323,7 +323,7 @@ FROM ubuntu
 RUN echo "deb http://archive.ubuntu.com/ubuntu precise main universe" > /etc/apt/sources.list
 RUN apt-get update
 RUN apt-get install -y memcached
-root@precise64:/home/vagrant/dockerfiles# docker build -t brand_new_memcached - < Dockerfile
+<span class="command">root@precise64:/home/vagrant/dockerfiles# docker build -t brand_new_memcached - < Dockerfile</span>
 Uploading context 2048 bytes
 Step 1 : FROM ubuntu
  ---> 8dbd9e392a96
