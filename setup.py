@@ -3,7 +3,7 @@ from distutils.core import setup
 from setuptools import find_packages
 
 setup(
-    name='DockerTutorial',
+    name='docker-tutorial',
     version='0.2.0',
     author=u'Thatcher Peskens',
     author_email='thatcher@dotcloud.com',
