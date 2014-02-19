@@ -1,40 +1,14 @@
-__author__ = 'thatcher'
-
-from django.shortcuts import render_to_response, get_object_or_404
-from django.template import RequestContext
-from django.views.decorators.csrf import csrf_exempt, csrf_protect
-from django.core.exceptions import ObjectDoesNotExist
-from django.contrib.sessions.models import Session
-from django.http import HttpResponse
-from .models import TutorialUser, TutorialEvent, DockerfileEvent, Subscriber
 import json
 
+from django.shortcuts import render_to_response
+from django.template import RequestContext
+from django.views.decorators.csrf import csrf_exempt
+from django.http import HttpResponse
 
+from . import utils
+from .models import TutorialUser, TutorialEvent, DockerfileEvent, Subscriber
 
-def get_user_for_request(request):
-    """
-    Function checks for an existing session, and creates one if necessary
-    then checks for existing tutorialUser, and creates one if necessary
-    returns this tutorialUser
-    """
-
-    if request.session.session_key is None or not request.session.exists(request.session.session_key):
-        request.session.create()
-
-    session = Session.objects.filter(pk=request.session.session_key).latest('pk')
-
-    try:
-        user = TutorialUser.objects.filter(session_key=session.session_key).latest('pk')
-    except ObjectDoesNotExist:
-        user = TutorialUser.objects.create(
-            session_key=session.session_key,
-            http_user_agent=request.META.get('HTTP_USER_AGENT', '')[:255],
-            http_remote_address=request.META.get('REMOTE_ADDR', '')[:31],
-            http_real_remote_address=request.META.get('HTTP_X_FORWARDED_FOR', '')[:32],
-            http_accept_language=request.META.get('HTTP_ACCEPT_LANGUAGE', '')[:127],
-            http_referrer=request.META.get('HTTP_REFERER', '')[:127]
-        )
-    return user
+__author__ = 'thatcher'
 
 
 def endpoint(request):
@@ -63,31 +37,29 @@ def testpage(request):
 @csrf_exempt
 def api(request):
     """
-    saving the users' events
+    saving the user's events
     """
-
-    user = get_user_for_request(request)
-
     if request.method == "POST":
-        event = TutorialEvent.objects.create(user=user)
-        # event.user ; is set at instantiation
-        event.type = request.POST.get('type', TutorialEvent.NONE)
-        # event.timestamp ; is automatically set
-        event.question = request.POST.get('question', None)
-        event.command = request.POST.get('command', "")[:79]  # Trim the string to max 80 characters.
-        event.feedback = request.POST.get('feedback', "")
-        event.save()
+        user = utils.get_user_for_request(request)
+
+        event = TutorialEvent.objects.create(
+            user=user,
+            type=request.POST.get('type', TutorialEvent.NONE),
+            question=request.POST.get('question', None),
+            command=request.POST.get('command', "")[:79],
+            feedback=request.POST.get('feedback', ""),
+        )
 
     return HttpResponse('.')
+
 
 def dockerfile_event(request):
     """
     saving the dockerfile events
     """
 
-    user = get_user_for_request(request)
-
     if request.method == "POST":
+        user = utils.get_user_for_request(request)
         event = DockerfileEvent.objects.create(user=user)
         # event.user ; is set at instantiation
         ## default type is 'none'
@@ -105,15 +77,14 @@ def subscribe(request):
     Save the users' email. -- Mainly / only meant for notifying them of the availability of
     a next tutorial
     """
-
-    user = get_user_for_request(request)
-
     if request.POST:
+        user = utils.get_user_for_request(request)
         email = request.POST.get('email', None)
         from_level = request.POST.get('from_level', None)
 
         try:
-            subscriber = Subscriber.objects.create(user=user, email=email, from_level=from_level)
+            subscriber = Subscriber.objects.create(
+                user=user, email=email, from_level=from_level)
             Subscriber.save(subscriber)
             return HttpResponse('0', status=200)
         except:
@@ -162,6 +133,7 @@ def stats(request):
         'peeks': peeks,
         'answered': answered
     }, context_instance=RequestContext(request))
+
 
 def get_metrics(request):
 

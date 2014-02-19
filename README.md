@@ -20,6 +20,7 @@ To include it
 * In your "host" app settings include "docker_tutorial"
 * in a template {% include 'tutorial/snippet.html' %}
 * in your urls.py add url(r'^tutorial/', include('docker_tutorial.urls')),
+* in your settings make sure you include the session middleware:
 
 
 When you want to make changes
@@ -37,5 +38,14 @@ When you want to make changes
 This will setup the symlinks such that you don't need to run setup.py every time you want to see a
 change. i.e. your local repository is now linked into the environment.
 
+Running the unit tests
+----------------------
+
+* ./runtests.py
+
+Running code coverage
+---------------------
+
+* coverage run ./runtests.py && coverage html --include="./docker_tutorial/*"
 
 Happy coding!
