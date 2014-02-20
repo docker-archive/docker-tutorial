@@ -1,18 +1,18 @@
-__author__ = 'thatcher'
-
 from django.db import models
 from datetime import datetime
 
+__author__ = 'thatcher'
+
 
 class TutorialUser(models.Model):
-    session_key = models.CharField(max_length=80)
+    session_key = models.CharField(max_length=40, unique=True)  # natural key
     timestamp = models.DateTimeField(auto_now=True, default=datetime.now)
     label = models.CharField(max_length=80, default='', blank=True)
-    http_user_agent = models.CharField(max_length=256, default='', blank=True)
-    http_remote_address = models.CharField(max_length=32, default='', blank=True)
-    http_real_remote_address = models.CharField(max_length=32, default='', blank=True)
-    http_accept_language = models.CharField(max_length=128, default='', blank=True)
-    http_referrer = models.CharField(max_length=128, default='', blank=True)
+    http_user_agent = models.TextField(default='', blank=True)
+    http_remote_address = models.TextField(default='', blank=True)
+    http_real_remote_address = models.TextField(default='', blank=True)
+    http_accept_language = models.TextField(default='', blank=True)
+    http_referrer = models.TextField(default='', blank=True)
 
     def __unicode__(self):
         return u"%s" % (self.id)
@@ -70,6 +70,7 @@ class DockerfileEvent(models.Model):
 
     def __unicode__(self):
         return str(self.id)
+
 
 class Subscriber(models.Model):
 
