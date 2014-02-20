@@ -16,9 +16,12 @@ def get_user_for_request(request):
 
 def _get_or_create_user(request, session_key):
     """
-    Creates a user if one exists, creates one otherwise.
+    Fetches a user if one exists, creates one otherwise.
     """
-    user = cache.get(session_key)
+    cache_prefix = "_get_or_create_user:"
+    cache_key = cache_prefix + session_key
+
+    user = cache.get(cache_key)
     if user is None:
         try:
             user = TutorialUser.objects.filter(
@@ -37,6 +40,6 @@ def _get_or_create_user(request, session_key):
                 http_referrer=request.META.get('HTTP_REFERER', '')
             )
         finally:
-            cache.set(session_key, user)
+            cache.set(cache_key, user)
 
     return user
