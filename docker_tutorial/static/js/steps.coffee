@@ -202,9 +202,7 @@ currentDockerPs:
     ID                  IMAGE               COMMAND               CREATED             STATUS              PORTS
     efefdc74a1d5        learn/ping:latest   ping www.google.com   37 seconds ago      Up 36 seconds
     """
-
 })
-
 
 
 q.push ({
@@ -582,3 +580,29 @@ else
 
 $('#results').hide()
 
+
+###
+  Pull CSRF token from cookie and set it in the request header.
+###
+
+getCookie = (name) ->
+  cookieValue = null
+  if (document.cookie && document.cookie != '')
+    cookies = document.cookie.split('; ')
+    for cookie in cookies
+      $.trim(cookie)
+      if cookie.substring(0, name.length + 1) == (name + '=')
+        cookieValue = decodeURIComponent(cookie.substring(name.length + 1))
+
+  return cookieValue
+
+csrfSafeMethod = (method) ->
+  regex = /^(GET|HEAD|OPTIONS|TRACE)$/
+  return regex.test(method)
+
+$.ajaxSetup({
+  crossDomain: false,
+  beforeSend: (xhr, settings) ->
+    if !csrfSafeMethod(settings.type)
+      xhr.setRequestHeader("X-CSRFToken", getCookie("csrftoken"))
+})

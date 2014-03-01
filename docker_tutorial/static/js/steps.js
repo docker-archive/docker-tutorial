@@ -5,7 +5,7 @@
 
 
 (function() {
-  var COMPLETE_URL, EVENT_TYPES, buildfunction, current_question, currentquestion, drawStatusMarker, err, f, logEvent, next, previous, progressIndicator, q, question, questionNumber, questions, results, staticDockerPs, statusMarker, _i, _len;
+  var COMPLETE_URL, EVENT_TYPES, buildfunction, csrfSafeMethod, current_question, currentquestion, drawStatusMarker, err, f, getCookie, logEvent, next, previous, progressIndicator, q, question, questionNumber, questions, results, staticDockerPs, statusMarker, _i, _len;
 
   COMPLETE_URL = "/whats-next/";
 
@@ -457,5 +457,43 @@
   }
 
   $('#results').hide();
+
+  /*
+    Pull CSRF token from cookie and set it in the request header.
+  */
+
+
+  getCookie = function(name) {
+    var cookie, cookieValue, cookies, _j, _len1;
+
+    cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+      cookies = document.cookie.split('; ');
+      for (_j = 0, _len1 = cookies.length; _j < _len1; _j++) {
+        cookie = cookies[_j];
+        $.trim(cookie);
+        if (cookie.substring(0, name.length + 1) === (name + '=')) {
+          cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+        }
+      }
+    }
+    return cookieValue;
+  };
+
+  csrfSafeMethod = function(method) {
+    var regex;
+
+    regex = /^(GET|HEAD|OPTIONS|TRACE)$/;
+    return regex.test(method);
+  };
+
+  $.ajaxSetup({
+    crossDomain: false,
+    beforeSend: function(xhr, settings) {
+      if (!csrfSafeMethod(settings.type)) {
+        return xhr.setRequestHeader("X-CSRFToken", getCookie("csrftoken"));
+      }
+    }
+  });
 
 }).call(this);

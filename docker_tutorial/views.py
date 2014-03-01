@@ -34,7 +34,6 @@ def testpage(request):
     }, context_instance=RequestContext(request))
 
 
-@csrf_exempt
 def api(request):
     """
     saving the user's events
