@@ -68,7 +68,7 @@
         return "<p>Not specifying -y on the apt-get install command will work for ping, because it has no other dependencies, but\nit will fail when apt-get wants to install dependencies. To get into the habit, please add -y after apt-get.</p>";
       }
     ],
-    tip: "<p>Don't forget to use -y for noninteractive mode installation</p>\n<p>Not specifieng -y on the apt-get install command will fail for most commands because it expects you to accept\n(y/n) but you cannot respond.\n</p>"
+    tip: "<p>Don't forget to use -y for noninteractive mode installation</p>\n<p>Not specifying -y on the apt-get install command will fail for most commands because it expects you to accept\n(y/n) but you cannot respond.\n</p>"
   });
 
   q.push({
@@ -99,7 +99,7 @@
   });
 
   q.push({
-    html: "<h3>Check your running image</h3>\n<p>You now have a running container. Let's see what is going on.</p>\n<p>Using <code>docker ps</code> we can see a list of all running containers, and using <code>docker inspect</code>\nwe can see all sorts of usefull information about this container.</p>",
+    html: "<h3>Check your running image</h3>\n<p>You now have a running container. Let's see what is going on.</p>\n<p>Using <code>docker ps</code> we can see a list of all running containers, and using <code>docker inspect</code>\nwe can see all sorts of useful information about this container.</p>",
     assignment: "<h3>Assignment</h3>\n<p><em>Find the container id</em> of the running container, and then inspect the container using <em>docker inspect</em>.</p>\n",
     command_expected: ["docker", "inspect", "efe"],
     result: "<p>Success! Have a look at the output. You can see the ip-address, status and other information.</p>",
@@ -124,7 +124,7 @@
 
         $('#instructions .assignment').hide();
         $('#tips, #command').hide();
-        $('#instructions .text').html("<div class=\"complete\">\n  <h3>Congratulations!</h3>\n  <p>You have mastered the basic docker commands!</p>\n  <p><strong>Did you enjoy this tutorial? Share it!</strong></p>\n  <p>\n    <a href=\"mailto:?Subject=Check%20out%20the%20Docker%20interactive%20tutorial!&Body=%20https://www.docker.io/gettingstarted/\"><img src=\"/static/img/email.png\"></a>\n    <a href=\"http://www.facebook.com/sharer.php?u=https://www.docker.io/gettingstarted/\"><img src=\"/static/img/facebook.png\"></a>\n    <a href=\"http://twitter.com/share?url=https://www.docker.io/gettingstarted/&text=%20Check+out+the+docker+tutorial!\"><img src=\"/static/img/twitter.png\"></a>\n  </p>\n  <h3>Your next steps</h3>\n  <ol>\n    <li><a href=\"/news_signup/\" target=\"_blank\" >Register</a> for news and updates on Docker (opens in new window)</li>\n    <li><a href=\"http://twitter.com/docker\" target=\"_blank\" >Follow</a> us on twitter (opens in new window)</li>\n    <li><a href=\"#\" onClick=\"leaveFullSizeMode()\">Close</a> this tutorial, and continue with the rest of the getting started.</li>\n  </ol>\n\n</div>");
+        $('#instructions .text').html("<div class=\"complete\">\n  <h3>Congratulations!</h3>\n  <p>You have mastered the basic docker commands!</p>\n  <p><strong>Did you enjoy this tutorial? Share it!</strong></p>\n  <p>\n    <a href=\"mailto:?Subject=Check%20out%20the%20Docker%20interactive%20tutorial!&Body=%20https://www.docker.io/gettingstarted/\"><img src=\"/static/img/email.png\"></a>\n    <a href=\"http://www.facebook.com/sharer.php?u=https://www.docker.io/gettingstarted/\"><img src=\"/static/img/facebook.png\"></a>\n    <a href=\"http://twitter.com/share?url=https://www.docker.io/gettingstarted/&text=%20Check+out+the+docker+tutorial!\"><img src=\"/static/img/twitter.png\"></a>\n  </p>\n  <h3>Your next steps</h3>\n  <ol>\n    <li><a href=\"/news_signup/\" target=\"_blank\" >Register</a> for news and updates on Docker (opens in new window)</li>\n    <li><a href=\"http://twitter.com/docker\" target=\"_blank\" >Follow</a> us on twitter (opens in new window)</li>\n    <li><a href=\"#\" onClick=\"leaveFullSizeMode()\">Close</a> this tutorial, and continue with the rest of the getting started.</li>\n  </ol>\n  <p> - Or - </p>\n  <p>Continue to learn about the way to automatically build your containers from a file. </p><p><a href=\"/learn/dockerfile/\" class='btn btn-primary secondary-action-button'>Start Dockerfile tutorial</a></p>\n\n</div>");
         data = {
           type: EVENT_TYPES.complete
         };

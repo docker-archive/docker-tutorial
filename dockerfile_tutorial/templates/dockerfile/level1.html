@@ -27,7 +27,7 @@
 	
 	<p>
 In this section we will cover the most important instructions: <code><a href="http://docs.docker.io/en/latest/use/builder/#from" target="_blank">FROM</a></code> and <code><a href="http://docs.docker.io/en/latest/use/builder/#run" target="_blank">RUN</a></code>.
-We will also see how to use the <code><a href="http://docs.docker.io/en/latest/commandline/command/build/" target="_blank">docker build</a></code> command and how to specify the <a href="http://docs.docker.io/en/latest/use/builder/#maintainer" target="_blank">maintainer</a> of the Dockerfile and how to insert comments.
+We will also see how to use the <code><a href="http://docs.docker.io/en/latest/commandline/cli/#build" target="_blank">docker build</a></code> command and how to specify the <a href="http://docs.docker.io/en/latest/use/builder/#maintainer" target="_blank">maintainer</a> of the Dockerfile and how to insert comments.
 </p>
 
 <h3>Dockerfile instructions</h3>
@@ -58,7 +58,7 @@ Example:
 <pre>FROM ubuntu</pre>
 <p>
 In this example, we chose ubuntu as our base image. ubuntu is a “General use Ubuntu base image” provided by the Docker team.
-You can find a list of available images from the command line by using the <a href="http://docs.docker.io/en/latest/commandline/command/search/" target="_blank">docker search</a> command.<br />
+You can find a list of available images from the command line by using the <a href="http://docs.docker.io/en/latest/commandline/cli/#search" target="_blank">docker search</a> command.<br />
 Example:
 </p>
 <pre class="terminal">
@@ -131,8 +131,8 @@ Once you have your Dockerfile ready, you can use the docker build command to cre
 	From stdin. For instance: <code>docker build - < Dockerfile</code>
 </li>
 <li>
-	From gitHub. For instance: <code>docker build github.com/creack/docker-firefox</code><br />
-	In this last example, docker will clone the github repository and use it as context. The Dockerfile at the root of the repository will be used to create the image.
+	From GitHub. For instance: <code>docker build github.com/creack/docker-firefox</code><br />
+	In this last example, docker will clone the GitHub repository and use it as context. The Dockerfile at the root of the repository will be used to create the image.
 </li>
 </ol>
 <p>
@@ -308,7 +308,9 @@ d7a97544c0c7
 <span class="command">root@precise64:/home/vagrant/dockerfiles# docker run d7a97544c0c7 apt-get update</span>
 […]
 [=> container id is 66b22a0ef7c9]
-<span class="command">root@precise64:/home/vagrant/dockerfiles# docker run 66b22a0ef7c9 apt-get install -y memcached</span>
+<span class="command">root@precise64:/home/vagrant/dockerfiles# docker commit 66b22a0ef7c9</span>
+a5f142a604b3
+<span class="command">root@precise64:/home/vagrant/dockerfiles# docker run a5f142a604b3 apt-get install -y memcached</span>
 […]
 [=> container id is 9fb69e798e67]
 <span class="command">root@precise64:/home/vagrant/dockerfiles# docker commit 9fb69e798e67</span>
@@ -323,7 +325,7 @@ FROM ubuntu
 RUN echo "deb http://archive.ubuntu.com/ubuntu precise main universe" > /etc/apt/sources.list
 RUN apt-get update
 RUN apt-get install -y memcached
-root@precise64:/home/vagrant/dockerfiles# docker build -t brand_new_memcached - < Dockerfile
+<span class="command">root@precise64:/home/vagrant/dockerfiles# docker build -t brand_new_memcached - < Dockerfile</span>
 Uploading context 2048 bytes
 Step 1 : FROM ubuntu
  ---> 8dbd9e392a96
@@ -377,11 +379,11 @@ can't run as root without the -u switch
 <h3>Commenting</h3>
 <p>
 Code should always be commented. The same rule applies to the Dockerfile.
-A character <code>#</code> at the beginning of a line defines a comment. The comments are not exectuted. Comments are not mandatory, but we recommend to use them to:
+A character <code>#</code> at the beginning of a line defines a comment. The comments are not exectuted. Comments are not mandatory, but we recommend using them to:
 <ul>
 <li>Give a title and/or describe the purpose of the Dockerfile</li>
-<li>Give version of your Dockerfile</li>
-<li>Comment the Dockerfile lines / instructions</li>
+<li>Give the version of your Dockerfile</li>
+<li>Comment individual Dockerfile lines and instructions</li>
 <li>…</li>
 </ul>
 So the Dockerfile to create a memcached image becomes:</p>
@@ -403,7 +405,7 @@ RUN apt-get install -y memcached
 
 <h3>The MAINTAINER instruction</h3>
 <p>
-As you could expect, the <code>MAINTAINER</code> instruction is used to specify name / contact of the person maintaining the Dockerfile.<br />
+As you could expect, the <code>MAINTAINER</code> instruction is used to specify name and contact information of the maintainer of the Dockerfile.<br />
 Example:
 </p>
 <pre>
@@ -418,7 +420,7 @@ The final version of the Dockerfile becomes</p>
 
 # use the ubuntu base image provided by dotCloud
 FROM ubuntu
-MAINTAINER Guillaume J. Charmes guillaume@dotcloud.com
+MAINTAINER Guillaume J. Charmes, guillaume@dotcloud.com
 # make sure the package repository is up to date
 RUN echo "deb http://archive.ubuntu.com/ubuntu precise main universe" > /etc/apt/sources.list
 RUN apt-get update
@@ -444,11 +446,11 @@ RUN apt-get install -y memcached
 	<div class="alert alert-error" id="level1_error3" style="display:none;">The right answer was <code>#</code></div>
 	<input type="text" id="level1_q3"/><br />
 	<div class="alert alert-success" id="all_good" style="display:none;">Congratulations, you made no mistake!<br />
-	Tell the world <a href="https://twitter.com/share" class="twitter-share-button" data-url="https://www.docker.io/dockerfile-tutorial-level1" data-text="I just successfully completed the 'Questions' challenge from - level 1' from the #Dockerfile tutorial. Can you do it?" data-via="docker" data-hashtags="docker">Tweet</a><br />
+	Tell the world <a href="https://twitter.com/share" class="twitter-share-button" data-url="http://www.docker.io/learn/dockerfile/level1/" data-text="I just successfully answered questions of the #Dockerfile tutorial Level 1. What's your score?" data-via="docker" >Tweet</a><br />
 	And try the next challenge: <a href="#fill_the_dockerfile">Fill the Dockerfile</a>
 	</div>
 	<div class="alert alert-error" id="no_good" style="display:none;">Your Dockerfile skills are not yet perfect, try to take the time to read this tutorial again.</div>
-	<div class="alert alert-block" id="some_good" style="display:none;">Your almost there! Read carefully the sections corresponding to your errors, and take the test again!</div>
+	<div class="alert alert-block" id="some_good" style="display:none;">You're almost there! Read carefully the sections corresponding to your errors, and take the test again!</div>
 	<button class="btn btn-primary" id="check_level1_questions">Check your answers</button>
 </div>
 
@@ -480,29 +482,23 @@ RUN apt-get install -y <input type="text" class="input-small" id="memcached" />
 
 </pre>
 </div>
-<div class="alert alert-success" id="dockerfile_ok" style="display:none;">Congratulations, you successfully restored Eric's Dockerfile! You are ready to containerize the world!.<br />
-Tell the world! <a href="https://twitter.com/share" class="twitter-share-button" data-url="https://www.docker.io/dockerfile-tutorial-level1" data-text="I just successfully completed the 'Fill the Dockerfile' challenge from - level 1' from the #Dockerfile tutorial. Can you do it?" data-via="docker" data-hashtags="docker">Tweet</a>
-</div>
-<div class="alert alert-error" id="dockerfile_ko" style="display:none;">Wooops, there are one or more errors in the Dockerfile. Try again.</div>
-<button class="btn btn-primary" id="check_level1_fill">Check the Dockerfile</button></p>
 
-<h3>What's next?</h3>
-<p>
-We will be posting Level 2 next week. Follow us on twitter and/or enter your email address to be alerted!<br />
-<a href="https://twitter.com/docker" class="twitter-follow-button" data-show-count="false">Follow @docker</a>
-<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script>
-</p>
-	<div>
-		<div class="alert alert-success" id="email_registered" style="display:none;">Email registered.</div>
-		<div class="alert alert-error" id="email_invalid" style="display:none;">Wrong email format. Please check your email.</div>
-		<div class="alert alert-block" id="email_already_registered" style="display:none;">Your email is already registered.</div>
-		Email: <input type="text" id="email"/> <button class="btn btn-primary" id="send_email">Alert me when you post new levels</button></p>
+    <div class="alert alert-success" id="dockerfile_ok" style="display:none;">Congratulations, you successfully restored Eric's Dockerfile! You are ready to containerize the world!.<br />
+    Tell the world! <a href="https://twitter.com/share" class="twitter-share-button" data-url="http://www.docker.io/learn/dockerfile/level1/" data-text="I just successfully completed the 'Fill the Dockerfile' challenge of the #Dockerfile tutorial Level 1" data-via="docker" >Tweet</a>
+    </div>
+    <div class="alert alert-error" id="dockerfile_ko" style="display:none;">Wooops, there are one or more errors in the Dockerfile. Try again.</div>
+    <button class="btn btn-primary" id="check_level1_fill">Check the Dockerfile</button></p>
 
-	</div>
+    <h3>What's next?</h3>
+
+    <p>In the next level, we will go into more detail about how to specify which command should be executed when the container starts,
+    which user to use, and how expose a particular port.</p>
+
+    <a title="getting started" class="btn btn-primary" href="{% url 'dockerfile_level2' %} ">Go to the next level</a>
+
 
         </div>
     </div>
-
 <!--<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script>-->
 
 </div>

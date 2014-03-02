@@ -1,10 +1,10 @@
 # -*- coding: utf-8 -*-
-from distutils.core import setup
+from setuptools import setup
 from setuptools import find_packages
 
 setup(
-    name='DockerTutorial',
-    version='0.2.0',
+    name='docker-tutorial',
+    version='0.2.1',
     author=u'Thatcher Peskens',
     author_email='thatcher@dotcloud.com',
     packages=find_packages(),

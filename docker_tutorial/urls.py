@@ -1,18 +1,13 @@
-from django.conf.urls import patterns, include, url
-from django.views.generic import TemplateView
+from django.conf.urls import patterns, url
 
-from views import testpage, api, stats, dockerfile_event, subscribe
-
-# Uncomment the next two lines to enable the admin:
-# from django.contrib import admin
-# admin.autodiscover()
+from . import views
 
 
 urlpatterns = patterns('',
-    # Examples:
-    url(r'^$', testpage, name='tutorial_testpage'),
-    url(r'^api/$', api, name='tutorial_api'),
-    url(r'^api/dockerfile_event/$', dockerfile_event, name='dockerfile_event'),
-    url(r'^api/subscribe/$', subscribe, name='subscribe'),
-    url(r'^stats/$', stats, name='stats'),
+    url(r'^$', views.testpage, name='tutorial_testpage'),
+    url(r'^api/$', views.api, name='tutorial_api'),
+    url(r'^api/dockerfile_event/$', views.dockerfile_event, name='dockerfile_event'),
+    url(r'^api/subscribe/$', views.subscribe, name='subscribe'),
+    url(r'^api/metrics/$', views.get_metrics, name='get_metrics'),
+    url(r'^stats/$', views.stats, name='stats'),
 )

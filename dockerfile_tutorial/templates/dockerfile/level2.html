@@ -1,0 +1,506 @@
+{% extends 'dockerfile/_dockerfile.html' %}
+{% load staticfiles %}{% load google_analytics %}{% load navactive %}
+
+{% block page_js %}
+    {{ block.super }}
+    <script src="{% static 'js/dockerfile_tutorial_level2.js' %}"></script>
+{% endblock page_js %}
+
+
+{% block content %}
+
+
+<div class="container">
+<div class="row" >
+    <div class="span12 text-center">
+        <div class="copy-headline">
+            <h1>Dockerfile tutorial</h1>
+
+        </div>
+    </div>
+</div>
+<div class="row" >
+    <div class="span12 paper">
+        <div id="" class="span8 offset2">
+
+
+
+<h2>Level 2 – ENTRYPOINT, USER & EXPOSE</h2>
+<p>
+In this section we will cover three important instructions: <code>ENTRYPOINT</code>, <code>USER</code> and <code>EXPOSE</code>.  These commands will help you write more advanced and therefore more complex containers.
+At the end of this tutorial you will be able to understand and write this Dockerfile:
+</p>
+<pre>
+# Memcached
+#
+# VERSION       42
+
+# use the ubuntu base image provided by dotCloud
+FROM ubuntu
+
+MAINTAINER Victor Coisne victor.coisne@dotcloud.com
+
+# make sure the package repository is up to date
+RUN echo "deb http://archive.ubuntu.com/ubuntu precise main universe" > /etc/apt/sources.list
+RUN apt-get update
+
+# install memcached
+RUN apt-get install -y memcached
+
+# Launch memcached when launching the container
+ENTRYPOINT ["memcached"]
+
+# run memcached as the daemon user
+USER daemon
+
+# expose memcached port
+EXPOSE 11211
+</pre>
+<p>
+Ready? Go!</p>
+
+<h3>Requirements</h3>
+<p>
+Before taking this tutorial, please make sure that you completed and understand all instructions covered by the <a href="/learn/dockerfile/level1/">Level 1 Dockerfile tutorial</a> (<code>FROM</code>, <code>RUN</code>, <code>MAINTAINER</code>, <code>#</code>). If this is not the case please start with <a href="/learn/dockerfile/level1/">Level 1</a>.
+</p>
+<h3>
+The ENTRYPOINT instruction
+</h3>
+<p>The <code>ENTRYPOINT</code> instruction permits you to trigger a command as soon as the container starts.</p>
+<h4>
+Whale You Be My Container?
+</h4>
+<p>
+Let’s say you want your container to execute echo “Whale You Be My Container?” as soon as it starts. Then you will use:
+</p>
+<pre>
+ENTRYPOINT echo “Whale You Be My Container?”
+</pre>
+<p>
+Let’s try it!
+</p>
+<pre class="terminal">
+<span class="command">root@precise64:/home/vagrant/dockerfiles/tutorial1# cat Dockerfile_whale_you_be_my_container</span>
+# Whale you be my container?
+#
+# VERSION       0.42
+
+# use the ubuntu base image provided by dotCloud
+FROM ubuntu
+
+MAINTAINER Victor Coisne victor.coisne@dotcloud.com
+
+# say hello when the container is launched
+ENTRYPOINT echo "Whale you be my container"
+<span class="command">root@precise64:/home/vagrant/dockerfiles/tutorial1# docker build -t whaleyoubemycontainer - < Dockerfile_whale_you_be_my_container</span>
+Uploading context 2048 bytes
+Step 1 : FROM ubuntu
+Pulling repository ubuntu
+ ---> b750fe79269dlayersantl) from ubuntu, endpoint: https://cdn-registry-1.docker.io/v1/
+Step 2 : MAINTAINER Victor Coisne victor.coisne@dotcloud.com
+ ---> Running in 2fd00b89982b
+ ---> a2163a4bb4e6
+Step 3 : ENTRYPOINT echo "Whale you be my container"
+ ---> Running in 81f46dafd81a
+ ---> f62c1b30adad
+Successfully built f62c1b30adad
+<span class="command">root@precise64:/home/vagrant/dockerfiles/tutorial1# docker run whaleyoubemycontainer</span>
+Whale you be my container
+<span class="command">root@precise64:/home/vagrant/dockerfiles/tutorial1#</span>
+</pre>
+<p>
+There are two syntaxes for the <code>ENTRYPOINT</code> instruction. Instead of command param1 param2 … you could also use the exec format:
+</p>
+<pre>
+ENTRYPOINT ["echo", "Whale you be my container"]
+</pre>
+<p>
+This is actually the preferred form, so we will use this form from now on.
+</p>
+<h4>
+wc
+</h4>
+<p>
+The <code>ENTRYPOINT</code> instruction helps to configure a container that you can run as an executable. That is, when you specify an <code>ENTRYPOINT</code>, the whole container runs as if it was just that executable. Let’s see an example with a a container running <code>wc –l</code> as <code>ENTRYPOINT</code>
+</p>
+<pre class="terminal">
+<span class="command">root@precise64:/home/vagrant/dockerfiles/tutorial1# cat Dockerfile_wc</span>
+# This is wc
+#
+# VERSION       0.42
+
+# use the ubuntu base image provided by dotCloud
+FROM ubuntu
+
+MAINTAINER Victor Coisne victor.coisne@dotcloud.com
+
+# count lines with wc
+ENTRYPOINT ["wc", "-l"]
+<span class="command">root@precise64:/home/vagrant/dockerfiles/tutorial1# docker build -t wc - < Dockerfile_wc</span>
+Uploading context 2048 bytes
+Step 1 : FROM ubuntu
+ ---> b750fe79269d
+Step 2 : MAINTAINER Victor Coisne victor.coisne@dotcloud.com
+ ---> Using cache
+ ---> a2163a4bb4e6
+Step 3 : ENTRYPOINT ["wc", "-l"]
+ ---> Using cache
+ ---> 52504f229d30
+Successfully built 52504f229d30
+<span class="command">root@precise64:/home/vagrant/dockerfiles/tutorial1# cat /etc/passwd | docker run -i wc</span>
+28
+</pre>
+<h4>
+memcached
+</h4>
+<p>
+Remember our Dockerfile from <a href="/learn/dockerfile/level1/">Level 1</a>? We can now add an ENTRYPOINT. Memcached needs to be run by the user daemon. So the ENTRYPOINT instruction will look like this:
+</p>
+<code>ENTRYPOINT ["memcached", "-u", "daemon"]</code>
+<p>
+This is the resulting Dockerfile
+</p>
+<pre>
+# Memcached
+#
+# VERSION       2.0
+
+# use the ubuntu base image provided by dotCloud
+FROM ubuntu
+MAINTAINER Guillaume J. Charmes guillaume@dotcloud.com
+# make sure the package repository is up to date
+RUN echo "deb http://archive.ubuntu.com/ubuntu precise main universe" > /etc/apt/sources.list
+RUN apt-get update
+
+# install memcached
+RUN apt-get install -y memcached
+
+# Launch memcached when launching the container
+ENTRYPOINT ["memcached", "-u", "daemon"]
+</pre>
+<h3>
+The USER instruction
+</h3>
+<p>
+As we have seen earlier with Memcached, you may need to run the <code>ENTRYPOINT</code> commands as a different user than root. In the previous example, Memcached already has the option to run as another user. But it is not the case for all services/programs. Here comes the <code>USER</code> instruction. As you may have already understood, the <code>USER</code> instruction sets the username or UID to use when running the image.
+With this new instruction, instead of this</p>
+<pre>
+ENTRYPOINT ["memcached", "-u", "daemon"]
+</pre>
+<p>
+We can now use this
+</p>
+<pre>
+ENTRYPOINT ["memcached"]
+USER daemon
+</pre>
+<h4>
+Memcached
+</h4>
+<p>
+Here is our updated Memcached Dockerfile
+</p>
+<pre>
+# Memcached
+#
+# VERSION       2.1
+
+# use the ubuntu base image provided by dotCloud
+FROM ubuntu
+
+MAINTAINER Victor Coisne victor.coisne@dotcloud.com
+
+# make sure the package repository is up to date
+RUN echo "deb http://archive.ubuntu.com/ubuntu precise main universe" > /etc/apt/sources.list
+RUN apt-get update
+
+# install memcached
+RUN apt-get install -y memcached
+
+# Launch memcached when launching the container
+ENTRYPOINT ["memcached"]
+
+# run memcached as the daemon user
+USER daemon
+</pre>
+<h3>
+The EXPOSE instruction
+</h3>
+<p>
+The <code>EXPOSE</code> instruction sets ports to be exposed when running the image.
+</p>
+<h4>
+Memcached
+</h4>
+<p>
+Memcached uses port <code>11211</code>, so we have to expose this port in order to be able to talk to the Memcached container from outside the container. This is simply done with this line
+</p>
+<pre>
+EXPOSE 11211
+</pre>
+<p>
+By doing so, the container will sets the port <code>11211</code> to be exposed when running the Memcached image.<br />
+The final Dockerfile now looks like this:
+</p>
+<pre>
+# Memcached
+#
+# VERSION       2.2
+
+# use the ubuntu base image provided by dotCloud
+FROM ubuntu
+
+MAINTAINER Victor Coisne victor.coisne@dotcloud.com
+
+# make sure the package repository is up to date
+RUN echo "deb http://archive.ubuntu.com/ubuntu precise main universe" > /etc/apt/sources.list
+RUN apt-get update
+
+# install memcached
+RUN apt-get install -y memcached
+
+# Launch memcached when launching the container
+ENTRYPOINT ["memcached"]
+
+# run memcached as the daemon user
+USER daemon
+
+# expose memcached port
+EXPOSE 11211
+</pre>
+
+<h3>Playing with our Memcached image
+</h3>
+<p>
+So, we are on a server and we need Memcached. Let's use what we have just learned :)
+</p>
+<h4>
+Building the image
+</h4>
+<p>
+First, let’s build the image, from the Dockerfile.
+</p>
+<pre class="terminal">
+<span class="command">root@precise64:/home/vagrant/dockerfiles/tutorial1# cat Dockerfile</span>
+# Memcached
+#
+# VERSION       2.2
+
+# use the ubuntu base image provided by dotCloud
+FROM ubuntu
+
+MAINTAINER Victor Coisne victor.coisne@dotcloud.com
+
+# make sure the package repository is up to date
+RUN echo "deb http://archive.ubuntu.com/ubuntu precise main universe" > /etc/apt/sources.list
+RUN apt-get update
+
+# install memcached
+RUN apt-get install -y memcached
+
+# Launch memcached when launching the container
+ENTRYPOINT ["memcached"]
+
+# run memcached as the daemon user
+USER daemon
+
+# expose memcached port
+EXPOSE 11211
+<span class="command">root@precise64:/home/vagrant/dockerfiles/tutorial1# docker build -t memcached - < Dockerfile</span>
+Uploading context 2560 bytes
+Step 1 : FROM ubuntu
+ ---> 8dbd9e392a96
+Step 2 : MAINTAINER Victor Coisne victor.coisne@dotcloud.com
+ ---> Using cache
+ ---> dee832c11d42
+Step 3 : RUN echo "deb http://archive.ubuntu.com/ubuntu precise main universe" > /etc/apt/sources.list
+ ---> Using cache
+ ---> 66678b24bab4
+Step 4 : RUN apt-get update
+ ---> Using cache
+ ---> 2fbfe4f542d8
+Step 5 : RUN apt-get install -y memcached
+ ---> Using cache
+ ---> 80c7e70e69a1
+Step 6 : ENTRYPOINT ["memcached"]
+ ---> Running in df59a42eeaa7
+ ---> 090512aab2ac
+Step 7 : USER daemon
+ ---> Running in f4618f8c72ec
+ ---> 264b9e444135
+Step 8 : EXPOSE 11211
+ ---> Running in e339e4cb6838
+ ---> 42a44756989e
+Successfully built 42a44756989e
+</pre>
+<p>
+Now let’s launch it. We use the <code>-p</code> flag to publish the port publicly.
+</p>
+
+<pre class="terminal"><span class="command">root@precise64:/home/vagrant/dockerfiles/tutorial1# docker run -p 11211 memcached</span>
+
+</pre>
+<p>
+Memcached is running :) Now which port should we use to access it from outside the container?
+As we asked for it with the <code>EXPOSE</code> instruction, the container is exposing the <code>11211</code> port, and we used <code>-p</code> publish it to our system. We can use the <code>docker ps</code> command in order to get the port we should use from outside the container to access Memcached inside the container.
+</p>
+
+<pre class="terminal"><span class="command">root@precise64:/home/vagrant/dockerfiles/tutorial1# docker ps</span>
+ID                  IMAGE               COMMAND             CREATED             STATUS              PORTS                           NAMES
+1aa7a504438c        memcached:latest    memcached           2 minutes ago       Up 2 minutes        0.0.0.0:49153->11211/tcp        blue_whale
+</pre>
+<p>
+In this example the column <code>PORTS</code> shows that we should use the port <code>49153</code>.<br />
+NOTE: you could also use the <code>docker port</code> or the <code>docker inspect</code> commands to retrieve the right port number.
+</p>
+<h4>
+Python
+</h4>
+<p>
+We will here use python to play with Memcached, but you can use any language (Go, PHP, Ruby, …). This is a simple Python script to use your Memcached (Don’t forget to update the port number, you will probably not have the same).
+</p>
+<pre>
+# run this command if import memcache fails
+# pip install python-memcached
+
+import memcache
+
+ip = 'localhost'
+port = 49153
+
+mc = memcache.Client(["{0}:{1}".format(ip, port)], debug=0)
+mc.set("MDM", "Guillaume J. C.")
+value = mc.get("MDM")
+
+print value
+</pre>
+<p>
+Let’s run it!
+</p>
+<pre class="terminal"><span class="command">root@precise64:/home/vagrant/dockerfiles/tutorial2# python test.py</span>
+Guillaume J. C.
+</pre>
+<p>
+Congratulations! You just used your first containerized Memcached server :)
+</p>
+
+<h3>Test your Dockerfile skills - Level 2</h3>
+<h4>Questions</h4>
+<div name="level1_questions">
+	What is the Dockerfile instruction to specify the base image?<br>
+	<div style="display:none;" id="level2_error0" class="alert alert-error">The right answer was <code>FROM</code></div>
+	<input type="text" id="level2_q0"><br>
+
+	Which Dockerfile instruction sets the default command for your image?<br>
+	<div style="display:none;" id="level2_error4" class="alert alert-error">The right answer was <code>ENTRYPOINT</code></div>
+	<input type="text" id="level2_q4"><br>
+
+	What is the character used to add comments in Dockerfiles?<br>
+	<div style="display:none;" id="level2_error3" class="alert alert-error">The right answer was <code>#</code></div>
+	<input type="text" id="level2_q3"><br>
+
+	Which Dockerfile instruction sets the username to use when running the image?<br>
+	<div style="display:none;" id="level2_error5" class="alert alert-error">The right answer was <code>USER</code></div>
+	<input type="text" id="level2_q5"><br>
+
+	What is the Dockerfile instruction to execute any command on the current image and commit the results?<br>
+	<div style="display:none;" id="level2_error1" class="alert alert-error">The right answer was <code>RUN</code></div>
+	<input type="text" id="level2_q1"><br>
+
+	Which Dockerfile instruction sets ports to be exposed when running the image?<br>
+	<div style="display:none;" id="level2_error6" class="alert alert-error">The right answer was <code>EXPOSE</code></div>
+	<input type="text" id="level2_q6"><br>
+
+	What is the Dockerfile instruction to specify the maintainer of the Dockerfile?<br>
+	<div style="display:none;" id="level2_error2" class="alert alert-error">The right answer was <code>MAINTAINER</code></div>
+	<input type="text" id="level2_q2"><br>
+
+	Which Dockerfile instruction lets you trigger a command as soon as the container starts?<br>
+	<div style="display:none;" id="level2_error7" class="alert alert-error">The right answer was <code>ENTRYPOINT</code></div>
+	<input type="text" id="level2_q7"><br>
+
+	<div style="display:none;" id="all_good" class="alert alert-success">Congratulations, you made no mistake!<br>
+	Tell the world <iframe scrolling="no" frameborder="0" allowtransparency="true" src="https://platform.twitter.com/widgets/tweet_button.1378768434.html#_=1378851453427&amp;count=horizontal&amp;id=twitter-widget-0&amp;lang=en&amp;original_referer=http%3A%2F%2Fwww.docker.io%2Flearn%2Fdockerfile%2Flevel2%2F&amp;size=m&amp;text=I%20just%20successfully%20answered%20questions%20of%20the%20%23Dockerfile%20tutorial%20Level%202.%20What's%20your%20score%3F&amp;url=http%3A%2F%2Fwww.docker.io%2Flearn%2Fdockerfile%2Flevel2%2F&amp;via=docker" class="twitter-share-button twitter-count-horizontal" style="width: 109px; height: 20px;" title="Twitter Tweet Button" data-twttr-rendered="true"></iframe><br>
+	And try the next challenge: <a href="#fill_the_dockerfile">DockerFill</a>
+	</div>
+	<div style="display:none;" id="no_good" class="alert alert-error">Your Dockerfile skills are not yet perfect, try to take the time to read this tutorial again.</div>
+	<div style="display:none;" id="some_good" class="alert alert-block">You're almost there! Read carefully the sections corresponding to your errors, and take the test again!</div>
+	<button id="check_level2_questions" class="btn btn-primary">Check your answers</button>
+</div>
+<br />
+<a name="fill_the_dockerfile"></a>
+<h3>
+DockerFill
+</h3>
+<p>
+Your best friend Roberto Hashioka sent you a Dockerfile, but some parts were lost in the ocean. Can you find the missing parts?
+</p>
+<pre>
+# Redis
+#
+# VERSION       0.42
+
+# use the ubuntu base image provided by dotCloud
+<input id="from" class="input-small" type="text">  ub<input id="ubuntu" class="input-small" type="text">
+
+MAINT<input id="maintainer" class="input-small" type="text"> Ro<input id="eric" class="input-small" type="text"> Ha<input id="bardin" class="input-small" type="text"> roberto.hashioka@dotcloud.com
+
+# make sure the package repository is up to date
+<input id="run0" class="input-small" type="text"> echo "deb http://archive.ubuntu.com/ubuntu precise main universe" > /etc/apt/sources.list
+<input id="run1" class="input-small" type="text"> apt-get update
+
+# install wget (required for redis installation)
+<input id="run2" class="input-small" type="text"> apt-get install -y wget
+
+# install make (required for redis installation)
+<input id="run3" class="input-small" type="text"> apt-get install -y make
+
+# install gcc (required for redis installation)
+RUN apt-get install -y <input id="gcc" class="input-small" type="text">
+
+# install apache2
+<input id="run4" class="input-small" type="text"> wget http://download.redis.io/redis-stable.tar.gz
+<input id="run5" class="input-small" type="text">tar xvzf redis-stable.tar.gz
+<input id="run6" class="input-small" type="text">cd redis-stable && make && make install
+
+# launch redis when starting the image
+<input id="entrypoint" class="input-small" type="text"> ["redis-server"]
+
+# run as user dameon
+<input id="user" class="input-small" type="text"> daemon
+
+# expose port 6379
+<input id="expose" class="input-small" type="text"> 6379
+</pre>
+
+<div class="alert alert-success" id="dockerfile_ok" style="display:none;">Congratulations, you successfully restored Roberto's Dockerfile! You are ready to containerize the world!.<br />
+Tell the world! <a href="https://twitter.com/share" class="twitter-share-button" data-url="http://www.docker.io/learn/dockerfile/level2/" data-text="I just successfully completed the 'Dockerfill' challenge of the #Dockerfile tutorial Level 2" data-via="docker" >Tweet</a>
+</div>
+<div class="alert alert-error" id="dockerfile_ko" style="display:none;">Wooops, there are one or more errors in the Dockerfile. Try again.</div>
+<button class="btn btn-primary" id="check_level2_fill">Check the Dockerfile</button></p>
+
+<br />
+<h3>What's next?</h3>
+<p>
+We will be posting Level 3 in the next few weeks. Follow us on twitter and/or enter your email address to be alerted!<br />
+<a href="https://twitter.com/docker" class="twitter-follow-button" data-show-count="false">Follow @docker</a>
+<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script>
+</p>
+	<div>
+		<div class="alert alert-success" id="email_registered" style="display:none;">Email registered.</div>
+		<div class="alert alert-error" id="email_invalid" style="display:none;">Wrong email format. Please check your email.</div>
+		<div class="alert alert-block" id="email_already_registered" style="display:none;">Your email is already registered.</div>
+		Email: <input type="text" id="email"/> <button class="btn btn-primary" data-level="2" id="send_email">Alert me when you post new levels</button></p>
+
+	</div>
+    <p>In the meantime, check out this <a href="http://crosbymichael.com/dockerfile-best-practices.html">blog post</a> by Michael Crosby that describes Dockerfile Best Practices.</p>
+
+
+        </div>
+    </div>
+
+</div>
+</div> <!-- endblock container -->
+
+
+{% endblock %}
