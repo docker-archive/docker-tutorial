@@ -9,5 +9,6 @@ urlpatterns = patterns('',
     url(r'^api/dockerfile_event/$', views.dockerfile_event, name='dockerfile_event'),
     url(r'^api/subscribe/$', views.subscribe, name='subscribe'),
     url(r'^api/metrics/$', views.get_metrics, name='get_metrics'),
+    url(r'^api/docker_login/$', views.docker_tutorial_login, name='cutom_login'),
     url(r'^stats/$', views.stats, name='stats'),
 )

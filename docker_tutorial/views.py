@@ -1,14 +1,18 @@
 import json
+import logging
 
 from django.shortcuts import render_to_response
 from django.template import RequestContext
 from django.views.decorators.csrf import csrf_exempt
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseNotAllowed
+from .signals import tutorial_login
 
 from . import utils
 from .models import TutorialUser, TutorialEvent, DockerfileEvent, Subscriber
 
 __author__ = 'thatcher'
+
+log = logging.getLogger(__name__)
 
 
 def endpoint(request):
@@ -155,5 +159,39 @@ def get_metrics(request):
     response.append({'name': 'tutorial_dockerfile_completed_level1', 'value_i': dockerfile_tutorial_complete_level1})
 
     jsonresponse = json.dumps(response)
+
+    return HttpResponse(jsonresponse, mimetype="application/json")
+
+
+def docker_tutorial_login(request):
+    """
+    View to verify the username and password at 'docker login' command.
+    Relies on the host application to receive the tutorial_login signal and login the user
+    """
+
+    if not request.POST:
+        return HttpResponseNotAllowed(['POST'])
+
+    username = request.POST.get('username', None),
+    password = request.POST.get('password', None),
+    signal_results = tutorial_login.send("docker_tutorial_login", username=username, password=password, request=request)
+
+    try:
+        # get status code from object like [(<function login_signal at 0x102a45140>, (0, 'user already logged in'))]
+        status_code = signal_results[0][1][0]
+    except:
+        status_code = 1
+        log.error("No signal receiver listening, or invalid response received")
+        raise
+
+    response = []
+    if status_code == 0:
+        response.append({'login_successfull': True})
+    else:
+        response.append({'login_successfull': False})
+
+    response.append({'username': request.user.username})
+    jsonresponse = json.dumps(response)
+
 
     return HttpResponse(jsonresponse, mimetype="application/json")
