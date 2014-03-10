@@ -169,11 +169,12 @@ def docker_tutorial_login(request):
     Relies on the host application to receive the tutorial_login signal and login the user
     """
 
-    if not request.POST:
+    if request.method != 'POST':
         return HttpResponseNotAllowed(['POST'])
 
-    username = request.POST.get('username', None),
-    password = request.POST.get('password', None),
+    username = request.POST.get('username', None)
+    password = request.POST.get('password', None)
+
     signal_results = tutorial_login.send("docker_tutorial_login", username=username, password=password, request=request)
 
     try:

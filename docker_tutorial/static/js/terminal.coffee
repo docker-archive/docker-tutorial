@@ -11,7 +11,7 @@
 do @myTerminal = ->
 
   # Which terminal emulator version are we
-  EMULATOR_VERSION = "0.1.3"
+  EMULATOR_VERSION = "0.2.0"
 
 
   @basesettings = {
@@ -19,8 +19,11 @@ do @myTerminal = ->
     greetings: """
                Welcome to the interactive Docker tutorial
               """
-
   }
+
+  strings = $.terminal.defaults.strings
+  strings.login = "Username"
+  strings.password = "Password"
 
   ###
     Callback definitions. These can be overridden by functions anywhere else
@@ -219,6 +222,26 @@ do @myTerminal = ->
       term.echo "done "
     ), time
 
+  timestamp = (d) ->
+    if not d
+      d = new Date()
+
+    # padding function
+    s = (a,b) ->
+      return(1e15+a+"").slice(-b)
+
+    # default date parameter
+    if (typeof d is 'undefined')
+      d = new Date()
+
+    # return ISO datetime
+    return d.getFullYear() + '-' +
+        s(d.getMonth()+1,2) + '-' +
+        s(d.getDate(),2) + ' ' +
+        s(d.getHours(),2) + ':' +
+        s(d.getMinutes(),2) + ':' +
+        s(d.getSeconds(),2)
+
   ###
     Bash program
   ###
@@ -245,8 +268,10 @@ do @myTerminal = ->
 
     echo = term.echo
     insert = term.insert
+    login = term.login
     callback = () -> @finishedCallback(inputs)
     command = inputs[1]
+
 
     # no command
     if not inputs[1]
@@ -402,9 +427,26 @@ do @myTerminal = ->
         echo pull
 
     else if inputs[1] is "version"
-#      console.log(version)
       echo docker_version()
 
+    else if inputs[1] is "login"
+      auth = (user, pass, doneFunc) ->
+        console.log timestamp() + " login complete: " + user + " " + pass
+        doneFunc(false, true)
+
+      infinite = false
+
+      success = (e) ->
+        console.log "login succeeded"
+        echo "Login Succeeded"
+
+      error = (e) ->
+        console.log "login failed"
+        echo timestamp() + " Error: auth: Wrong login/password, please try again"
+
+      # Call the login function with
+      term.login(auth, infinite, success, error)
+      return
 
     else if DockerCommands[inputs[1]]
       echo "#{inputs[1]} is a valid argument, but not implemented"

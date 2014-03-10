@@ -11,13 +11,16 @@
 
 (function() {
   (this.myTerminal = function() {
-    var Docker, DockerCommands, Docker_cmd, Docker_logo, EMULATOR_VERSION, bash, commit, commit_containerid, commit_id_does_not_exist, docker_version, help, images, inspect, inspect_no_such_container, inspect_ping_container, parseInput, ping, ps, ps_a, ps_l, pull, pull_no_results, pull_tutorial, pull_ubuntu, push, push_container_learn_ping, push_wrong_name, run_apt_get, run_apt_get_install_iputils_ping, run_apt_get_install_unknown_package, run_cmd, run_flag_defined_not_defined, run_image_wrong_command, run_learn_no_command, run_learn_tutorial_echo_hello_world, run_notfound, run_ping_not_google, run_ping_www_google_com, run_switches, search, search_no_results, search_tutorial, search_ubuntu, testing, util_slow_lines, wait;
+    var Docker, DockerCommands, Docker_cmd, Docker_logo, EMULATOR_VERSION, bash, commit, commit_containerid, commit_id_does_not_exist, docker_version, help, images, inspect, inspect_no_such_container, inspect_ping_container, parseInput, ping, ps, ps_a, ps_l, pull, pull_no_results, pull_tutorial, pull_ubuntu, push, push_container_learn_ping, push_wrong_name, run_apt_get, run_apt_get_install_iputils_ping, run_apt_get_install_unknown_package, run_cmd, run_flag_defined_not_defined, run_image_wrong_command, run_learn_no_command, run_learn_tutorial_echo_hello_world, run_notfound, run_ping_not_google, run_ping_www_google_com, run_switches, search, search_no_results, search_tutorial, search_ubuntu, strings, testing, timestamp, util_slow_lines, wait;
 
-    EMULATOR_VERSION = "0.1.3";
+    EMULATOR_VERSION = "0.2.0";
     this.basesettings = {
       prompt: 'you@tutorial:~$ ',
       greetings: "Welcome to the interactive Docker tutorial"
     };
+    strings = $.terminal.defaults.strings;
+    strings.login = "Username";
+    strings.password = "Password";
     /*
       Callback definitions. These can be overridden by functions anywhere else
     */
@@ -219,6 +222,20 @@
         return term.echo("done ");
       }), time);
     };
+    timestamp = function(d) {
+      var s;
+
+      if (!d) {
+        d = new Date();
+      }
+      s = function(a, b) {
+        return (1e15 + a + "").slice(-b);
+      };
+      if (typeof d === 'undefined') {
+        d = new Date();
+      }
+      return d.getFullYear() + '-' + s(d.getMonth() + 1, 2) + '-' + s(d.getDate(), 2) + ' ' + s(d.getHours(), 2) + ':' + s(d.getMinutes(), 2) + ':' + s(d.getSeconds(), 2);
+    };
     /*
       Bash program
     */
@@ -244,10 +261,11 @@
     */
 
     Docker = function(term, inputs) {
-      var DockerCommand, callback, command, commands, description, echo, i, imagename, insert, keyword, parsed_input, result, swargs, switches;
+      var DockerCommand, auth, callback, command, commands, description, echo, error, i, imagename, infinite, insert, keyword, login, parsed_input, result, success, swargs, switches;
 
       echo = term.echo;
       insert = term.insert;
+      login = term.login;
       callback = function() {
         return this.finishedCallback(inputs);
       };
@@ -402,6 +420,22 @@
         }
       } else if (inputs[1] === "version") {
         echo(docker_version());
+      } else if (inputs[1] === "login") {
+        auth = function(user, pass, doneFunc) {
+          console.log(timestamp() + " login complete: " + user + " " + pass);
+          return doneFunc(false, true);
+        };
+        infinite = false;
+        success = function(e) {
+          console.log("login succeeded");
+          return echo("Login Succeeded");
+        };
+        error = function(e) {
+          console.log("login failed");
+          return echo(timestamp() + " Error: auth: Wrong login/password, please try again");
+        };
+        term.login(auth, infinite, success, error);
+        return;
       } else if (DockerCommands[inputs[1]]) {
         echo("" + inputs[1] + " is a valid argument, but not implemented");
       } else {
