@@ -11,9 +11,10 @@
 
 (function() {
   (this.myTerminal = function() {
-    var Docker, DockerCommands, Docker_cmd, Docker_logo, EMULATOR_VERSION, bash, commit, commit_containerid, commit_id_does_not_exist, docker_version, help, images, inspect, inspect_no_such_container, inspect_ping_container, parseInput, ping, ps, ps_a, ps_l, pull, pull_no_results, pull_tutorial, pull_ubuntu, push, push_container_learn_ping, push_wrong_name, run_apt_get, run_apt_get_install_iputils_ping, run_apt_get_install_unknown_package, run_cmd, run_flag_defined_not_defined, run_image_wrong_command, run_learn_no_command, run_learn_tutorial_echo_hello_world, run_notfound, run_ping_not_google, run_ping_www_google_com, run_switches, search, search_no_results, search_tutorial, search_ubuntu, strings, testing, timestamp, util_slow_lines, wait;
+    var Docker, DockerCommands, Docker_cmd, Docker_logo, EMULATOR_VERSION, LOADURL, bash, commit, commit_containerid, commit_id_does_not_exist, docker_version, help, images, inspect, inspect_no_such_container, inspect_ping_container, parseInput, ping, ps, ps_a, ps_l, pull, pull_no_results, pull_tutorial, pull_ubuntu, push, push_container_learn_ping, push_wrong_name, run_apt_get, run_apt_get_install_iputils_ping, run_apt_get_install_unknown_package, run_cmd, run_flag_defined_not_defined, run_image_wrong_command, run_learn_no_command, run_learn_tutorial_echo_hello_world, run_notfound, run_ping_not_google, run_ping_www_google_com, run_switches, search, search_no_results, search_tutorial, search_ubuntu, strings, testing, timestamp, util_slow_lines, wait;
 
     EMULATOR_VERSION = "0.2.0";
+    LOADURL = "/tutorial/api/";
     this.basesettings = {
       prompt: 'you@tutorial:~$ ',
       greetings: "Welcome to the interactive Docker tutorial"
@@ -422,8 +423,15 @@
         echo(docker_version());
       } else if (inputs[1] === "login") {
         auth = function(user, pass, doneFunc) {
-          console.log(timestamp() + " login complete: " + user + " " + pass);
-          return doneFunc(false, true);
+          var data;
+
+          console.log("calling remote endpoint for login");
+          data = 'username=' + user + '&password=' + pass;
+          return $.post(LOADURL + 'docker_login/', data, function(e) {
+            result = e[0];
+            console.log(result.login_successfull + " " + result.username);
+            return doneFunc(result.login_successfull, true);
+          });
         };
         infinite = false;
         success = function(e) {

@@ -12,7 +12,7 @@ do @myTerminal = ->
 
   # Which terminal emulator version are we
   EMULATOR_VERSION = "0.2.0"
-
+  LOADURL = "/tutorial/api/"
 
   @basesettings = {
     prompt: 'you@tutorial:~$ ',
@@ -272,7 +272,6 @@ do @myTerminal = ->
     callback = () -> @finishedCallback(inputs)
     command = inputs[1]
 
-
     # no command
     if not inputs[1]
       console.debug "no args"
@@ -429,10 +428,21 @@ do @myTerminal = ->
     else if inputs[1] is "version"
       echo docker_version()
 
+    # function to check username and password, for real
     else if inputs[1] is "login"
+
+      # this function will be called by jQueryTerminal, and we need to call the doneFunc
+      # with a 'truthy' value (e.g. a token) to signify a successfull login
       auth = (user, pass, doneFunc) ->
-        console.log timestamp() + " login complete: " + user + " " + pass
-        doneFunc(false, true)
+        console.log "calling remote endpoint for login"
+
+        data = 'username=' + user + '&password=' + pass
+
+        $.post(LOADURL + 'docker_login/', data, (e) ->
+          result = e[0]
+          console.log result.login_successfull + " " + result.username
+          doneFunc(result.login_successfull, true)
+        )
 
       infinite = false
 

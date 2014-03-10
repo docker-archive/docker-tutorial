@@ -1,8 +1,11 @@
+import logging 
+
 from django.core.cache import cache
 from django.core.exceptions import ObjectDoesNotExist
-
 from docker_tutorial.models import TutorialUser
+from django.contrib.auth import authenticate, login
 
+log = logging.getLogger(__name__)
 
 def get_user_for_request(request):
     """
@@ -40,3 +43,27 @@ def _get_or_create_user(request, session_key):
             cache.set(session_key, user)
 
     return user
+
+
+def login_user(username, password, request):
+    """
+    Function to login the user with username and password
+    """
+
+    # just log that the user is already authenticated.
+    if request.user.is_authenticated():
+        log.debug("login function: User already authenticated")
+
+    # check if username and password are correct
+    user = authenticate(username=username, password=password)
+    if user is not None:
+        if user.is_active:
+            login(request, user)
+            log.debug("login function: user {} is active and now logged in".format(username))
+            return 0, "user successfully logged in"
+        else:
+            log.debug("login function: user {} is not active".format(username))
+            return 1, "user not active"
+    else:
+        log.debug("login function: user is not set, login failed")
+        return 1, "login failed"

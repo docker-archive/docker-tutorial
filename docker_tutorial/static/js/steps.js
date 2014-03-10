@@ -113,6 +113,14 @@
   });
 
   q.push({
+    html: "<h3>Login</h3>\n<p>Docker provides a unified point of authentication for all your services. Your <em>Docker</em> account. </p>\n<a href=\"#8\" onclick=\"window.open('http://www.docker.io/account/signup/','Docker','width=1000,height=900,left=50,top=50,menubar=0')\">www.docker.io/account/signup/</a>",
+    assignment: "<h3>Assignment</h3>\n<p>Create an account and login.</p>\n",
+    command_expected: ["docker", "login"],
+    result: "<p>Great!</p>",
+    tip: "<ul><li>Go to www.docker.com to create your account</li></ul>"
+  });
+
+  q.push({
     html: "<h3>Push your image to the index</h3>\n<p>Now you have verified that your application container works, you can share it.</p>\n<p>Remember you pulled (downloaded) the learn/tutorial image from the index? You can also share your built images\nto the index by pushing (uploading) them to there. That way you can easily retrieve them for re-use and share them\nwith others. </p>",
     assignment: "<h3>Assignment</h3>\n<p>Push your container image learn/ping to the index</p>\n",
     command_expected: ["will_never_be_valid"],

@@ -7,7 +7,7 @@ from django.views.decorators.csrf import csrf_exempt
 from django.http import HttpResponse, HttpResponseNotAllowed
 from .signals import tutorial_login
 
-from . import utils
+from .utils import get_user_for_request, login_user
 from .models import TutorialUser, TutorialEvent, DockerfileEvent, Subscriber
 
 __author__ = 'thatcher'
@@ -43,7 +43,7 @@ def api(request):
     saving the user's events
     """
     if request.method == "POST":
-        user = utils.get_user_for_request(request)
+        user = get_user_for_request(request)
 
         event = TutorialEvent.objects.create(
             user=user,
@@ -62,7 +62,7 @@ def dockerfile_event(request):
     """
 
     if request.method == "POST":
-        user = utils.get_user_for_request(request)
+        user = get_user_for_request(request)
         event = DockerfileEvent.objects.create(user=user)
         # event.user ; is set at instantiation
         ## default type is 'none'
@@ -81,7 +81,7 @@ def subscribe(request):
     a next tutorial
     """
     if request.POST:
-        user = utils.get_user_for_request(request)
+        user = get_user_for_request(request)
         email = request.POST.get('email', None)
         from_level = request.POST.get('from_level', None)
 
@@ -175,23 +175,22 @@ def docker_tutorial_login(request):
     username = request.POST.get('username', None)
     password = request.POST.get('password', None)
 
-    signal_results = tutorial_login.send("docker_tutorial_login", username=username, password=password, request=request)
-
-    try:
-        # get status code from object like [(<function login_signal at 0x102a45140>, (0, 'user already logged in'))]
-        status_code = signal_results[0][1][0]
-    except:
-        status_code = 1
-        log.error("No signal receiver listening, or invalid response received")
-        raise
+    login_results = login_user(username, password, request)
 
     response = []
-    if status_code == 0:
-        response.append({'login_successfull': True})
-    else:
-        response.append({'login_successfull': False})
+    if login_results[0] == 0:
+        response.append({
+            'login_successfull': True,
+            'username': request.user.username
+        })
 
-    response.append({'username': request.user.username})
+    else:
+        response.append({
+            'login_successfull': False,
+            'details': login_results[1],
+            'username': request.user.username
+        })
+
     jsonresponse = json.dumps(response)
 
 

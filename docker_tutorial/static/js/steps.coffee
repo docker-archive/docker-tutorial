@@ -204,6 +204,22 @@ currentDockerPs:
     """
 })
 
+q.push ({
+html: """<h3>Login</h3>
+         <p>Docker provides a unified point of authentication for all your services. Your <em>Docker</em> account. </p>
+         <a href="#8" onclick="window.open('http://www.docker.io/account/signup/','Docker','width=1000,height=900,left=50,top=50,menubar=0')">www.docker.io/account/signup/</a>
+      """
+assignment: """
+      <h3>Assignment</h3>
+      <p>Create an account and login.</p>
+
+      """
+command_expected: ["docker", "login"]
+result: """<p>Great!</p>"""
+tip:  """<ul><li>Go to www.docker.com to create your account</li></ul>"""
+
+})
+
 
 q.push ({
 html: """
@@ -301,8 +317,8 @@ EVENT_TYPES =
 ###
 
 logEvent = (data, feedback) ->
-    ajax_load = "loading......";
-    loadUrl = "/tutorial/api/";
+    ajax_load = "loading......"
+    loadUrl = "/tutorial/api/"
     if not feedback
       callback = (responseText) -> $("#ajax").html(responseText)
     else
