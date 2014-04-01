@@ -434,6 +434,9 @@ do @myTerminal = ->
       # this function will be called by jQueryTerminal, and we need to call the doneFunc
       # with a 'truthy' value (e.g. a token) to signify a successfull login
       auth = (user, pass, doneFunc) ->
+
+        # clean up prompt
+        term.set_prompt('')
         console.log "calling remote endpoint for login"
 
         data = 'username=' + user + '&password=' + pass
