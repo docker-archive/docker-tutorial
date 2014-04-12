@@ -10,8 +10,68 @@
 
 
 (function() {
+  var Application, Question, root;
+
+  root = typeof exports !== "undefined" && exports !== null ? exports : this;
+
+  Application = (function() {
+    var PrivateApplication, instance;
+
+    function Application() {}
+
+    instance = null;
+
+    PrivateApplication = (function() {
+      function PrivateApplication(message) {
+        this.message = message;
+      }
+
+      PrivateApplication.prototype.echo = function() {
+        return this.message;
+      };
+
+      PrivateApplication.prototype.name = "";
+
+      PrivateApplication.prototype.questions = [];
+
+      PrivateApplication.prototype.EMULATOR_VERSION = "0.2.0";
+
+      PrivateApplication.prototype.COMPLETE_URL = "/whats-next/";
+
+      return PrivateApplication;
+
+    })();
+
+    Application.get = function(message) {
+      return instance != null ? instance : instance = new PrivateApplication(message);
+    };
+
+    return Application;
+
+  })();
+
+  root.Application = Application;
+
+  Question = (function() {
+    function Question(slug, html, tip, assignment, command_expected, command_show, result, intermediateresults) {
+      this.slug = slug;
+      this.html = html;
+      this.tip = tip;
+      this.assignment = assignment;
+      this.command_expected = command_expected;
+      this.command_show = command_show;
+      this.result = result;
+      this.intermediateresults = intermediateresults;
+    }
+
+    return Question;
+
+  })();
+
+  root.Question = Question;
+
   (this.myTerminal = function() {
-    var Docker, DockerCommands, Docker_cmd, Docker_logo, EMULATOR_VERSION, LOADURL, bash, commit, commit_containerid, commit_id_does_not_exist, docker_version, help, images, inspect, inspect_no_such_container, inspect_ping_container, parseInput, ping, ps, ps_a, ps_l, pull, pull_no_results, pull_tutorial, pull_ubuntu, push, push_container_learn_ping, push_wrong_name, run_apt_get, run_apt_get_install_iputils_ping, run_apt_get_install_unknown_package, run_cmd, run_flag_defined_not_defined, run_image_wrong_command, run_learn_no_command, run_learn_tutorial_echo_hello_world, run_notfound, run_ping_not_google, run_ping_www_google_com, run_switches, search, search_no_results, search_tutorial, search_ubuntu, strings, testing, timestamp, util_slow_lines, wait;
+    var Docker, DockerCommands, Docker_cmd, Docker_logo, EMULATOR_VERSION, LOADURL, bash, commit, commit_containerid, commit_id_does_not_exist, docker_version, help, images, inspect, inspect_no_such_container, inspect_ping_container, opt, ping, ps, ps_a, ps_l, pull, pull_no_results, pull_tutorial, pull_ubuntu, push, push_container_learn_ping, push_wrong_name, run_apt_get, run_apt_get_install_iputils_ping, run_apt_get_install_unknown_package, run_cmd, run_flag_defined_not_defined, run_image_wrong_command, run_learn_no_command, run_learn_tutorial_echo_hello_world, run_notfound, run_ping_not_google, run_ping_www_google_com, run_switches, search, search_no_results, search_tutorial, search_ubuntu, strings, testing;
 
     EMULATOR_VERSION = "0.2.0";
     LOADURL = "/tutorial/api/";
@@ -36,6 +96,7 @@
     this.intermediateResults = function(string) {
       console.debug("sent " + string);
     };
+    this.docker_username = 'yourname';
     this.currentDockerPs = "";
     /*
       Base interpreter
@@ -59,6 +120,8 @@
         }, {
           prompt: '> $ '
         });
+      } else if (command === 'd') {
+        opt(term, inputs);
       } else if (command === 'r') {
         location.reload('forceGet');
       } else if (command === '#') {
@@ -80,162 +143,13 @@
         }
       } else if (command === "pull") {
         term.echo('[[b;#fff;]some text]');
-        wait(term, 5000, true);
+        utils.wait(term, 5000, true);
         alert(term.get_output());
         return;
       } else if (command) {
         term.echo("" + inputs[0] + ": command not found");
       }
       return immediateCallback(inputs);
-    };
-    /*  =======================================
-      Common utils
-    =======================================
-    */
-
-    String.prototype.beginsWith = function(string) {
-      /*
-      Check if 'this' string starts with the inputstring.
-      */
-      return this.indexOf(string) === 0;
-    };
-    Array.prototype.containsAllOfThese = function(inputArr) {
-      /*
-      This function compares all of the elements in the inputArr
-      and checks them one by one if they exist in 'this'. When it
-      finds an element to not exist, it returns false.
-      */
-
-      var me, valid;
-
-      me = this;
-      valid = false;
-      if (inputArr) {
-        valid = inputArr.every(function(value) {
-          if (me.indexOf(value) === -1) {
-            return false;
-          } else {
-            return true;
-          }
-        });
-      }
-      return valid;
-    };
-    Array.prototype.containsAllOfTheseParts = function(inputArr) {
-      /*
-      This function is like containsAllofThese, but also matches partial strings.
-      */
-
-      var me, valid;
-
-      me = this;
-      if (inputArr) {
-        valid = inputArr.every(function(value) {
-          var item, _i, _len;
-
-          for (_i = 0, _len = me.length; _i < _len; _i++) {
-            item = me[_i];
-            if (item.match(value)) {
-              return true;
-            }
-          }
-          return false;
-        });
-      }
-      return valid;
-    };
-    parseInput = function(inputs) {
-      var command, commands, imagename, input, j, parsed_input, switchArg, switchArgs, switches, _i, _len;
-
-      command = inputs[1];
-      switches = [];
-      switchArg = false;
-      switchArgs = [];
-      imagename = "";
-      commands = [];
-      j = 0;
-      for (_i = 0, _len = inputs.length; _i < _len; _i++) {
-        input = inputs[_i];
-        if (input.startsWith('-') && imagename === "") {
-          switches.push(input);
-          if (switches.length > 0) {
-            if (!['-i', '-t', '-d'].containsAllOfThese([input])) {
-              switchArg = true;
-            }
-          }
-        } else if (switchArg === true) {
-          switchArg = false;
-          switchArgs.push(input);
-        } else if (j > 1 && imagename === "") {
-          imagename = input;
-        } else if (imagename !== "") {
-          commands.push(input);
-        } else {
-
-        }
-        j++;
-      }
-      parsed_input = {
-        'switches': switches.sortBy(),
-        'switchArgs': switchArgs,
-        'imageName': imagename,
-        'commands': commands
-      };
-      return parsed_input;
-    };
-    util_slow_lines = function(term, paragraph, keyword, finishedCallback) {
-      var foo, i, lines;
-
-      if (keyword) {
-        lines = paragraph(keyword).split("\n");
-      } else {
-        lines = paragraph.split("\n");
-      }
-      term.pause();
-      i = 0;
-      foo = function(lines) {
-        return self.setTimeout((function() {
-          if (lines[i]) {
-            term.echo(lines[i]);
-            i++;
-            return foo(lines);
-          } else {
-            term.resume();
-            return finishedCallback();
-          }
-        }), 1000);
-      };
-      return foo(lines);
-    };
-    wait = function(term, time, dots) {
-      var interval_id;
-
-      term.echo("starting to wait");
-      interval_id = self.setInterval((function() {
-        return dots != null ? dots : term.insert('.');
-      }), 500);
-      return self.setTimeout((function() {
-        var output;
-
-        self.clearInterval(interval_id);
-        output = term.get_command();
-        term.echo(output);
-        return term.echo("done ");
-      }), time);
-    };
-    timestamp = function(d) {
-      var s;
-
-      if (!d) {
-        d = new Date();
-      }
-      s = function(a, b) {
-        return (1e15 + a + "").slice(-b);
-      };
-      if (typeof d === 'undefined') {
-        d = new Date();
-      }
-      return d.getFullYear() + '-' + s(d.getMonth() + 1, 2) + '-' + s(d.getDate(), 2) + ' ' + s(d.getHours(), 2) + ':' + s(d.getMinutes(), 2) + ':' + s(d.getSeconds(), 2);
     };
     /*
       Bash program
@@ -256,6 +170,14 @@
           return echo("-bash: cd: " + argument + ": No such file or directory");
         }
       }
+    };
+    /*
+      Option parser
+    */
+
+    opt = function(term, inputs) {
+      this.parserterm = term;
+      term.echo(docker_main(inputs));
     };
     /*
       Docker program
@@ -280,9 +202,9 @@
         }
       } else if (inputs[1] === "commit") {
         if (inputs.containsAllOfTheseParts(['docker', 'commit', '698', 'learn/ping'])) {
-          util_slow_lines(term, commit_containerid, "", callback);
+          utils.util_slow_lines(term, commit_containerid, "", callback);
         } else if (inputs.containsAllOfTheseParts(['docker', 'commit', '698'])) {
-          util_slow_lines(term, commit_containerid, "", callback);
+          utils.util_slow_lines(term, commit_containerid, "", callback);
           intermediateResults(0);
         } else if (inputs.containsAllOfTheseParts(['docker', 'commit']) && inputs[2]) {
           echo(commit_id_does_not_exist(inputs[2]));
@@ -315,7 +237,7 @@
         }
       } else if (inputs[1] === "push") {
         if (inputs[2] === "learn/ping") {
-          util_slow_lines(term, push_container_learn_ping, "", callback);
+          utils.util_slow_lines(term, push_container_learn_ping, "", callback);
           intermediateResults(0);
           return;
         } else if (inputs[2]) {
@@ -324,7 +246,7 @@
           echo(push);
         }
       } else if (inputs[1] === "run") {
-        parsed_input = parseInput(inputs);
+        parsed_input = utils.parseInput(inputs);
         switches = parsed_input.switches;
         swargs = parsed_input.switchArgs;
         imagename = parsed_input.imageName;
@@ -379,7 +301,7 @@
           }
         } else if (imagename === "learn/ping") {
           if (commands.containsAllOfTheseParts(["ping", "google.com"])) {
-            util_slow_lines(term, run_ping_www_google_com, "", callback);
+            utils.util_slow_lines(term, run_ping_www_google_com, "", callback);
           } else if (commands[0] === "ping" && commands[1]) {
             echo(run_ping_not_google(commands[1]));
           } else if (commands[0] === "ping") {
@@ -410,11 +332,11 @@
       } else if (inputs[1] === "pull") {
         if (keyword = inputs[2]) {
           if (keyword === 'ubuntu') {
-            result = util_slow_lines(term, pull_ubuntu, "", callback);
+            result = utils.util_slow_lines(term, pull_ubuntu, "", callback);
           } else if (keyword === 'learn/tutorial') {
-            result = util_slow_lines(term, pull_tutorial, "", callback);
+            result = utils.util_slow_lines(term, pull_tutorial, "", callback);
           } else {
-            util_slow_lines(term, pull_no_results, keyword);
+            utils.util_slow_lines(term, pull_no_results, keyword);
           }
         } else {
           echo(pull);
@@ -425,11 +347,13 @@
         auth = function(user, pass, doneFunc) {
           var data;
 
+          term.set_prompt('');
           console.log("calling remote endpoint for login");
           data = 'username=' + user + '&password=' + pass;
           return $.post(LOADURL + 'docker_login/', data, function(e) {
             result = e[0];
             console.log(result.login_successfull + " " + result.username);
+            self.docker_username = result.username;
             return doneFunc(result.login_successfull, true);
           });
         };
@@ -440,7 +364,7 @@
         };
         error = function(e) {
           console.log("login failed");
-          return echo(timestamp() + " Error: auth: Wrong login/password, please try again");
+          return echo(utils.timestamp() + " Error: auth: Wrong login/password, please try again");
         };
         term.login(auth, infinite, success, error);
         return;

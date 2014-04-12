@@ -8,6 +8,48 @@
 
 ###
 
+root = exports ? this
+
+
+class Application
+  # Application singleton for 'global state'
+
+  instance = null
+
+  class PrivateApplication
+    constructor: (@message) ->
+    echo: -> @message
+    name: ""
+    questions: []
+
+    EMULATOR_VERSION: "0.2.0"
+    COMPLETE_URL: "/whats-next/"
+
+  @get: (message) ->
+    instance ?= new PrivateApplication(message)
+
+root.Application = Application
+
+class Question
+
+  constructor: (@slug,
+                @html,
+                @tip,
+                @assignment,
+                @command_expected,
+                @command_show,
+                @result,
+                @intermediateresults
+  ) ->
+
+root.Question = Question
+
+
+
+
+
+
+
 do @myTerminal = ->
 
   # Which terminal emulator version are we
@@ -24,6 +66,8 @@ do @myTerminal = ->
   strings = $.terminal.defaults.strings
   strings.login = "Username"
   strings.password = "Password"
+
+
 
   ###
     Callback definitions. These can be overridden by functions anywhere else
@@ -43,6 +87,8 @@ do @myTerminal = ->
     console.debug("sent #{string}")
     return
 
+  @docker_username = 'yourname'
+
   @currentDockerPs = ""
 
   ###
@@ -50,6 +96,7 @@ do @myTerminal = ->
   ###
 
   @interpreter = (input, term) ->
+
     inputs = input.split(" ")
     command = inputs[0]
 
@@ -63,6 +110,9 @@ do @myTerminal = ->
         if command is 'cd'
           bash(term, inputs)
       , {prompt: '> $ '}
+
+    else if command is 'd'
+      opt(term, inputs)
 
     else if command is 'r'
       location.reload('forceGet')
@@ -91,7 +141,7 @@ do @myTerminal = ->
 
     else if command is "pull"
       term.echo '[[b;#fff;]some text]'
-      wait(term, 5000, true)
+      utils.wait(term, 5000, true)
       alert term.get_output()
 
       return
@@ -102,145 +152,6 @@ do @myTerminal = ->
 
     immediateCallback(inputs)
 
-  ###  =======================================
-    Common utils
-  =======================================  ###
-
-  String.prototype.beginsWith = (string) ->
-    ###
-    Check if 'this' string starts with the inputstring.
-    ###
-    return(this.indexOf(string) is 0)
-
-  Array.prototype.containsAllOfThese = (inputArr) ->
-    ###
-    This function compares all of the elements in the inputArr
-    and checks them one by one if they exist in 'this'. When it
-    finds an element to not exist, it returns false.
-    ###
-    me = this
-    valid = false
-
-    if inputArr
-      valid = inputArr.every( (value) ->
-        if me.indexOf(value) == -1
-          return false
-        else
-          return true
-      )
-    return valid
-
-
-  Array.prototype.containsAllOfTheseParts = (inputArr) ->
-    ###
-    This function is like containsAllofThese, but also matches partial strings.
-    ###
-
-    me = this
-    if inputArr
-      valid = inputArr.every( (value) ->
-        for item in me
-          if item.match(value)
-            return true
-
-        return false
-      )
-    return valid
-
-
-  parseInput = (inputs) ->
-    command = inputs[1]
-    switches = []
-    switchArg = false
-    switchArgs = []
-    imagename = ""
-    commands = []
-    j = 0
-
-    # parse args
-    for input in inputs
-      if input.startsWith('-') and imagename == ""
-        switches.push(input)
-        if switches.length > 0
-          if not ['-i', '-t', '-d'].containsAllOfThese([input])
-            switchArg = true
-      else if switchArg == true
-        # reset switchArg
-        switchArg = false
-        switchArgs.push(input)
-      else if j > 1 and imagename == ""
-        # match wrong names
-        imagename = input
-      else if imagename != ""
-        commands.push (input)
-      else
-        # nothing?
-      j++
-
-    parsed_input = {
-      'switches': switches.sortBy(),
-      'switchArgs': switchArgs,
-      'imageName': imagename,
-      'commands': commands,
-    }
-    return parsed_input
-
-
-  util_slow_lines = (term, paragraph, keyword, finishedCallback) ->
-
-    if keyword
-      lines = paragraph(keyword).split("\n")
-    else
-      lines = paragraph.split("\n")
-
-    term.pause()
-    i = 0
-    # function calls itself after timeout is done, untill
-    # all lines are finished
-    foo = (lines) ->
-      self.setTimeout ( ->
-        if lines[i]
-          term.echo (lines[i])
-          i++
-          foo(lines)
-        else
-          term.resume()
-          finishedCallback()
-      ), 1000
-
-    foo(lines)
-
-
-  wait = (term, time, dots) ->
-    term.echo "starting to wait"
-    interval_id = self.setInterval ( -> dots ? term.insert '.'), 500
-
-    self.setTimeout ( ->
-      self.clearInterval(interval_id)
-      output = term.get_command()
-      term.echo output
-      term.echo "done "
-    ), time
-
-  timestamp = (d) ->
-    if not d
-      d = new Date()
-
-    # padding function
-    s = (a,b) ->
-      return(1e15+a+"").slice(-b)
-
-    # default date parameter
-    if (typeof d is 'undefined')
-      d = new Date()
-
-    # return ISO datetime
-    return d.getFullYear() + '-' +
-        s(d.getMonth()+1,2) + '-' +
-        s(d.getDate(),2) + ' ' +
-        s(d.getHours(),2) + ':' +
-        s(d.getMinutes(),2) + ':' +
-        s(d.getSeconds(),2)
 
   ###
     Bash program
@@ -259,6 +170,18 @@ do @myTerminal = ->
         echo "-bash: cd: #{argument}: Permission denied"
       else
         echo "-bash: cd: #{argument}: No such file or directory"
+
+  ###
+    Option parser
+  ###
+
+  opt = (term, inputs) ->
+
+    @parserterm = term
+    term.echo docker_main(inputs)
+
+    return
+
 
   ###
     Docker program
@@ -282,9 +205,9 @@ do @myTerminal = ->
     # Command commit
     else if inputs[1] is "commit"
       if inputs.containsAllOfTheseParts(['docker', 'commit', '698', 'learn/ping'])
-        util_slow_lines(term, commit_containerid, "", callback )
+        utils.util_slow_lines(term, commit_containerid, "", callback )
       else if inputs.containsAllOfTheseParts(['docker', 'commit', '698'])
-        util_slow_lines(term, commit_containerid, "", callback )
+        utils.util_slow_lines(term, commit_containerid, "", callback )
         intermediateResults(0)
       else if inputs.containsAllOfTheseParts(['docker', 'commit']) and inputs[2]
         echo commit_id_does_not_exist(inputs[2])
@@ -318,7 +241,7 @@ do @myTerminal = ->
         echo currentDockerPs
     else if inputs[1] is "push"
       if inputs[2] is "learn/ping"
-        util_slow_lines(term, push_container_learn_ping, "", callback )
+        utils.util_slow_lines(term, push_container_learn_ping, "", callback )
         intermediateResults(0)
         return
       else if inputs[2]
@@ -330,7 +253,7 @@ do @myTerminal = ->
     # Command run
     else if inputs[1] is "run"
       # parse all input so we have a json object
-      parsed_input = parseInput(inputs)
+      parsed_input = utils.parseInput(inputs)
 
       switches = parsed_input.switches
       swargs = parsed_input.switchArgs
@@ -388,7 +311,7 @@ do @myTerminal = ->
 
       else if imagename is "learn/ping"
         if commands.containsAllOfTheseParts(["ping", "google.com"])
-          util_slow_lines(term, run_ping_www_google_com, "", callback )
+          utils.util_slow_lines(term, run_ping_www_google_com, "", callback )
         else if commands[0] is "ping" and commands[1]
           echo run_ping_not_google(commands[1])
         else if commands[0] is "ping"
@@ -417,11 +340,11 @@ do @myTerminal = ->
     else if inputs[1] is "pull"
       if keyword = inputs[2]
         if keyword is 'ubuntu'
-          result = util_slow_lines(term, pull_ubuntu, "", callback )
+          result = utils.util_slow_lines(term, pull_ubuntu, "", callback )
         else if keyword is 'learn/tutorial'
-          result = util_slow_lines(term, pull_tutorial, "", callback )
+          result = utils.util_slow_lines(term, pull_tutorial, "", callback )
         else
-          util_slow_lines(term, pull_no_results, keyword)
+          utils.util_slow_lines(term, pull_no_results, keyword)
       else
         echo pull
 
@@ -437,13 +360,16 @@ do @myTerminal = ->
 
         # clean up prompt
         term.set_prompt('')
+
         console.log "calling remote endpoint for login"
 
         data = 'username=' + user + '&password=' + pass
 
+
         $.post(LOADURL + 'docker_login/', data, (e) ->
           result = e[0]
           console.log result.login_successfull + " " + result.username
+          self.docker_username = result.username
           doneFunc(result.login_successfull, true)
         )
 
@@ -455,7 +381,7 @@ do @myTerminal = ->
 
       error = (e) ->
         console.log "login failed"
-        echo timestamp() + " Error: auth: Wrong login/password, please try again"
+        echo utils.timestamp() + " Error: auth: Wrong login/password, please try again"
 
       # Call the login function with
       term.login(auth, infinite, success, error)

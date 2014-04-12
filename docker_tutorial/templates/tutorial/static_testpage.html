@@ -1,3 +1,11 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title></title>
+</head>
+<body>
+
+
 {% load staticfiles %}
 
 <link href="{% static 'lib/css/jquery.terminal.css' %}" rel="stylesheet"/>
@@ -111,7 +119,7 @@
                 </div>
                 <!--<button id="buttonPrevious" class="docker-btn-blue docker-btn-large " >previous</button>-->
                 <button id="buttonNext" class="docker-btn-blue docker-btn-large" disabled="disabled" tabindex="0" >next</button>
-                <button id="buttodsnFinish" class="docker-btn-blue docker-btn-large hidden" tabindex="0" >Finish and see what's next!</button>
+                <button id="buttonFinish" class="docker-btn-blue docker-btn-large hidden" tabindex="0" >Finish and see what's next!</button>
             </div>
 
             <div id="feedback" class="feedback togglesize hide-when-small">
@@ -130,22 +138,21 @@
 <script src="{% static 'lib/js/sugar-1.3.9.min.js' %}"></script>
 <script src="{% static 'lib/js/optparse.js' %}"></script>
 
-<script src="{% static 'js/terminal.js' %}"></script>
-
 <script src="{% static 'js/termutils.js' %}"></script>
 <script src="{% static 'js/parser.js' %}"></script>
 <script src="{% static 'js/run.js' %}"></script>
-<script src="{% static 'js/push_pull.js' %}"></script>
 
-<script src="{% static 'js/questions.js' %}"></script>
+<script src="{% static 'js/terminal.js' %}"></script>
 <script src="{% static 'js/steps.js' %}"></script>
 
 
 <!-- temporary solution to start in fullscreen -->
 <script type="text/javascript">
 $('document').ready(function() {
-   goFullScreen();
+{#    goFullScreen();#}
 })
 
 
 </script>
+</body>
+</html>

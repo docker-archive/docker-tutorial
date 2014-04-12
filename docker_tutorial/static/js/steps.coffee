@@ -2,294 +2,18 @@
   This is the main script file. It can attach to the terminal
 ###
 
-COMPLETE_URL = "/whats-next/"
+
+app = Application.get()
 
 
 ###
   Array of question objects
 ###
 
-staticDockerPs = """
-    ID                  IMAGE               COMMAND               CREATED             STATUS              PORTS
-    """
-
-
-q = []
-q.push ({
-html: """
-      <h3>Getting started</h3>
-      <p>There are actually two programs: The Docker daemon, which is a server process and which manages all the
-      containers, and the Docker client, which acts as a remote control on the daemon. On most systems, like in this
-      emulator, both execute on the same host.</p>
-      """
-assignment: """
-      <h3>Assignment</h3>
-      <p>Check which Docker versions are running</p>
-      <p>This will help you verify the daemon is running and you can connect to it. If you see which version is running
-      you know you are all set.</p>
-      """
-tip: "<p>Try typing <code>docker</code> to see the full list of accepted arguments</p>
-      <p>This emulator provides only a limited set of shell and Docker commands, so some commands may not work as expected</p>"
-command_expected: ['docker', 'version']
-result: """<p>Well done! Let's move to the next assignment.</p>"""
-})
-
-q.push ({
-html: """
-      <h3>Searching for images</h3>
-      <p>The easiest way to get started is to use a container image from someone else. Container images are
-      available on the Docker index, a central place to store images. You can find them online at
-      <a href="#1" onClick="window.open('http://index.docker.io','Docker Index','width=1000,height=900,left=50,top=50,menubar=0')";>index.docker.io</a>
-      and by using the commandline</p>
-      """
-assignment: """
-      <h3>Assignment</h3>
-      <p>Use the commandline to search for an image called tutorial</p>
-      """
-command_expected: ['docker', 'search', 'tutorial']
-result: """<p>You found it!</p>"""
-tip: "the format is <code>docker search &lt;string&gt;</code>"
-})
-
-q.push ({
-html: """
-      <h3>Downloading container images</h3>
-      <p>Container images can be downloaded just as easily, using <code>docker pull</code>.</p>
-      <p>For images from the central index, the name you specify is constructed as &lt;username&gt;/&lt;repository&gt;</p>
-      <p>A group of special, trusted images such as the ubuntu base image can be retrieved by just their name &lt;repository&gt;.</p>
-      """
-assignment:
-      """
-      <h3>Assignment</h3>
-      <p>Please download the tutorial image you have just found</p>
-      """
-command_expected: ['docker', 'pull', 'learn/tutorial']
-result: """<p>Cool. Look at the results. You'll see that Docker has downloaded a number of layers. In Docker all images (except the base image) are made up of several cumulative layers.</p>"""
-tip: """<p>Don't forget to pull the full name of the repository e.g. 'learn/tutorial'</p>
-     <p>Look under 'show expected command if you're stuck.</p>
-     """
-})
-
-
-q.push ({
-html: """
-      <h3>Hello world from a container</h3>
-      <p>You can think about containers as a process in a box. The box contains everything the process might need, so
-      it has the filesystem, system libraries, shell and such, but by default none of it is started or run.<p>
-      <p>You 'start' a container <em>by</em> running a process in it. This process is the only process run, so when
-      it completes the container is fully stopped.
-      """
-assignment: """
-      <h3>Assignment</h3>
-      <p>Make our freshly loaded container image output "hello world"</p>
-      <p>To do so you should run 'echo' in the container and have that say "hello world"
-
-      """
-command_expected: ["docker", "run", "learn/tutorial", "echo", "hello"]
-command_show: ["docker", "run", "learn/tutorial", 'echo "hello world"']
-
-result: """<p>Great! Hellooooo World!</p><p>You have just started a container and executed a program inside of it, when
-        the program stopped, so did the container."""
-intermediateresults: [
-  () -> """<p>You seem to be almost there. Did you give the command `echo "hello world"` """,
-  () -> """<p>You've got the arguments right. Did you get the command? Try <em>/bin/bash </em>?</p>"""
-  ]
-tip: """
-     <p>The command <code>docker run</code> takes a minimum of two arguments. An image name, and the command you want to execute
-     within that image.</p>
-     <p>Check the expected command below if it does not work as expected</p>
-    """
-})
-
-q.push ({
-html: """
-      <h3>Installing things in the container</h3>
-      <p>Next we are going to install a simple program (ping) in the container. The image is based upon ubuntu, so you
-      can run the command <code>apt-get install -y ping</code> in the container. </p>
-      <p>Note that even though the container stops right after a command completes, the changes are not forgotten.</p>
-      """
-assignment: """
-      <h3>Assignment</h3>
-      <p>Install 'ping' on top of the learn/tutorial image.</p>
-      """
-command_expected: ["docker", "run", "learn/tutorial", "apt-get", "install", "-y", "ping"]
-result: """<p>That worked! You have installed a program on top of a base image. Your changes to the filesystem have been
-        kept, but are not yet saved.</p>"""
-intermediateresults: [
-  () -> """<p>Not specifying -y on the apt-get install command will work for ping, because it has no other dependencies, but
-  it will fail when apt-get wants to install dependencies. To get into the habit, please add -y after apt-get.</p>""",
-]
-tip: """
-     <p>Don't forget to use -y for noninteractive mode installation</p>
-     <p>Not specifying -y on the apt-get install command will fail for most commands because it expects you to accept
-     (y/n) but you cannot respond.
-     </p>
-     """
-})
-
-q.push ({
-html: """
-      <h3>Save your changes</h3>
-      <p>After you make changes (by running a command inside a container), you probably want to save those changes.
-      This will enable you to later start from this point onwards.</p>
-      <p>With Docker, the process of saving the state is called <em>committing</em>. Commit basically saves the difference
-      between the old image and the new state. The result is a new layer.</p>
-      """
-assignment: """
-      <h3>Assignment</h3>
-      <p>First use <code>docker ps -l</code> to find the ID of the container you created by installing ping.</p>
-      <p>Then save (commit) this container with the repository name 'learn/ping' </p>
-      """
-command_expected: ["docker", "commit", "698", "learn/ping"]
-command_show: ["docker", "commit", "698", 'learn/ping']
-result: """<p>That worked! Please take note that Docker has returned a new ID. This id is the <em>image id</em>.</p>"""
-intermediateresults: [ () -> """You have not specified the correct repository name to commit to (learn/ping). This works, but giving your images a name
-                      makes them much easier to work with."""]
-tip: """<ul>
-     <li>Giving just <code>docker commit</code> will show you the possible arguments.</li>
-     <li>You will need to specify the container to commit by the ID you found</li>
-     <li>You don't need to copy (type) the entire ID. Three or four characters are usually enough.</li>
-     </ul>"""
-})
-
-
-q.push ({
-html: """
-      <h3>Run your new image</h3>
-      <p>Now you have basically setup a complete, self contained environment with the 'ping' program installed. </p>
-      <p>Your image can now be run on any host that runs Docker.</p>
-      <p>Lets run this image on this machine.</p>
-      """
-assignment: """
-      <h3>Assignment</h3>
-      <p>Run the ping program to ping www.google.com</p>
-
-      """
-command_expected: ["docker", "run", 'learn/ping', 'ping', 'google.com' ]
-result: """<p>That worked! Note that normally you can use Ctrl-C to disconnect. The container will keep running. This
-        container will disconnect automatically.</p>"""
-intermediateresults: [ () -> """You have not specified a repository name. This is not wrong, but giving your images a name
-                      make them much easier to work with."""]
-tip: """<ul>
-     <li>Make sure to use the repository name learn/ping to run ping with</li>
-     </ul>"""
-})
-
-
-
-
-q.push ({
-html: """
-      <h3>Check your running image</h3>
-      <p>You now have a running container. Let's see what is going on.</p>
-      <p>Using <code>docker ps</code> we can see a list of all running containers, and using <code>docker inspect</code>
-      we can see all sorts of useful information about this container.</p>
-      """
-assignment: """
-      <h3>Assignment</h3>
-      <p><em>Find the container id</em> of the running container, and then inspect the container using <em>docker inspect</em>.</p>
-
-      """
-command_expected: ["docker", "inspect", "efe" ]
-result: """<p>Success! Have a look at the output. You can see the ip-address, status and other information.</p>"""
-intermediateresults: [ () -> """You have not specified a repository name. This is not wrong, but giving your images a name
-                      make them much easier to work with."""]
-tip: """<ul>
-     <li>Remember you can use a partial match of the image id</li>
-     </ul>"""
-currentDockerPs:
-    """
-    ID                  IMAGE               COMMAND               CREATED             STATUS              PORTS
-    efefdc74a1d5        learn/ping:latest   ping www.google.com   37 seconds ago      Up 36 seconds
-    """
-})
-
-q.push ({
-html: """<h3>Login</h3>
-         <p>Docker provides a unified point of authentication for all your services. Your <em>Docker</em> account. </p>
-         <a href="#8" onclick="window.open('http://www.docker.io/account/signup/','Docker','width=1000,height=900,left=50,top=50,menubar=0')">www.docker.io/account/signup/</a>
-      """
-assignment: """
-      <h3>Assignment</h3>
-      <p>Create an account and login.</p>
-
-      """
-command_expected: ["docker", "login"]
-result: """<p>Great!</p>"""
-tip:  """<ul><li>Go to www.docker.com to create your account</li></ul>"""
-
-})
-
-
-q.push ({
-html: """
-      <h3>Push your image to the index</h3>
-      <p>Now you have verified that your application container works, you can share it.</p>
-      <p>Remember you pulled (downloaded) the learn/tutorial image from the index? You can also share your built images
-      to the index by pushing (uploading) them to there. That way you can easily retrieve them for re-use and share them
-      with others. </p>
-      """
-assignment: """
-      <h3>Assignment</h3>
-      <p>Push your container image learn/ping to the index</p>
-
-      """
-#command_expected: ["docker", "push", "learn/ping"]
-command_expected: ["will_never_be_valid"]
-command_show: ["docker", "push", "learn/ping"]
-result: """"""
-intermediateresults:
-  [
-    () ->
-      $('#instructions .assignment').hide()
-      $('#tips, #command').hide()
-
-      $('#instructions .text').html("""
-        <div class="complete">
-          <h3>Congratulations!</h3>
-          <p>You have mastered the basic docker commands!</p>
-          <p><strong>Did you enjoy this tutorial? Share it!</strong></p>
-          <p>
-            <a href="mailto:?Subject=Check%20out%20the%20Docker%20interactive%20tutorial!&Body=%20https://www.docker.io/gettingstarted/"><img src="/static/img/email.png"></a>
-            <a href="http://www.facebook.com/sharer.php?u=https://www.docker.io/gettingstarted/"><img src="/static/img/facebook.png"></a>
-            <a href="http://twitter.com/share?url=https://www.docker.io/gettingstarted/&text=%20Check+out+the+docker+tutorial!"><img src="/static/img/twitter.png"></a>
-          </p>
-          <h3>Your next steps</h3>
-          <ol>
-            <li><a href="/news_signup/" target="_blank" >Register</a> for news and updates on Docker (opens in new window)</li>
-            <li><a href="http://twitter.com/docker" target="_blank" >Follow</a> us on twitter (opens in new window)</li>
-            <li><a href="#" onClick="leaveFullSizeMode()">Close</a> this tutorial, and continue with the rest of the getting started.</li>
-          </ol>
-          <p> - Or - </p>
-          <p>Continue to learn about the way to automatically build your containers from a file. </p><p><a href="/learn/dockerfile/" class='btn btn-primary secondary-action-button'>Start Dockerfile tutorial</a></p>
-
-        </div>
-        """)
-
-
-      data = { type: EVENT_TYPES.complete }
-      logEvent(data)
-
-      return """<p>All done!. You are now pushing a container image to the index. You can see that push, just like pull, happens layer by layer.</p>"""
-  ]
-tip: """<ul>
-     <li><code>docker images</code> will show you which images are currently on your host</li>
-     <li><code>docker push</code>is the command to push images</li>
-     <li>You can only push images to your own namespace, this emulator is logged in as user 'learn'</li>
-
-     </ul>"""
-finishedCallback: () ->
-  webterm.clear()
-  webterm.echo( myTerminal() )
-
-
-})
-
+q = app.questions
 
 # the index arr
 questions = []
-
-
 
 
 ###
@@ -297,8 +21,6 @@ questions = []
 ###
 
 @webterm = $('#terminal').terminal(interpreter, basesettings)
-
-
 
 
 EVENT_TYPES =
@@ -317,6 +39,8 @@ EVENT_TYPES =
 ###
 
 logEvent = (data, feedback) ->
+
+  if LOG_EVENTS?
     ajax_load = "loading......"
     loadUrl = "/tutorial/api/"
     if not feedback
@@ -350,7 +74,7 @@ $('#buttonNext').click (e) ->
   next()
 
 $('#buttonFinish').click ->
-  window.open(COMPLETE_URL)
+  window.open(app.COMPLETE_URL)
 
 ## previous
 $('#buttonPrevious').click ->
@@ -470,12 +194,20 @@ previous = () ->
 
 results = {
   set: (htmlText, intermediate) ->
+
     if intermediate
       console.debug "intermediate text received"
       $('#results').addClass('intermediate')
       $('#buttonNext').hide()
     else
       $('#buttonNext').show()
+
+    setTimeout( ( ->
+      # disable the webterm so it doesn't keep focus
+      @webterm.disable()
+      # focus on the button
+      $('#buttonNext').focus()
+    ), 1000)
 
     window.setTimeout ( () ->
       $('#resulttext').html(htmlText)
@@ -509,49 +241,65 @@ buildfunction = (q) ->
     else
       $('#commandShownText').html(_q.command_expected.join(' '))
 
-    if _q.currentDockerPs?
-      window.currentDockerPs = _q.currentDockerPs
-    else
-      window.currentDockerPs = staticDockerPs
+#    if _q.currentDockerPs?
+#      window.currentDockerPs = _q.currentDockerPs
+#    else
+#      window.currentDockerPs = staticDockerPs
 
     if _q.finishedCallback?
       window.finishedCallback = q.finishedCallback
     else
       window.finishedCallback = () -> return ""
 
-    window.immediateCallback = (input, stop) ->
-      if stop == true # prevent the next event from happening
-        doNotExecute = true
-      else
-        doNotExecute = false
-
-      if doNotExecute != true
-        console.log (input)
-
-        data = { 'type': EVENT_TYPES.command, 'command': input.join(' '), 'result': 'fail' }
-
-        # Was like this:  if not input.switches.containsAllOfThese(_q.arguments)
-        if input.containsAllOfTheseParts(_q.command_expected)
-          data.result = 'success'
-
-          setTimeout( ( ->
-            @webterm.disable()
-            $('#buttonNext').focus()
-          ), 1000)
-
-          results.set(_q.result)
-          console.debug "contains match"
-        else
-          console.debug("wrong command received")
-
-        # call function to submit data
-        logEvent(data)
-      return
+#    window.immediateCallback = (input, stop) ->
+#      if stop == true # prevent the next event from happening
+#        doNotExecute = true
+#      else
+#        doNotExecute = false
+#
+#      if doNotExecute != true
+#        console.log (input)
+#
+#        data = { 'type': EVENT_TYPES.command, 'command': input.join(' '), 'result': 'fail' }
+#
+#        if input.containsAllOfTheseParts(_q.command_expected)
+#          data.result = 'success'
+#
+#          setTimeout( ( ->
+#            @webterm.disable()
+#            $('#buttonNext').focus()
+#          ), 1000)
+#
+#          results.set(_q.result)
+#          console.debug "contains match"
+#        else
+#          console.debug("wrong command received")
+#
+#        # call function to submit data
+#        logEvent(data)
+#      return
 
     window.intermediateResults = (input) ->
       if _q.intermediateresults
         results.set(_q.intermediateresults[input](), intermediate=true)
+
+
+
+    # callback with named question
+    window.questionAnswered = (input) ->
+      results.set(_q.result)
+
+#      if _q.slug is input
+#        alert "and it was the right question!"
+#      else
+#        alert """
+#          question #{input} answered, it was the wrong question,
+#          we were looking for question #{_q.slug}
+#          """
+
     return
+
+
 
 
 statusMarker = $('#progress-marker-0')
