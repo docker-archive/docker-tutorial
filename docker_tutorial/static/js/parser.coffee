@@ -8,7 +8,6 @@ ARGS = ['-p', 'This is a message', '-i', 'test.html', '--debug'];
 
 @docker_main = (ARGS) ->
 
-
   SWITCHES = [
     ['-H', '--H', '[unix:///var/run/docker.sock]: tcp://host:port to bind/connect to or unix://path/to/socket to use'],
   ]

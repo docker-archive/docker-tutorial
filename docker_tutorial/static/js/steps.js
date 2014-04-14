@@ -13,6 +13,7 @@
     Array of question objects
   */
 
+
   q = app.questions;
 
   questions = [];

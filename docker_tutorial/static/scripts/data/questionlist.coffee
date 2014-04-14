@@ -1,8 +1,13 @@
-app = Application.get()
+
+
+q = ['blah']
+
+define [], () ->
+
+  return q
 
 
 ## 0
-q = app.questions
 
 q.push ({
 slug: "docker-version"

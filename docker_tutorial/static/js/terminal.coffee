@@ -28,6 +28,12 @@ class Application
   @get: (message) ->
     instance ?= new PrivateApplication(message)
 
+      # callback with named question
+  @questionAnswered = (input) ->
+      results.set(_q.result)
+
+
+
 root.Application = Application
 
 class Question

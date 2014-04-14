@@ -148,4 +148,3 @@ root.utils =
         s(d.getHours(),2) + ':' +
         s(d.getMinutes(),2) + ':' +
         s(d.getSeconds(),2)
-

@@ -288,17 +288,7 @@ buildfunction = (q) ->
     # callback with named question
     window.questionAnswered = (input) ->
       results.set(_q.result)
-
-#      if _q.slug is input
-#        alert "and it was the right question!"
-#      else
-#        alert """
-#          question #{input} answered, it was the wrong question,
-#          we were looking for question #{_q.slug}
-#          """
-
     return
-
 
 
 

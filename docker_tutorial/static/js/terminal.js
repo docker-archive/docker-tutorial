@@ -46,6 +46,10 @@
       return instance != null ? instance : instance = new PrivateApplication(message);
     };
 
+    Application.questionAnswered = function(input) {
+      return results.set(_q.result);
+    };
+
     return Application;
 
   })();
