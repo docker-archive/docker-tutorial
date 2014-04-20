@@ -59,7 +59,7 @@ define ['require', 'parsers/run', 'parsers/utils'], ( require, DockerRun, utils 
         @term.echo docker_version()
         return {'answered': 'docker-version'}
 
-      if @args.command is 'search' and @args.search_term not in ['tutorial', 'ubuntu']
+      if @args.command is 'search' and @args.search_term not in ['tutorial', 'ubuntu', 'learn']
         @term.echo search_no_results(@args.search_term)
         return {}
 

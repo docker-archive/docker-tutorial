@@ -4,6 +4,9 @@ root = exports ? this
 
 require.config({
   baseUrl: '/static/js',
+  paths: {
+        lib: '/static/lib/js'
+    }
 
 });
 
@@ -12,23 +15,34 @@ require ['models/question',
          'controller',
          'views/main',
          'views/terminal',
-         'parsers/main'], \
+         'parsers/main',
+         'lib/domReady'], \
             (Question,
             questionList,
             Controller,
             View,
             TerminalView,
-            Parser) ->
+            Parser,
+            domReady) ->
+
+  settings = {
+      "debug": true
+  }
 
   class App
+
     constructor: () ->
       log("constructor called")
       @Question = new Question()
-      @view = new View()
-      @controller = new Controller(view = @view, model = @model, @questionlist = questionList)
-
+#      @view = new View(settings)
+      @controller = new Controller(@questionlist = questionList, @settings = settings )
       @Parser = Parser
 
+      # if we're debuggin we want fullscreen
+      if settings.debug is true
+        @controller.goFullScreen()
+
+    # log function
     log = (logline) ->
       console.log("App: " + logline)
 
