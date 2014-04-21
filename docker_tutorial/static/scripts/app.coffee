@@ -1,3 +1,14 @@
+###
+  Please note the javascript is being fully generated from coffeescript.
+  So make your changes in the .coffee file.
+  Thatcher Peskens
+         _
+      ,_(')<
+      \___)
+
+###
+
+
 root = exports ? this
 
 @app = root.app || {}

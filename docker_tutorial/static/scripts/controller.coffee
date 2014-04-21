@@ -3,38 +3,57 @@ define ['models/Question', 'views/main', 'views/terminal', 'parsers/main'], ( Qu
   class Controller
 
     questions: []
+    lastQuestionNumber: null
     currentQuestionNumber: 0
     currentQuestion: {}
 
     constructor: (@questionList, @settings) ->
       log('constructor called')
-#      @initializeQuestions()
 
-#      @webterm = $('#terminal').terminal(interpreter, basesettings)
       @terminalView = new TerminalView(@interpreter)
       @applicationView = new ApplicationView(@settings, @terminalView, this)
 
+      # Detect if we start on a different version and start the program there if so.
+      if (window.location.hash)
+        try
+          @currentQuestionNumber = window.location.hash.split('#')[1].toNumber()
+#          console.warn({ error: err, description: "location hash invalid"})
+        catch err
+          console.warn({ error: err, description: "location hash invalid"})
+
+      questionNumber = 0
+      for question in @questionList
+        @applicationView.drawStatusMarker(questionNumber)
+        questionNumber++
 
       console.log(@questionList)
-      @next()
+      @next(@currentQuestionNumber)
+
 
     log = (logline) ->
       console.log("Controller: +" + logline)
 
 
-    next: () ->
+    next: (i) ->
+      @currentQuestionNumber = i
 
       @currentQuestion = @questionList[@currentQuestionNumber]
       @applicationView.render(@currentQuestion)
 
-      @currentQuestionNumber++
+      # enable history navigation
+      history.pushState({}, "", "#" + @currentQuestionNumber);
 
       @terminalView.focus()
+
+      # lastly, when all updates are complete, update lastQuestionNumber
+      @lastQuestionNumber = @currentQuestionNumber
+
 
     goFullScreen: () ->
       @applicationView.goFullScreen()
       @terminalView.resize()
       return
+
 
     leaveFullScreen: () ->
       @applicationView.leaveFullScreen()

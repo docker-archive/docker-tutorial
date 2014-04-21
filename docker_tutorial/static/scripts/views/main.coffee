@@ -2,9 +2,6 @@ define [], () ->
 
   class View
 
-
-    @current_question: 0
-
     constructor: (settings, @terminalView, @controller) ->
       log("constructor called")
       _this = this
@@ -26,7 +23,7 @@ define [], () ->
       ## click next button
       $('#buttonNext').click ->
         this.setAttribute('disabled', 'disabled')
-        _this.controller.next()
+        _this.controller.next(_this.controller.currentQuestionNumber + 1)
         return
 
       ## Stop mousewheel on left side, and manually move it.
@@ -85,58 +82,9 @@ define [], () ->
       $('.hide-when-small').css({ display: 'none' })
       $('.hide-when-full').css({ display: 'inherit' })
 
-    ###
-      Navigation amongst the questions
-    ###
-
-    next: (which) =>
-      # before increment clear style from previous question progress indicator
-      $('#marker-' + current_question).addClass("complete").removeClass("active")
-
-      if not which and which != 0
-        current_question++
-      else
-        current_question = which
-
-#      @render(current_question)
-
-#      @questions[current_question]()
-#      results.clear()
-#      @webterm.focus()
-
-      if not $('#commandShownText').hasClass('hidden')
-        $('#commandShownText').addClass("hidden")
-        $('#commandHiddenText').removeClass("hidden").show()
-
-      # enable history navigation
-      history.pushState({}, "", "#" + current_question);
-#      data = { 'type': EVENT_TYPES.next }
-#      logEvent(data)
-
-      # change the progress indicator
-      $('#marker-' + current_question).removeClass("complete").addClass("active")
-
-      $('#question-number').find('text').get(0).textContent = current_question
-
-      # show in the case they were hidden by the complete step.
-      $('#instructions .assignment').show()
-      $('#tips, #command').show()
-
-
-      return
-
-    previous = () ->
-      current_question--
-      questions[current_question]()
-      results.clear()
-      @webterm.focus()
-      return
-
-
-
 
     ###
-      Transform question objects into functions
+      Functions for DOM manipulation
     ###
 
     render: (q) =>
@@ -151,21 +99,33 @@ define [], () ->
       $('#instructions .assignment').html(_q.assignment)
       $('#tipShownText').html(_q.tip)
 
+      if _q.command_show
+        $('#commandShownText').html(_q.command_show.join(' '))
+      else
+        $('#commandShownText').html(_q.command_expected.join(' '))
 
-      window.intermediateResults = (input) ->
-        if _q.intermediateresults
-          results.set(_q.intermediateresults[input](), intermediate=true)
+
+      # update markers
+      $('#marker-' + @controller.lastQuestionNumber).addClass("complete").removeClass("active")
+      $('#marker-' + @controller.currentQuestionNumber).addClass("active")
+
+#
+#      window.intermediateResults = (input) ->
+#        if _q.intermediateresults
+#          results.set(_q.intermediateresults[input](), intermediate=true)
+#
+#      # callback with named question
+#      window.questionAnswered = (input) ->
+#        results.set(_q.result)
+
+      $('#commandShownText').addClass("hidden")
+      $('#commandHiddenText').removeClass("hidden").show()
 
 
-
-      # callback with named question
-      window.questionAnswered = (input) ->
-        results.set(_q.result)
       return
 
 
     show_results_dialog: (htmlText, intermediate) =>
-
       if intermediate
         console.debug "intermediate text received"
         $('#results').addClass('intermediate')
@@ -189,6 +149,23 @@ define [], () ->
     clear_results_dialog: () ->
       $('#resulttext').html("")
       $('#results').fadeOut('slow')
+
+
+    # Question navigation
+
+    statusMarker: $('#progress-marker-0')
+    progressIndicator: $('#progress-indicator')
+
+    drawStatusMarker: (i) =>
+      if i == 0
+        marker = @statusMarker
+      else
+        marker = @statusMarker.clone()
+        marker.appendTo(@progressIndicator)
+
+      marker.attr("id", "marker-" + i)
+      marker.find('text').get(0).textContent = i
+      marker.click( => @controller.next(i) )
 
   return View
 
