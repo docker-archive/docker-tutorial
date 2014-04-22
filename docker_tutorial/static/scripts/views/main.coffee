@@ -1,8 +1,8 @@
-define [], () ->
+define ['settings'], (settings) ->
 
-  class View
+  class ApplicationView
 
-    constructor: (settings, @terminalView, @controller) ->
+    constructor: (@terminalView, @controller) ->
       log("constructor called")
       _this = this
 
@@ -23,7 +23,7 @@ define [], () ->
       ## click next button
       $('#buttonNext').click ->
         this.setAttribute('disabled', 'disabled')
-        _this.controller.next(_this.controller.currentQuestionNumber + 1)
+        _this.controller.setQuestion(_this.controller.currentQuestionNumber + 1)
         return
 
       ## Stop mousewheel on left side, and manually move it.
@@ -34,19 +34,20 @@ define [], () ->
         )
 
       ## submit feedback
-      $('#feedbackSubmit').click ->
+      $('#feedbackSubmit').click =>
         feedback = $('#feedbackInput').val()
-        data = { type: EVENT_TYPES.feedback, feedback: feedback}
-        logEvent(data, feedback=true)
+        data = { type: settings.EVENT_TYPES.feedback, feedback: feedback}
+        @controller.logEvent(data, feedback=true)
 
       ## click on tips
-      $('#command').click () ->
+      $('#command').click () =>
         if not $('#commandHiddenText').hasClass('hidden')
           $('#commandHiddenText').addClass("hidden").hide()
           $('#commandShownText').hide().removeClass("hidden").fadeIn()
 
-        data = { type: EVENT_TYPES.peek }
-        logEvent(data)
+        data = { type: settings.EVENT_TYPES.peek }
+        @controller.logEvent(data)
+        return
 
 
 
@@ -121,7 +122,6 @@ define [], () ->
       $('#commandShownText').addClass("hidden")
       $('#commandHiddenText').removeClass("hidden").show()
 
-
       return
 
 
@@ -165,9 +165,9 @@ define [], () ->
 
       marker.attr("id", "marker-" + i)
       marker.find('text').get(0).textContent = i
-      marker.click( => @controller.next(i) )
+      marker.click( => @controller.setQuestion(i) )
 
-  return View
+  return ApplicationView
 
 
 

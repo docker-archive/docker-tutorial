@@ -2,7 +2,7 @@
   Main Docker command parser
 ###
 
-define ['require', 'parsers/run', 'parsers/utils'], ( require, DockerRun, utils ) ->
+define ['require', 'parsers/utils', 'parsers/run', 'parsers/pull'], ( require, utils, DockerRun, DockerPull) ->
 
   class Parser
     parser: {}
@@ -10,7 +10,11 @@ define ['require', 'parsers/run', 'parsers/utils'], ( require, DockerRun, utils 
     term: {}
     args: {}
 
-    constructor: (@input, @term) ->
+    constructor: (@raw_input, @term) ->
+
+      # Drop all input to lowercase
+      for item in @raw_input
+        @input.push item.toLowerCase()
 
       SWITCHES = [
         ['-H', '--H', '[unix:///var/run/docker.sock]: tcp://host:port to bind/connect to or unix://path/to/socket to use'],
@@ -32,7 +36,7 @@ define ['require', 'parsers/run', 'parsers/utils'], ( require, DockerRun, utils 
           return
       )
 
-      @optparser.parse(input)
+      @optparser.parse(@input)
       return this
 
 
@@ -46,13 +50,14 @@ define ['require', 'parsers/run', 'parsers/utils'], ( require, DockerRun, utils 
 #        return new DockerRun(@input, @term).run()
 
       if @args.command is 'push'
-        return docker_push(ARGS)
+        return docker_push(@input)
 
       if @args.command is 'pull'
-        return docker_pull(ARGS)
+        dockerPull = new DockerPull(@input, @term)
+        return dockerPull.run()
 
       ### simple 'local' parsers ###
-      if @args.command is 'test'
+      if @args.command is 'time'
         @term.echo utils.timestamp
 
       if @args.command is 'version'
