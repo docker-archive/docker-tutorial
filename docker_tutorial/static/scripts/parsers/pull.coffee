@@ -7,17 +7,19 @@ define ['parsers/utils'], (utils) ->
 
     constructor: (@input, @term) ->
 
-      SWITCHES = [
-        ['-t', '--tag', 'Download tagged image in repository']
-      ]
+      @args = {}
+
+      SWITCHES = [ ]
 
       @optparser = new optparse.OptionParser(SWITCHES)
       @optparser.banner =
       """
+
       Usage: docker pull NAME
 
       Pull an image or a repository from the registry
       """
+      @optparser.options_title = null
 
       # prep the parser
       @optparser.on(2, (value) =>
@@ -28,7 +30,7 @@ define ['parsers/utils'], (utils) ->
       # parse it
       @optparser.parse(@input)
 
-    run: () =>
+    run: () ->
 
       if not @args.image?
         @term.echo @optparser.toString()
@@ -44,7 +46,7 @@ define ['parsers/utils'], (utils) ->
         setTimeout two, 1000
         setTimeout three, 2000
 
-        return ""
+        return {}
 
       if @args.image is 'learn/tutorial'
         one = => @term.echo @pull_ubuntu_1
@@ -53,12 +55,18 @@ define ['parsers/utils'], (utils) ->
 
         done = => questionAnswered('docker-pull')
 
-        setTimeout one, 1000
-        setTimeout two, 2000
-        setTimeout three, 3000
-        setTimeout done, 3400
+        setTimeout one,   200
+        setTimeout two,   1000
+        setTimeout three, 2000
+        setTimeout done,  2400
 
-        return ""
+        return {'answered': 'docker-pull'}
+
+      if @args.image?
+
+        one = => @term.echo @pull_no_results(@args.image)
+        setTimeout one, 600
+        return {}
 
 
     ###
@@ -72,6 +80,7 @@ define ['parsers/utils'], (utils) ->
       """
 
     pull_ubuntu_1: -> """
+      Pulling repository learn/tutorial
       58394af37342: Downloading [=============>                                     ] 30.65 MB/117.4 MB 18s
       """
 

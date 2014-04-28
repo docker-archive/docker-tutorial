@@ -4,7 +4,7 @@ define ['models/Question', 'views/main', 'views/terminal', 'parsers/main', 'sett
 
     questions: null
     lastQuestionNumber: null
-    currentQuestionNumber: null
+    currentQuestionNumber: 0
     currentQuestion: null
 
     constructor: (@questionList) ->
@@ -14,7 +14,7 @@ define ['models/Question', 'views/main', 'views/terminal', 'parsers/main', 'sett
       @applicationView = new ApplicationView(@terminalView, this)
 
 
-      # Detect if we start on a different version and start the program there if so.
+      # Detect if we start on a different question and start the program there if so.
       if (window.location.hash)
         @currentQuestionNumber = window.location.hash.split('#')[1].toNumber()
         if isNaN(@currentQuestionNumber)

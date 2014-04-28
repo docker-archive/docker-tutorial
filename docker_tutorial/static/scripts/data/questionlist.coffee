@@ -49,6 +49,7 @@ tip: "the format is <code>docker search &lt;string&gt;</code>"
 
 ## 2
 q.push ({
+slug: "docker-pull"
 html: """
       <h3>Downloading container images</h3>
       <p>Look at the output. You have found a repository called learn/tutorial. Using <code>docker pull</code>
@@ -73,6 +74,7 @@ tip: """<ul><li>Make sure to pull the full name of the repository e.g. 'learn/tu
 
 ## 3
 q.push ({
+slug: "hello-world"
 html: """
       <h3>Hello world from a container</h3>
       <p>You can think about containers as a process in a box. The box contains everything the process might need, so
@@ -104,17 +106,18 @@ tip: """
 
 ## 4
 q.push ({
+slug: "install-fortunes"
 html: """
       <h3>Installing things in the container</h3>
-      <p>Next we are going to install a simple program (ping) in the container. The image is based upon ubuntu, so you
-      can run the command <code>apt-get install -y ping</code> in the container. </p>
+      <p>Next we are going to install a simple program with happy quotes (fortunes) in the container. The image is based upon ubuntu, so you
+      can run the command <code>apt-get install -y fortunes</code> in the container. </p>
       <p>Note that even though the container stops right after a command completes, the changes are not forgotten.</p>
       """
 assignment: """
       <h3>Assignment</h3>
-      <p>Install 'ping' on top of the ubuntu image.</p>
+      <p>Install the program 'fortunes' on top of the ubuntu image.</p>
       """
-command_expected: ["docker", "run", "ubuntu", "apt-get", "install", "-y", "ping"]
+command_expected: ["docker", "run", "ubuntu", "apt-get", "install", "-y", "fortunes"]
 result: """<p>That worked! You have installed a program on top of a base image. Your changes to the filesystem have been
         kept, but are not yet saved.</p>"""
 intermediateresults: [
@@ -131,6 +134,7 @@ tip: """
 
 ## 5
 q.push ({
+slug: "ps-latest"
 html: """
       <h3>Save your changes</h3>
       <p>After you make changes (by running a command inside a container), you probably want to save those changes.
@@ -155,6 +159,8 @@ tip: """<ul>
      </ul>"""
 })
 
+###
+
 ## 6
 q.push ({
 html: """
@@ -176,6 +182,8 @@ tip: """<ul>
      <li>You will need to specify the <em>image</em> id this time. Later you will learn how to give it a name instead.</li>
      </ul>"""
 })
+###
+
 
 ## 7
 q.push ({

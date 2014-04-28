@@ -10,26 +10,57 @@ define ['parsers/utils'], ( utils ) ->
     term: null
     args: null
 
+    valid_images: ['ubuntu', 'learn/tutorial']
+
+
     constructor: (@input, @term) ->
 
+      @args = {}
+
       SWITCHES = [
-        ['-P', '--publish-all', '=false: Publish all exposed ports to the host interfaces'],
-        ['-a', '--attach []', 'Attach to stdin, stdout or stderr.'],
-        ['--cidfile ""', 'Write the container ID to the file']
+        ['-P', '--publish-all', 'Publish all exposed ports to the host interfaces'],
+        ['-a', '--attach', 'Attach to stdin, stdout or stderr.'],
+        ['--cidfile', 'Write the container ID to the file'],
+        ['-d', '--detach', 'Detached mode: Run container in the background, print new container id'],
+        ['--dns', 'Set custom dns servers'],
+        ['--dns-search', 'Set custom dns search domains'],
+        ['-e', '--env', 'Set environment variables'],
+#         ['--entrypoint="": Overwrite the default entrypoint of the image
+#         ['--env-file=[]: Read in a line delimited file of ENV variables
+#         ['--expose=[]: Expose a port from the container without publishing it to your host
+#         ['-h, --hostname="": Container host name
+#         ['-i, --interactive=false: Keep stdin open even if not attached
+#         ['--link=[]: Add link to another container (name:alias)
+#         ['--lxc-conf=[]: (lxc exec-driver only) Add custom lxc options --lxc-conf="lxc.cgroup.cpuset.cpus = 0,1"
+#         ['-m, --memory="": Memory limit (format: <number><optional unit>, where unit = b, k, m or g)
+#         ['-n, --networking=true: Enable networking for this container
+#         ['--name="": Assign a name to the container
+#         ['-p, --publish=[]: Publish a container's port to the host (format: ip:hostPort:containerPort | ip::containerPort | hostPort:containerPort) (use 'docker port' to see the actual mapping)
+#         ['-P, --publish-all=false: Publish all exposed ports to the host interfaces
+#         ['--privileged=false: Give extended privileges to this container
+#         ['--rm=false: Automatically remove the container when it exits (incompatible with -d)
+#         ['--sig-proxy=true: Proxify all received signal to the process (even in non-tty mode)
+#         ['-t, --tty=false: Allocate a pseudo-tty
+#         ['-u, --user="": Username or UID
+#         ['-v, --volume=[]: Bind mount a volume (e.g. from the host: -v /host:/container, from docker: -v /container)
+#         ['--volumes-from=[]: Mount volumes from the specified container(s)
+#         ['-w, --workdir="": Working directory inside the container
+
       ]
 
       @optparser = new optparse.OptionParser(SWITCHES)
       @optparser.banner =
       """
+
       Usage: docker run [OPTIONS] IMAGE [COMMAND] [ARG...]
 
       Run a command in a new container
       """
+      @optparser.options_title = null
 
       # prep the parser
       @optparser.on(2, (value) =>
         ### Get the image name ###
-        @term.echo "parser.on(2, (#{value}) ->"
         @args.image = value
       )
 
@@ -55,13 +86,26 @@ define ['parsers/utils'], ( utils ) ->
       console.log ("@args: ")
       console.log (@args)
 
-      if not @args.image
-        @term.echo @parser.toString()
+      if not @args.image?
+        @term.echo @optparser.toString()
+        return {}
 
-      if @args.image is 'ubuntu' and not @args.cmd
-        @term.echo run_no_command
+      if @args.image not in @valid_images
+        @term.echo run_notfound(@args.image)
+        return {}
 
-      if @args.image is 'ubuntu' and @args.cmd.containsAllOfThese(['apt-get', 'install'])
+      if not @args.cmd?
+        @term.echo run_no_command()
+        return {}
+
+      if @args.cmd[0] is 'echo'
+        string = @args.cmd.slice(1,).join(" ")
+        match = string.match(/\w+|(?:\\"|[^"])"+/g)
+        output = match.join(" ")
+        @term.echo run_echo(output)
+        return {'answered': 'hello-world'}
+
+      if @args.cmd.containsAllOfThese(['apt-get', 'install'])
         ### parse apt-get install and return the value ###
         program = ''
         dashyeserror = true
@@ -74,19 +118,28 @@ define ['parsers/utils'], ( utils ) ->
 
         if dashyeserror
           @term.echo run_apt_get_install_without_y()
+          return {}
+
         if program is 'fortunes'
           @term.echo run_apt_get_install_fortunes()
+          return {'answered': 'install-fortunes'}
+
         else
           @term.echo run_apt_get_install_unknown_package(program)
+          return {}
 
       if @args.image is 'ubuntu' and @args.cmd.containsAllOfThese(['apt-get'])
         @term.echo run_apt_get
-      else
+        return {}
+
+      if @args.cmd is 'ls'
+        @term.echo run_ls()
+        return {}
+
+      if @args.cmd
+        ### Let's implement some other (shell) commands ###
         @term.echo run_image_wrong_command(@args.cmd[0])
-
-      return {}
-
-
+        return {}
 
 
     ###
@@ -224,13 +277,17 @@ define ['parsers/utils'], ( utils ) ->
       Do you want to continue [Y/n]? Abort.
       """
 
+    run_echo = (keyword) ->
+      """
+      #{keyword}
+      """
 
     run_flag_defined_not_defined = (keyword) ->
       """
       #{utils.timestamp()} flag provided but not defined: #{keyword}
       """
 
-    run_no_command = () ->
+    run_no_command = ->
       """
       #{utils.timestamp()} Error: No command specified
       """
@@ -242,6 +299,28 @@ define ['parsers/utils'], ( utils ) ->
         string += ("#{command} ")
       return string
 
+    run_ls = ->
+      """
+      bin
+      boot
+      dev
+      etc
+      home
+      lib
+      lib64
+      media
+      mnt
+      opt
+      proc
+      root
+      run
+      sbin
+      srv
+      sys
+      tmp
+      usr
+      var
+      """
 
     run_image_wrong_command = (keyword) ->
       """
@@ -250,8 +329,9 @@ define ['parsers/utils'], ( utils ) ->
 
     run_notfound = (keyword) ->
       """
-      Pulling repository #{keyword} from https://index.docker.io/v1
-      #{utils.timestamp()} Error: No such image: #{keyword}
+      Unable to find image '#{keyword}' locally
+      Pulling repository '#{keyword}'
+      #{utils.timestamp()} HTTP code: 404
       """
 
     run_ping_not_google = (keyword) ->

@@ -2,7 +2,7 @@
   Main Docker command parser
 ###
 
-define ['require', 'settings', 'parsers/utils', 'parsers/run', 'parsers/pull'], ( require, settings, utils, DockerRun, DockerPull) ->
+define ['require', 'settings', 'parsers/utils', 'parsers/run', 'parsers/pull', 'parsers/ps'], ( require, settings, utils, DockerRun, DockerPull, DockerPs) ->
 
   class Parser
     parser: null
@@ -51,14 +51,16 @@ define ['require', 'settings', 'parsers/utils', 'parsers/run', 'parsers/pull'], 
         result = runner.run()
         return result
 
-#        return new DockerRun(@input, @term).run()
-
       if @args.command is 'push'
         return docker_push(@input)
 
       if @args.command is 'pull'
         dockerPull = new DockerPull(@input, @term)
         return dockerPull.run()
+
+      if @args.command is 'ps'
+        dockerPs = new DockerPs(@input, @term)
+        return dockerPs.run()
 
       ### simple 'local' parsers ###
       if @args.command is 'time'
@@ -79,7 +81,6 @@ define ['require', 'settings', 'parsers/utils', 'parsers/run', 'parsers/pull'], 
       if @args.command is 'search' and @args.search_term is 'tutorial'
         @term.echo search_tutorial()
         return {'answered': 'docker-search'}
-
 
       if @args.command is 'search' and @args.search_term is 'learn'
         @term.echo search_learn()
