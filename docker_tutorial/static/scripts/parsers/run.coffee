@@ -5,10 +5,10 @@
 define ['parsers/utils'], ( utils ) ->
 
   class DockerRun
-    parser: {}
-    input: []
-    term: {}
-    args: {}
+    parser: null
+    input: null
+    term: null
+    args: null
 
     constructor: (@input, @term) ->
 

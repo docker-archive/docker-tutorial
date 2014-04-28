@@ -110,6 +110,7 @@ define ['settings'], (settings) ->
       $('#marker-' + @controller.lastQuestionNumber).addClass("complete").removeClass("active")
       $('#marker-' + @controller.currentQuestionNumber).addClass("active")
 
+      $('#question-number text').html(@controller.currentQuestionNumber)
 #
 #      window.intermediateResults = (input) ->
 #        if _q.intermediateresults

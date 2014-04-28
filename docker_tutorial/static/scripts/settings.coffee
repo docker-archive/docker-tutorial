@@ -6,6 +6,8 @@ define [], () ->
 
     API_URI: "/tutorial/api/",
 
+    EMULATOR_VERSION: '2.0',
+
     EVENT_TYPES: {
       none: "none"
       start: "start"

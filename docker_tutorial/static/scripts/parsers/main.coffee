@@ -2,15 +2,19 @@
   Main Docker command parser
 ###
 
-define ['require', 'parsers/utils', 'parsers/run', 'parsers/pull'], ( require, utils, DockerRun, DockerPull) ->
+define ['require', 'settings', 'parsers/utils', 'parsers/run', 'parsers/pull'], ( require, settings, utils, DockerRun, DockerPull) ->
 
   class Parser
-    parser: {}
-    input: []
-    term: {}
-    args: {}
+    parser: null
+    input: null
+    term: null
+    args: null
 
     constructor: (@raw_input, @term) ->
+
+      @parser = {}
+      @input = []
+      @args = {}
 
       # Drop all input to lowercase
       for item in @raw_input
@@ -61,7 +65,7 @@ define ['require', 'parsers/utils', 'parsers/run', 'parsers/pull'], ( require, u
         @term.echo utils.timestamp
 
       if @args.command is 'version'
-        @term.echo docker_version()
+        @term.echo docker_version(settings.EMULATOR_VERSION)
         return {'answered': 'docker-version'}
 
       if @args.command is 'search' and @args.search_term not in ['tutorial', 'ubuntu', 'learn']
@@ -72,9 +76,13 @@ define ['require', 'parsers/utils', 'parsers/run', 'parsers/pull'], ( require, u
         @term.echo search_ubuntu()
         return {}
 
+      if @args.command is 'search' and @args.search_term is 'tutorial'
+        @term.echo search_tutorial()
+        return {'answered': 'docker-search'}
+
+
       if @args.command is 'search' and @args.search_term is 'learn'
         @term.echo search_learn()
-        return {'answered': 'docker-search'}
 
       if not @args.command
         @term.echo "A self-sufficient runtime for linux containers."
@@ -86,15 +94,22 @@ define ['require', 'parsers/utils', 'parsers/run', 'parsers/pull'], ( require, u
       Collection of Mock RUN results
     ###
 
-    docker_version = () ->
-        """
-        Docker Emulator version #{app.EMULATOR_VERSION}
+    docker_version = (version) ->
+      """
+      Docker Emulator version #{version}
 
-        Emulating:
-        Client version: 0.5.3
-        Server version: 0.5.3
-        Go version: go1.1
-        """
+      Emulating:
+
+      Client version: 0.10.0
+      Client API version: 1.10
+      Go version (client): go1.2.1
+      Git commit (client): dc9c28f
+      Server version: 0.10.0
+      Server API version: 1.10
+      Git commit (server): dc9c28f
+      Go version (server): go1.2.1
+      Last stable version: 0.10.0
+      """
 
 
     search_no_results = (keyword) ->
@@ -105,42 +120,76 @@ define ['require', 'parsers/utils', 'parsers/run', 'parsers/pull'], ( require, u
 
     search_ubuntu = ->
       """
-      NAME                                      DESCRIPTION                                     STARS     OFFICIAL   TRUSTED
-      ubuntu                                    General use Ubuntu base image.                  128
-      stackbrew/ubuntu                          Barebone ubuntu images                          34
-      phusion/baseimage                         A special image that is configured for cor...   31
-      crashsystems/gitlab-docker                A trusted, regularly updated build of GitL...   18                   [OK]
-      dockerfile/ubuntu                         Trusted Ubuntu (http://www.ubuntu.com/) Build   7                    [OK]
-      zsol/haskell-platform-2013.2.0.0          haskell platform on ubuntu precise              7
-      cmfatih/dun                               The DUN stack: Docker, Ubuntu, Node.js - [...   6
-      yankcrime/owncloud                        ownCloud 6.0 with a MySQL backend, support...   5
-      jonsharratt/rails                         Ubuntu 12.04 LTS, Rails 4.0, Ruby 2.0.0-p2...   4
-      angelrr7702/ubuntu-13.10-sshd             sshd base on angelrr7702/ubuntu-13.10           4                    [OK]
-      cmfatih/phantomjs                         PhantomJS [ phantomjs 1.9.7 , casperjs 1.1...   3                    [OK]
-      germandz/ruby_base                        Ubuntu 12.04 with Ruby 2.1 & Bundler 1.5.1      3
-      scivm/scientific-python-2.7               Scientific Python 2.7 Ubuntu 12.04- Numpy,...   3                    [OK]
-      ubuntu-upstart                                                                            3
-      jprjr/stackbrew-node                      A stackbrew/ubuntu-based image for Docker,...   2                    [OK]
-      jchavas/saucy-base                        working and tested base Ubuntu 13.10 image      2                    [OK]
-      flox/ubuntu-openerp                       Run OpenERP on Ubuntu - February 2014           2
-      tutum/ubuntu                              DEPRECATED. Use tutum/ubuntu-saucy instead...   2
-      edgester/gerrid runt                      The Gerrit code review system. v2.7 using ...   2
-      bradrydzewski/couchdb                     CouchDB versions 1.0, 1.4 and 1.5 running ...   2
-      lukasz/docker-scala                       Dockerfile for installing Scala 2.10.3, Ja...   2                    [OK]
-      stephens/sshd                             Ubuntu 13.10 with openssh based on the sta...   2
-      mbentley/ubuntu-django-uwsgi-nginx                                                        2                    [OK]
-      ctlc/buildstep                            Built from source at https://github.com/Ce...   2
-      vinothkumar6664/nagios6664                Ubuntu1310 +  Nagios                            2
-      allisson/docker-ubuntu                                                                    2                    [OK]
-      lgsd/saucy                                Base image for lgsd/docker-base (see https...   2
-      deis/base                                 Base Ubuntu 12.04 LTS image for the Deis o...   2                    [OK]
-
+      NAME                            DESCRIPTION                                     STARS     OFFICIAL   TRUSTED
+      ubuntu                          Official Ubuntu base image                      0
+      stackbrew/ubuntu                Barebone ubuntu images                          0
+      dockerfile/ubuntu               Trusted Ubuntu (http://www.ubuntu.com/) Build   0
+      tutum/ubuntu                    DEPRECATED. Use tutum/ubuntu-saucy instead...   0
+      cmfatih/ubuntu                  Ubuntu [ ubuntu , vim , htop , zip , wget ...   0
+      tutum/ubuntu-quantal            Ubuntu Quantal image with SSH access. For ...   0
+      libmesos/ubuntu                                                                 0
+      tutum/ubuntu-precise            Ubuntu Precise image with SSH access. For ...   0
+      jahkeup/ubuntu                  Ubuntu 13.10 base release                       0
+      crohr/ubuntu                    Ubuntu base images. Only lucid (10.04) for...   0
+      flox/ubuntu-openerp             Run OpenERP on Ubuntu - April 2014              0
+      totem/ubuntu                    A minimal base install of Ubuntu for use i...   0
+      markshao/ubuntu                                                                 0
+      newsdev/ubuntu                                                                  0
+      angelrr7702/ubuntu-13.10-sshd   sshd base on angelrr7702/ubuntu-13.10           0
+      vyom/ubuntu                     Ubuntu 14.04 LTS Trusty Base Image for doc...   0
+      tianon/ubuntu-core              Ubuntu Core (https://wiki.ubuntu.com/Core)      0
+      dpaw/ubuntu                     Ubuntu with AU mirror and universe repo en...   0
+      amosrivera/ubuntu               Ubuntu 13.10 with NodeJS, Nginx, Ruby and ...   0
+      tutum/ubuntu-saucy              Ubuntu Saucy image with SSH access. For th...   0
+      calebcase/ubuntu                Basic Ubuntu Raring image.                      0
+      pandrew/ubuntu-lts              https://github.com/pandrew/docker-ubuntu-lts    0
+      angelrr7702/ubuntu-13.10        ubuntu 13.10 base to be  use for building ...   0
+      jdharrington/ubuntu             The official Docker Ubuntu image with buil...   0
+      tithonium/rvm-ubuntu            The base 'ubuntu' image, with rvm installe...   0
       """
 
     search_learn = ->
       """
-      NAME                            DESCRIPTION                     STARS     OFFICIAL   TRUSTED
-      learn/tutorial                                                  2
+      NAME                            DESCRIPTION                                     STARS     OFFICIAL   TRUSTED
+      learn/tutorial                  Interactive tutorial                            0
+      learn/ping                                                                      0
+      nitin/learn_data_science                                                        0
+      odewahn/learning-data-science                                                   0
+      learndocker/centos              Centos 6.5 base image                           0
+      aecc/stream-tree-learning                                                       0
+      learndocker/wheezy                                                              0
+      shrikar/machinelearning         Get started with machine learning in python     0
+      qbyt/sklearn                                                                    0
+      greglearns/ruby                 Installs Ruby 2.0.0-p247, RubyGems, and Bu...   0
+      parente/ipython-notebook        IPython Notebook plus pandas, matplotlib, ...   0
+      greglearns/dietfs               As defined in: http://blog.docker.io/2013/...   0
+      greglearns/pglite               As defined in: http://blog.docker.io/2013/...   0
+      anychartlearning/test                                                           0
+      btel/python3                    basic scientiic environment with python 3....   0
+      shreyask/mlnotebook             Machine Learning Notebook.                      0
+      turnkeylinux/canvas-13.0        TurnKey Canvas LMS - Learning Management S...   0
+      lukec/redis                     Learning how to use docker, created a simp...   0
+      clairvy/railsgirls              learning Docker. ex. Rails Girls.               0
+      vigsterkr/shogun                The SHOGUN Machine Learning Toolbox http:/...   0
+      afolarin/ubuntu_ssh             Ubuntu Image + openssh-server Something of...   0
       """
+
+    search_tutorial = ->
+      """
+      NAME                           DESCRIPTION                                     STARS     OFFICIAL   TRUSTED
+      learn/tutorial                 Interactive tutorial                            0
+      zqhxuyuan/tutorial                                                             0
+      mzdaniel/buildbot-tutorial                                                     0
+      jbarbier/tutorial1                                                             0
+      fvieira/node_game_tutorial                                                     0
+      odewahn/parallel_ml_tutorial                                                   0
+      mhubig/echo                    Simple echo loop from the tutorial.             0
+      ivarvong/redis                 From the redis tutorial. Just redis-server...   0
+      danlucraft/postgresql          Postgresql 9.3, on port 5432, un:docker, p...   0
+      programster/mumble-server      Docker build for running own mumble servic...   0
+      namin/io.livecode.ch           interactive programming tutorials, powered...   0
+      amattn/postgresql-9.3.0        precise base, PostgreSQL 9.3.0 installed w...   0
+      """
+
 
   return Parser

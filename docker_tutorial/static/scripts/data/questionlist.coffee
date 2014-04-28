@@ -43,7 +43,7 @@ assignment: """
       <p>Use the commandline to find a repository called tutorial.</p>
       """
 command_expected: ['docker', 'search', 'tutorial']
-result: """<p>You found it!</p>"""
+result: """<p>You found it! Look at the first result. It's name is learn/tutorial, 'learn' is the namespace and 'tutorial' is the repository name.</p>"""
 tip: "the format is <code>docker search &lt;string&gt;</code>"
 })
 
@@ -52,14 +52,14 @@ q.push ({
 html: """
       <h3>Downloading container images</h3>
       <p>Look at the output. You have found a repository called learn/tutorial. Using <code>docker pull</code>
-      downloading the containing images is just as easy.</p>
-      <p>Notice that repository names on the Docker Index are composed as &lt;username&gt;/&lt;repository&gt;. A
-      group of special, official repositories can be retrieved by just their name &lt;repository&gt;.</p>
+      the Docker daemon will download the container images contained in this repository.</p>
       """
+#<p>Notice that repository names on the Docker Index are composed as &lt;username&gt;/&lt;repository&gt;. A
+#      group of special, official repositories can be retrieved by just their name &lt;repository&gt;.</p>
 assignment:
       """
       <h3>Assignment</h3>
-      <p>Pull the content of the repository you have just found.</p>
+      <p>Pull (download) the content of the repository you have just found.</p>
       """
 command_expected: ['docker', 'pull', 'learn/tutorial']
 # ToDo: Fixme - display and downloading of all ubuntu version images does not make a lot of sense..

@@ -3,7 +3,7 @@ define ['parsers/utils'], (utils) ->
 
   class DockerPull
 
-    args: {}
+    args: null
 
     constructor: (@input, @term) ->
 
@@ -22,7 +22,7 @@ define ['parsers/utils'], (utils) ->
       # prep the parser
       @optparser.on(2, (value) =>
         @args.image = value
-        return
+        return {}
       )
 
       # parse it
@@ -32,7 +32,7 @@ define ['parsers/utils'], (utils) ->
 
       if not @args.image?
         @term.echo @optparser.toString()
-        return {}
+        return ""
 
       if @args.image in ['ubuntu',]
 
@@ -40,9 +40,9 @@ define ['parsers/utils'], (utils) ->
         two = => @term.echo @pull_ubuntu_2
         three = => @term.echo @pull_ubuntu_3
 
-        setTimeout one, 1000
-        setTimeout two, 2000
-        setTimeout three, 3000
+        setTimeout one, 200
+        setTimeout two, 1000
+        setTimeout three, 2000
 
         return ""
 

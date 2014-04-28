@@ -2,10 +2,10 @@ define ['models/Question', 'views/main', 'views/terminal', 'parsers/main', 'sett
 
   class Controller
 
-    questions: []
+    questions: null
     lastQuestionNumber: null
-    currentQuestionNumber: 0
-    currentQuestion: {}
+    currentQuestionNumber: null
+    currentQuestion: null
 
     constructor: (@questionList) ->
       log('constructor called')
@@ -40,6 +40,7 @@ define ['models/Question', 'views/main', 'views/terminal', 'parsers/main', 'sett
       @currentQuestionNumber = i
 
       @currentQuestion = @questionList[@currentQuestionNumber]
+      @currentQuestion.number = @currentQuestionNumber
       @applicationView.render(@currentQuestion)
 
       # enable history navigation
@@ -100,6 +101,8 @@ define ['models/Question', 'views/main', 'views/terminal', 'parsers/main', 'sett
         parser = new Parser(inputs, term)
         result = parser.run()
 
+      if inputs[0] is 'r'
+        location.reload('forceGet')
 
       if result and result.answered
         console.debug "answered: " + result.answered
