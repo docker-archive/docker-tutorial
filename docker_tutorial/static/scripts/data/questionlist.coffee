@@ -11,16 +11,14 @@ define [], () ->
 
 q.push ({
 slug: "docker-version"
+
+title: "Getting started"
 html: """
-      <h3>Getting started</h3>
-      <p>There are actually two programs: The Docker daemon, which is a server process and which manages all the
-      containers, and the Docker client, which acts as a remote control on the daemon. On most systems, like in this
-      emulator, both execute on the same host.</p>
+      <p>There is the Docker Engine, a server process which manages starting and stopping of containers
+      containers. and the client of the Docker Engine, it acts as a remote control to the server process. In this
+      emulator both execute on the same host.</p>
       """
-assignment: """
-      <h3>Assignment</h3>
-      <p>Check which Docker versions are running.</p>
-      """
+assignment: "<p>Check which version of Docker is running</p>"
 tip: "<p>Try typing <code>docker</code> to see the full list of accepted arguments</p>
       <p>This emulator provides only a limited set of shell and Docker commands, so some commands may not work as expected</p>"
 command_expected: ['docker', 'version']
@@ -30,8 +28,8 @@ result: """<p>Well done! Let's move to the next assignment.</p>"""
 ## 1
 q.push ({
 slug: "docker-search"
+title: "Searching for images"
 html: """
-      <h3>Searching for images</h3>
       <p>The easiest way to get started is to use a container image from someone else.
       Container images are available from repositories on the Docker Index, a central place to store and share
       built images. You can find them online at
@@ -39,8 +37,7 @@ html: """
       and by using the commandline.</p>
       """
 assignment: """
-      <h3>Assignment</h3>
-      <p>Use the commandline to find a repository called tutorial.</p>
+      <p>Use the commandline to find a repository called 'tutorial'.</p>
       """
 command_expected: ['docker', 'search', 'tutorial']
 result: """<p>You found it! Look at the first result. It's name is learn/tutorial, 'learn' is the namespace and 'tutorial' is the repository name.</p>"""
@@ -50,8 +47,8 @@ tip: "the format is <code>docker search &lt;string&gt;</code>"
 ## 2
 q.push ({
 slug: "docker-pull"
+title: "Downloading container images"
 html: """
-      <h3>Downloading container images</h3>
       <p>Look at the output. You have found a repository called learn/tutorial. Using <code>docker pull</code>
       the Docker daemon will download the container images contained in this repository.</p>
       """
@@ -59,7 +56,6 @@ html: """
 #      group of special, official repositories can be retrieved by just their name &lt;repository&gt;.</p>
 assignment:
       """
-      <h3>Assignment</h3>
       <p>Pull (download) the content of the repository you have just found.</p>
       """
 command_expected: ['docker', 'pull', 'learn/tutorial']
@@ -75,17 +71,16 @@ tip: """<ul><li>Make sure to pull the full name of the repository e.g. 'learn/tu
 ## 3
 q.push ({
 slug: "hello-world"
+title: "Hello world from a container"
 html: """
-      <h3>Hello world from a container</h3>
       <p>You can think about containers as a process in a box. The box contains everything the process might need, so
       it has the filesystem, system libraries, shell and such, but by default none of it is started or run.<p>
       <p>You 'start' a container <em>by</em> running a process in it. This process is the only process run, so when
       it completes the container is fully stopped.
       """
 assignment: """
-      <h3>Assignment</h3>
       <p>Use the 'ubuntu' base image to output "hello world"</p>
-      <p>To do so you can simply run the program 'echo' in a container and have that echo "hello world"</p>
+      <p>To do so you wil run the program 'echo' in a container and have that show "hello world"</p>
 
       """
 command_expected: ["docker", "run", "ubuntu", "echo", "hello"]
@@ -107,14 +102,13 @@ tip: """
 ## 4
 q.push ({
 slug: "install-fortunes"
+title: "Installing things in the container"
 html: """
-      <h3>Installing things in the container</h3>
-      <p>Next we are going to install a simple program with happy quotes (fortunes) in the container. The image is based upon ubuntu, so you
+      <p>Next we are going to install a simple program (fortunes) in the container. The image is based upon ubuntu, so you
       can run the command <code>apt-get install -y fortunes</code> in the container. </p>
       <p>Note that even though the container stops right after a command completes, the changes are not forgotten.</p>
       """
 assignment: """
-      <h3>Assignment</h3>
       <p>Install the program 'fortunes' on top of the ubuntu image.</p>
       """
 command_expected: ["docker", "run", "ubuntu", "apt-get", "install", "-y", "fortunes"]
@@ -135,20 +129,19 @@ tip: """
 ## 5
 q.push ({
 slug: "ps-latest"
+title: "Save your changes"
 html: """
-      <h3>Save your changes</h3>
       <p>After you make changes (by running a command inside a container), you probably want to save those changes.
       This will enable you to later start from this point onwards.</p>
       <p>With Docker, the process of saving the state is called <em>committing</em>. Commit basically saves the difference
       between the old image and the new state. The result is a new image, it contains only the files which are new or modified.</p>
       """
 assignment: """
-      <h3>Assignment</h3>
-      <p>First use <code>docker ps -l</code> to find the ID of the container you created by installing ping.</p>
+      <p>First use <code>docker ps -l</code> to find the ID of the container you created by installing fortunes.</p>
       <p>Then save (commit) this container.</p>
       """
-command_expected: ["docker", "commit", "698"]
-command_show: ["docker", "commit", "698"]
+command_expected: ["docker", "commit", "991"]
+command_show: ["docker", "commit", "991"]
 result: """<p>That worked! Please take note that Docker has returned a new ID. This id is the <em>image id</em>.</p>"""
 intermediateresults: [ () -> """You have not specified the correct repository name to commit to (learn/ping). This works, but giving your images a name
                       makes them much easier to work with."""]
@@ -187,14 +180,14 @@ tip: """<ul>
 
 ## 7
 q.push ({
-html: """<h3>Login with your Docker account</h3>
-         <p>A Docker account is your central identity in the Docker ecosystem and gives you access to a number of usefull services.</p>
-         <p>To finish this tutorial you will need to have or create one (it's free).</p>
-         <p>If you don't have a Docker Account yet, you can <strong><a href="#8" class='' onclick="window.open('http://www.docker.io/account/signup/','Docker','width=1000,height=900,left=50,top=50,menubar=0')">create one here.</a></strong></p>
-         <p>The docker commandline allows you to login with <code>docker login</code>.</p>
+title: "Login with your Docker account"
+html: """
+      <p>A Docker account is your central identity in the Docker ecosystem and gives you access to a number of usefull services.</p>
+      <p>To finish this tutorial you will need to have or create one (it's free).</p>
+      <p>If you don't have a Docker Account yet, you can <strong><a href="#8" class='' onclick="window.open('http://www.docker.io/account/signup/','Docker','width=1000,height=900,left=50,top=50,menubar=0')">create one here.</a></strong></p>
+      <p>The docker commandline allows you to login with <code>docker login</code>.</p>
       """
 assignment: """
-      <h3>Assignment</h3>
       <p>Login with your Docker account. Create one if needed.</p>
       """
 command_expected: ["docker", "login", "cannot match"]
@@ -207,13 +200,13 @@ tip:  """<ul><li>Make sure to also verify your e-mail</li><li>When you succesful
 
 ## 8
 q.push ({
-html: """<h3>Tag your image for storage on the Docker Index</h3>
-         <p>Now you know your Docker username you can prepare and name the 'ping' container image you've built in
-        step 5 so it is easy to reference and ready for pushing to the index.</p>
+title: "Tag your image for storage on the Docker Index"
+html: """
+      <p>Now you know your Docker username you can prepare and name the 'ping' container image you've built in
+      step 5 so it is easy to reference and ready for pushing to the index.</p>
       """
 assignment: () ->
       """
-      <h3>Assignment</h3>
       <p>Find the last image you created and tag it with #{docker_username}/ping.</p>
       """
 command_expected: ["docker", "tag", "eff", "ping"]
@@ -232,13 +225,12 @@ tip:  """<ul><li><code>docker images</code> shows a full list of images currentl
 
 ## 9
 q.push ({
+title: "Push your image to the index"
 html: """
-      <h3>Push your image to the index</h3>
       <p>Now you have logged in and labelled your container correctly you can push it to the Index.</p>
       <p>This will allow you to download it on another host or share it with coworkers and friends.</p>
       """
 assignment: """
-      <h3>Assignment</h3>
       <p>Push the container image you just tagged to the Docker Index.</p>
       <small>(this emulator will not actually create a repository)</small>
       """

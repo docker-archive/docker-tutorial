@@ -1,244 +1,28 @@
 @informationblue: #008BB8;
 @tutorialTopHeight: 60px;
 @greySuperLight: #E7E7E7;
-@topBarHeight: 70px;
-
-
-.debug {
-  border: 2px red dotted;
-  background: rgb(54, 25, 25); /* Fall-back for browsers that don't support rgba */
-  background: rgba(54, 25, 25, .5);
-  box-sizing: border-box;
-}
-
-/*
-  Styles largely duplicates from the docker website
-*/
-
-.tutorial {
-  font-family: "Cabin", "Helvetica Neue", Helvetica, Arial, sans-serif;
-  font-size: 14px;
-  line-height: 20px;
-  color: #333333;
-
-  h1, h2, h3, h4, h5, h6 {
-    margin: 10px 0;
-    font-family: inherit;
-    font-weight: normal;
-    line-height: 20px;
-    color: inherit;
-    text-rendering: optimizelegibility;
-  }
-
-  h1, h2, h3 {
-    line-height: 40px;
-  }
-
-  img {
-    max-width: 100%;
-    width: auto\9;
-    height: auto;
-    vertical-align: middle;
-    border: 0;
-    -ms-interpolation-mode: bicubic;
-  }
-
-  select, textarea, input[type="text"], input[type="password"], input[type="datetime"], input[type="datetime-local"], input[type="date"], input[type="month"], input[type="time"], input[type="week"], input[type="number"], input[type="email"], input[type="url"], input[type="search"], input[type="tel"], input[type="color"], .uneditable-input {
-    display: inline-block;
-    height: 20px;
-    padding: 4px 6px;
-    margin-bottom: 10px;
-    font-size: 14px;
-    line-height: 20px;
-    color: #555555;
-    -webkit-border-radius: 4px;
-    -moz-border-radius: 4px;
-    border-radius: 4px;
-    vertical-align: middle;
-  }
-
-  button, input, select, textarea {
-    margin: 0;
-    font-size: 100%;
-    vertical-align: middle;
-  }
-
-  label, input, button, select, textarea {
-    font-size: 14px;
-    font-weight: normal;
-    line-height: 20px;
-  }
-
-  code, pre {
-    padding: 0 3px 2px;
-    font-family: Monaco, Menlo, Consolas, "Courier New", monospace;
-    font-size: 12px;
-    color: #333333;
-    -webkit-border-radius: 3px;
-    -moz-border-radius: 3px;
-    border-radius: 3px;
-  }
-
-  code {
-    padding: 2px 4px;
-    color: #d14;
-    background-color: #f7f7f9;
-    border: 1px solid #e1e1e8;
-    white-space: nowrap;
-  }
-
-}
-
-/*
-  New (non dupe) styles
-*/
-
-
-.tutorial {
-  p {
-    margin-top: 0px;
-    margin-bottom: 5px;
-    line-height: 1.3em;
-  }
-
-  h1, h2, h3, h4{
-    margin-top: 5px;
-    margin-bottom: 7px;
-    color: #394D54;
-  }
-
-  h3 {
-    font-size: 24px;
-  }
-
-  h4 {
-    color: @informationblue;
-  //  margin-bottom: 5px;
-  }
-}
-
-
-#command .box{
-//  .debug;
-  border: 1px grey solid;
-  border-radius: 5px;
-  padding: 15px;
-  box-sizing: border-box;
-  color: #a9a9a9;
-  font-style: italic;
-//  style="width: 100%; height: 100%"
-}
-
-#commandShownText, #tipShownText {
-    color: black !important;
-    font-style: normal !important;
-}
-
-#command .hidden, #tips .hidden {
-  display: none;
-  visibility: hidden;
-  height: 1px; width: 1px;
-}
-
-#ajax {
-  position: absolute;
-  bottom: 0;
-  margin: 20px;
-//  border: 1px red dotted;
-}
-
-#resulttext {
-  border-radius: 5px;
-  box-sizing: border-box;
-  color: #106e34;
-  font-weight: bold;
-}
-
-
-
-#feedback {
-  font-size: 0.4em;
-  border: 1px #444444 solid;
-  background-color: black;
-  position: absolute;
-  right: 0;
-  bottom: 0px;
-  margin-bottom: 5px;
-
-  input {
-    margin: 5px;
-    border-radius: 0px;
-    position: relative;
-    width: 400px;
-    background-color: #dcdcdc;
-  }
-  button {
-    margin: 5px 5px 5px 0;
-    height: 30px;
-  }
-}
-
-
-#actions button {
-  width: 45%;
-}
-
-.hidden {
-  display: none;
-  visibility: hidden;
-  height: 1px;
-  width: 1px;
-}
-
-
-/* styles for when it is not fullsize */
-
-
-//#overlay .hide-when-full {
-//  display: none;
-//}
-
-
-#overlay {
-  position: relative;
-  width: 100%;
-
-  &.startsize {
-    border: 3px solid #7fafc1;
-    height: 300px;
-    padding: 15px;
-  }
-
-  &.fullsize {
-    position: absolute;
-    top: 0;
-    right: 0;
-    bottom: 0;
-    left: 0;
-    width: auto;
-    height: auto;
-
-    // here we set a background color for the overlay, so the elements below don't shine through
-    background-color: white;
-    z-index: 1982;
-  }
-}
+@topBarHeight: 56px;
 
 
 #tutorialTop {
 
   display: none;
+  box-sizing: border-box;
 
-  position: absolute;
+  position: relative;
   height: @topBarHeight;
   left: 0;
   right: 0;
   width: 100%;
-  background-color: #394D54;
 
-  img {
-    margin-bottom: 20px;
-    display: inline-block;
+  padding: 10px;
+
+  .logo {
+//    margin-bottom: 20px;
+//    display: inline-block;
+     float: left;
+     margin-right: 20px;
+    margin-left: 20px;
   }
   h1, h2 {
     display: inline-block;
@@ -254,291 +38,436 @@
     font-weight: normal;
     margin-top: 20px;
   }
-}
 
+  .closeButton {
+    height: 32px;
+    width: 32px;
+    margin-top: 2px;
+    background:url("../img/exit-icons.png") no-repeat;
 
-
-#main {
-  position: absolute;
-  top: 0;
-  right: 0;
-  bottom: 0;
-  left: 0;
-
-  &.fullsize {
-//    margin-top: 0px;
-//    top: @topBarHeight;
-  }
-
-}
-
-#leftside {
-  &.fullsize {
-    box-sizing: border-box;
-    width: 35%;
-    position: absolute;
-    display: block;
-    top: 0;
-    right: 0;
-    bottom: 0;
-    left: 0;
-
-    margin-top: @topBarHeight;
-    overflow-y: scroll;
-//    .debug;
-  }
-
-}
-
-#rightside {
-  margin-top: @topBarHeight;
-}
-
-
-#instructions, #results, #actions, #tips, #command {
-  padding: 5px 10px 0 10px;
-  .text, .assignment, .tiptext {
-    margin-left: 60px;
-  }
-  .text {
-    font-size: 16px;
-  }
-}
-
-#instructions {
-  circle { fill: #FF8100; }
-}
-
-#results {
-  position: absolute;
-  z-index: 20;
-  background-color: @greySuperLight;
-  width: 400px;
-//  min-height: 130px;
-  padding: 10px;
-  position:absolute;
-  box-sizing: border-box;
-  right:0;
-  top: 0;
-  margin-top: @topBarHeight + 30px;
-
-  circle { fill: green; }
-
-  &.intermediate {
-    circle { fill: @informationblue }
-  }
-
-  button {
-    position: relative;
-    float: right;
-    margin-top: 10px;
-//    margin-bottom: 15px;
-  }
-}
-
-#instructions {
-//  .debug;
-  .assignment {
-    margin-top: 20px;
-    border: 2px grey solid;
-    padding: 15px;
-    padding-top: 5px;
-  }
-}
-
-.circle {
-  position: relative;
-  float: left;
-  font-size: 18px;
-  margin-top: 15px;
-}
-
-#terminal {
-  box-sizing: border-box;
-  position: absolute;
-  display: block;
-  top: 0;
-  right: 0;
-  bottom: 0;
-  left: 35%;
-
-  &.smallsize {
-    margin: 10px;
-//    padding-bottom: 10px;
-    margin-bottom: 65px;
-  }
-
-  &.fullsize {
-    margin: 0;
-    margin-right: 15px;
-    margin-top: @topBarHeight;
-    padding-bottom: 0px;
-    margin-bottom: 65px;
-  }
-}
-
-#terminal-extenstion {
-  box-sizing: border-box;
-  position: absolute;
-  display: block;
-  top: 0;
-  right: 0;
-  bottom: 0;
-  left: 35%;
-
-  background-color: black;
-  margin-bottom: 0px;
-
-  &.smallsize {
-    margin: 10px;
-  }
-
-  &.fullsize {
-    margin: 0;
-    margin-top: @topBarHeight;
-  }
-
-}
-
-#terminal a {
-  color: #AAA;
-  text-decoration: none;
-  font-weight: normal;
-}
-
-
-#starttext {
-  width: 200px;
-  margin: 10px;
-}
-
-.hide-when-small {
-  display: none;
-}
-
-.hide-when-full {
-//  display: none;
-}
-
-.docker-btn {
-  border: none;
-  color: white;
-
-}
-
-.docker-btn-large {
-  font-size: 22px;
-  padding: 10px 15px 10px 15px;
-}
-
-.docker-btn-blue {
-
-  .docker-btn;
-
-  background: #008bb8; /* Old browsers */
-  background: -moz-linear-gradient(top,  #008bb8 0%, #00617f 100%); /* FF3.6+ */
-  background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#008bb8), color-stop(100%,#00617f)); /* Chrome,Safari4+ */
-  background: -webkit-linear-gradient(top,  #008bb8 0%,#00617f 100%); /* Chrome10+,Safari5.1+ */
-  background: -o-linear-gradient(top,  #008bb8 0%,#00617f 100%); /* Opera 11.10+ */
-  background: -ms-linear-gradient(top,  #008bb8 0%,#00617f 100%); /* IE10+ */
-  background: linear-gradient(to bottom,  #008bb8 0%,#00617f 100%); /* W3C */
-  filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#008bb8', endColorstr='#00617f',GradientType=0 ); /* IE6-9 */
-}
-
-.docker-btn-blue:enabled:active {
-
-  .docker-btn;
-
-  background: #00617f; /* Old browsers */
-  background: -moz-linear-gradient(top,  #00617f 0%, #008bb8 100%); /* FF3.6+ */
-  background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#00617f), color-stop(100%,#008bb8)); /* Chrome,Safari4+ */
-  background: -webkit-linear-gradient(top,  #00617f 0%,#008bb8 100%); /* Chrome10+,Safari5.1+ */
-  background: -o-linear-gradient(top,  #00617f 0%,#008bb8 100%); /* Opera 11.10+ */
-  background: -ms-linear-gradient(top,  #00617f 0%,#008bb8 100%); /* IE10+ */
-  background: linear-gradient(to bottom,  #00617f 0%,#008bb8 100%); /* W3C */
-  filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#00617f', endColorstr='#008bb8',GradientType=0 ); /* IE6-9 */
-
-}
-
-.docker-btn-blue:disabled {
-  color: white;
-
-  background: #4f727c; /* Old browsers */
-  background: -moz-linear-gradient(top, #4f727c 0%, #89acb7 100%); /* FF3.6+ */
-  background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#4f727c), color-stop(100%,#89acb7)); /* Chrome,Safari4+ */
-  background: -webkit-linear-gradient(top, #4f727c 0%,#89acb7 100%); /* Chrome10+,Safari5.1+ */
-  background: -o-linear-gradient(top, #4f727c 0%,#89acb7 100%); /* Opera 11.10+ */
-  background: -ms-linear-gradient(top, #4f727c 0%,#89acb7 100%); /* IE10+ */
-  background: linear-gradient(to bottom, #4f727c 0%,#89acb7 100%); /* W3C */
-  filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#4f727c', endColorstr='#89acb7',GradientType=0 ); /* IE6-9 */
-}
-
-#tutorialTop .closeButton {
-  position: relative;
-  float: right;
-  margin: 6px;
-  width: 18px;
-  height: 18px;
-}
-
-#progress-indicator {
-  margin-top: 20px;
-  margin-right: 20px;
-  float: right;
-//  .debug;
-//  width: 100px;
-//  height: 100px;
-  cursor: hand;
-}
-
-.progress-marker {
-
-  position:relative;
-  float: left;
-  margin-right: 5px;
-  cursor: hand;
-//  top:5;
-//  left:5;
-//  z-index:1;
-//  .debug;
-  svg {
-    width:30px;
-    height:30px;
-    cursor: pointer;
-  }
-
-  circle { fill: #eaeaea; }
-  text { fill: black; }
-
-  &.complete {
-    circle { fill: green; }
-  }
-
-  &:hover {
-    circle { fill: #01b0ee; }
-  }
-
-  &:active {
-    circle { fill: #ff810a; }
-  }
-
-  &.active {
-    circle { fill: #ff810a; }
-  }
-}
-
-.complete {
-  img {
-    height: 45px;
-    width: 45px;
-    margin-top: 10px;
-    margin-right: 10px;
-  }
-
-  ol {
-    li {
-      margin-bottom: 10px;
-      font-weight: bold;
+    &:hover {
+      background:url("../img/exit-icons.png") no-repeat -33px 0;
+      cursor: pointer;
     }
   }
+
+  .stepselector {
+    position: absolute;
+    left: 386px;
+    top: 10px;
+
+    .btn {
+      border-color: #bbb;
+      border-width: 1px 2px 2px 1px;
+      border-style: solid;
+      font-size: 14px;
+      padding: 5px;
+
+      border-radius: 0px;
+    }
+
+    .docker-caret {
+      display:inline-block;
+      width:15px;
+      height:15px;
+      background:url("../img/nav/caret-down-user-icon.svg") no-repeat 70% 80%;
+    }
+  }
+
+}
+
+
+
+#online-cli-tutorial {
+
+  .h1-caption {
+    font-size: 32px;
+    font-weight: bold;
+    display: block;
+    margin-bottom: 22px;
+  }
+
+  p {
+
+    .small-body {
+      line-height: 18px !important;
+    }
+
+    margin-bottom: 10px !important;
+
+  }
+
+  #starttext {
+
+    .btn {
+      margin-top: 12px;
+      width: 100%;
+    }
+
+  }
+
+  .subnote {
+    display: block;
+    padding: 12px;
+    font-size: 12px;
+    margin: 0 auto;
+  }
+
+  h1 {
+    display: block;
+    font-weight: bold;
+    font-size: 16px;
+  }
+
+  hr { margin: 0 !important; }
+
+  #return-back {
+
+    background-size: #f0f;
+    padding: 15px;
+
+    cursor: pointer;
+
+    a {
+      color: #005976;
+      font-weight: bold;
+    }
+
+  }
+
+  #step-indicator {
+
+    font-size: 16px;
+    padding: 10px;
+    font-weight: bold;
+  
+    #step-no {
+      margin-left: 6px;
+    }
+
+  }
+
+  .debug {
+    border: 2px red dotted;
+    background: rgb(54, 25, 25); /* Fall-back for browsers that don't support rgba */
+    background: rgba(54, 25, 25, .5);
+    box-sizing: border-box;
+  }
+
+  .tutorial {
+    p {
+      margin-top: 0px;
+      margin-bottom: 5px;
+      line-height: 2.0em;
+    }
+
+    h1, h2, h3, h4{
+      margin-top: 5px;
+      margin-bottom: 7px;
+      color: #394D54;
+    }
+
+    h3 {
+      font-weight: bold;
+    }
+
+    h4 {
+      color: @informationblue;
+    }
+  }
+
+  #commandShownText, #tipShownText {
+      color: black !important;
+      font-style: normal !important;
+  }
+
+  #command .hidden, #tips .hidden {
+    display: none;
+    visibility: hidden;
+    height: 1px; width: 1px;
+  }
+
+  #ajax {
+    position: absolute;
+    bottom: 0;
+    margin: 20px;
+  }
+
+  #resulttext {
+    border-radius: 5px;
+    box-sizing: border-box;
+    color: #106e34;
+    font-weight: bold;
+  }
+
+  #actions button {
+    width: 45%;
+  }
+
+  .hidden {
+    display: none;
+  }
+
+  #overlay {
+
+    &.startsize {
+
+    }
+
+    &.fullsize {
+      position: absolute;
+
+      top: 0;
+      right: 0;
+      bottom: 0;
+      left: 0;
+      width: auto;
+      height: auto;
+
+      background-color: white;
+      z-index: 1982;
+
+
+    }
+  }
+
+  #main {
+
+    &.fullsize {
+    }
+
+  }
+
+  #leftside {
+
+    line-height: 1.9;
+
+    &.fullsize {
+      box-sizing: border-box;
+      width: 386px;
+      position: absolute;
+      display: block;
+      top: @topBarHeight;
+      right: 0;
+      bottom: 0;
+      left: 0;
+      background-color: #fff !important;
+      overflow-y: scroll;
+      padding: 20px;
+      border-top: 1px solid #bbb;
+    }
+
+  }
+
+  #instructions, #assignment, #results, #actions, #tips, #command {
+    padding: 10px;
+
+    ul {
+      padding: 10px 0px 10px 20px;
+      list-style-position: inherit;
+      list-style: circle;
+    }
+  }
+
+  #tips {
+    p {
+      font-size: 12px;
+    }
+    line-height: 2.0em;
+
+  }
+
+
+  #instructions {
+    padding-top: 0px !important;
+  }
+
+  #results {
+    position: absolute;
+    z-index: 20;
+    background-color: @greySuperLight;
+    width: 400px;
+    padding: 10px;
+    box-sizing: border-box;
+    right:0;
+    top: @topBarHeight;
+
+    circle { fill: #d3f1fb; }
+
+    &.intermediate {
+      circle { fill: @informationblue }
+    }
+
+    button {
+      position: relative;
+      float: right;
+      margin-top: 10px;
+  //    margin-bottom: 15px;
+    }
+  }
+
+  #instructions {
+    .assignment {
+      margin-top: 20px;
+//      border: 2px grey solid;
+      padding: 15px;
+      padding-top: 5px;
+    }
+  }
+
+  .circle {
+    position: relative;
+    float: left;
+    font-size: 18px;
+    margin-top: 15px;
+  }
+
+  #terminal {
+
+    &.smallsize {
+//      height: 370px;
+    }
+
+    &.fullsize {
+      position: absolute;
+      left: 386px;
+      top: @topBarHeight;
+//      margin-bottom: @topBarHeight;
+      bottom: 0;
+      right: 0;
+//      height: 100%;
+      box-sizing: border-box;
+      margin-bottom: 0;
+      margin-top: 0;
+      padding: 20px;
+    }
+  }
+
+  #terminal-extenstion {
+
+    background-color: black;
+    margin-bottom: 0px;
+
+    &.smallsize {
+    }
+
+    &.fullsize {
+      margin: 0;
+    }
+
+  }
+
+  #terminal a {
+    color: #AAA;
+    text-decoration: none;
+    font-weight: normal;
+  }
+
+
+  #starttext {
+    padding-right: 20px; 
+  }
+
+  .hide-when-small {
+    display: none;
+  }
+
+  .hide-when-full {
+  }
+
+  .docker-btn {
+    border: none;
+    color: white;
+
+  }
+
+  .docker-btn-large {
+    font-size: 22px;
+    padding: 10px 15px 10px 15px;
+  }
+
+  #progress-indicator {
+
+    height: 34px;
+    padding-top: 18px;
+    display: block;
+
+    overflow: hidden;
+
+    text-align: center;
+
+    .progress-marker {
+
+      width: 23px;
+      height: 23px;
+      display: inline-block;
+
+      -webkit-border-radius: 15px;
+      -moz-border-radius: 15px;
+      border-radius: 15px;
+
+      border: 1px solid #ccc;
+      background-color: #FFFFFF;
+
+      margin-left: 10px;
+      cursor: pointer;
+
+      &.complete {
+        background-color: #ccc;
+      }
+
+      &:hover {
+        background-color: #fff;
+      }
+
+      &.active {
+        background-color: #d3f1fb;
+        border-color: #ade5f9;
+      }
+    }
+  }
+
+  #stepDropdown {
+
+
+    .btn, .btn-group {
+      &:hover, &:active, &:focus   {
+        color: inherit;
+      }
+    }
+
+    li {
+      &.complete a {
+        color: #00a200;
+      }
+
+      &:hover {
+//        background-color: #fff;
+      }
+
+      &.active {
+        background-color: #d3f1fb;
+//        border-color: #ade5f9;
+      }
+    }
+  }
+
+  .complete {
+    img {
+      height: 45px;
+      width: 45px;
+      margin-top: 10px;
+      margin-right: 10px;
+    }
+
+
+
+    ol {
+      li {
+        margin-left: 18px;
+        margin-bottom: 10px;
+      }
+    }
+  }
+
 }

@@ -1,7 +1,7 @@
 define [], () ->
 
   settings = {
-    DEBUG: true,
+    DEBUG: false,
     LOG_EVENTS_TO_SERVER: false,
 
     API_URI: "/tutorial/api/",
@@ -18,7 +18,6 @@ define [], () ->
       complete: "complete"
       render: "render"
     }
-
   }
 
   return settings

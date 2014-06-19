@@ -1,4 +1,4 @@
-define ['models/Question', 'views/main', 'views/terminal', 'parsers/main', 'settings'], ( Question, ApplicationView, TerminalView, Parser, settings ) ->
+define ['models/question', 'views/main', 'views/terminal', 'parsers/main', 'settings'], ( Question, ApplicationView, TerminalView, Parser, settings ) ->
 
   class Controller
 
@@ -21,15 +21,13 @@ define ['models/Question', 'views/main', 'views/terminal', 'parsers/main', 'sett
           console.warn({ error: "invalid hash", description: "location hash invalid"})
           @currentQuestionNumber = 0
 
-      for number in [0..(@questionList.length - 1)]
-        @applicationView.drawStatusMarker(number)
+      @applicationView.drawSelectionDropdown(questionList)
 
       @setQuestion(@currentQuestionNumber)
 
       # if we're debugging we want fullscreen right away
       if settings.DEBUG is true
         @goFullScreen()
-
 
 
     log = (logline) ->
@@ -58,18 +56,15 @@ define ['models/Question', 'views/main', 'views/terminal', 'parsers/main', 'sett
       @lastQuestionNumber = @currentQuestionNumber
 
 
-
     goFullScreen: () ->
       data = {
         type: settings.EVENT_TYPES.start
         question: @currentQuestionNumber
       }
       @logEvent(data)
-
       @applicationView.goFullScreen()
       @terminalView.resize()
       return
-
 
     leaveFullScreen: () ->
       @applicationView.leaveFullScreen()
@@ -93,7 +88,7 @@ define ['models/Question', 'views/main', 'views/terminal', 'parsers/main', 'sett
 
 
       if inputs[0] is 'hi'
-        term.echo 'hi there! What is your name??'
+        term.echo 'hello there! What is your name??'
         term.push (input, term) ->
           term.echo input + ' is a pretty name'
 

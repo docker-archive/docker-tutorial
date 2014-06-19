@@ -10,52 +10,68 @@
   <div id="main">
 
     <div id="tutorialTop" class="togglesize hide-when-small">
-        <img class="logo" src="{% static 'img/nav/docker-logo-loggedin.png' %}" alt="Docker">
+        <img src="{% static 'img/docker-letters.png' %}" alt="Docker">
+        <h1>Learn Docker</h1>
 
-        <!-- exit fullscreen -->
-        <a id="fullSizeClose" class="closeButton pull-right" title="exit fullscreen mode"></a>
+        <a id="fullSizeClose" href="#" class="closeButton"><img src="{% static 'img/fullscreen_exit_32x32.png' %}" title="close fullscreen"> </a>
 
-        <h1>Try it!</h1>
-
-        <div class="btn-group add-repository stepselector">
-            <a id="stepselector-button" class="btn dropdown-toggle " data-toggle="dropdown" href="#">
-              Step <span class="current">Current</span>/<span class="total">Total</span> <span class="docker-caret"></span>
-            </a>
-            <ul id="stepDropdown" class="dropdown-menu">
-              <li id="stepselector-0" ><a href="#">Step 1</a></li>
-              <!-- dropdown menu links -->
-            </ul>
+        <div id="progress-indicator">
+            <span id="progress-marker-0" class="progress-marker">
+                <svg xmlns="http://www.w3.org/2000/svg" version="1.1"
+                    style="width:30px; height:30px;">>
+                <circle cx="50%" cy="50%" r="50%" fill="#008BB8" ></circle>
+                <text x="50%" dy="50%" text-anchor="middle" dominant-baseline="central" fill="white">i</text>
+                </svg>
+            </span>
         </div>
     </div>
 
     <div id="leftside" class="left togglesize hide-when-small">
-
-      <div id="instructions" class="text body">
-        <h1 class="title"></h1>
-        <div class="text">
-
-        </div>
+      <div id="return-back">
+        <!--<a id="fullSizeClose" class="home-link3"><i class="icon-arrow-left"></i> Back</a>-->
       </div>
+      <hr>
 
-      <div id="assignment">
+      <!--<div id="step-indicator">-->
+        <!--<span>Step</span><span id="step-no">1</span>-->
+      <!--</div>-->
+      <!---->
+      <hr>
 
-        <h1>Assignment</h1>
-        <span class="assignment"></span>
-      </div>
+      <!--<div id="progress-indicator" class="clearfix">-->
+        <!--<span id="progress-marker-0" class="progress-marker">-->
+            <!--<svg xmlns="http://www.w3.org/2000/svg" version="1.1"-->
+                <!--style="width:30px; height:30px;">>-->
+            <!--<circle cx="50%" cy="50%" r="50%" fill="#008BB8" ></circle>-->
+            <!--<text x="50%" dy="50%" text-anchor="middle" dominant-baseline="central" fill="white">i</text>-->
+            <!--</svg>-->
+        <!--</span>-->
+      <!--</div>-->
 
-      <div id="tips">
-        <div class="tiptext" >
-          <h1>Tips</h1>
-          <div id="tipShownText" class="">
-            This is what the written tip looks like
-          </div>
-        </div>
-      </div>
+      <div id="instructions" class="text body"></div>
+
+      <div id="assignment" class="text body"></div>
+
+      <hr>
 
       <div id="command">
         <div class="text" >
           <h3><i class="icon-question-sign"></i> Show the answer.</h3>
           <div id="commandShownText" class="hidden"></div>
+        </div>
+      </div>
+
+      <hr>
+
+      <div id="tips">
+        <div class="tiptext" >
+          <h3>Tips</h3>
+{#          <div id="tipHiddenText" class="box">#}
+{#            click here for tips#}
+{#          </div>#}
+          <div id="tipShownText" class="">
+            This is what the written tip looks like
+          </div>
         </div>
       </div>
 

@@ -55,6 +55,9 @@ define ['settings'], (settings) ->
     log = (logline) ->
       console.log("View: " + logline)
 
+    ###
+      Manipulate the layout
+    ###
 
     goFullScreen: () ->
       console.debug("going to fullsize mode")
@@ -96,8 +99,9 @@ define ['settings'], (settings) ->
       console.debug("render question called")
 
       $('#instructions').hide().fadeIn()
+      $('#instructions .title').html(_q.title)
       $('#instructions .text').html(_q.html)
-      $('#instructions .assignment').html(_q.assignment)
+      $('#assignment .assignment').html(_q.assignment)
       $('#tipShownText').html(_q.tip)
 
       if _q.command_show
@@ -107,10 +111,13 @@ define ['settings'], (settings) ->
 
 
       # update markers
-      $('#marker-' + @controller.lastQuestionNumber).addClass("complete").removeClass("active")
-      $('#marker-' + @controller.currentQuestionNumber).addClass("active")
+#      $('#marker-' + @controller.lastQuestionNumber).addClass("complete").removeClass("active")
+#      $('#marker-' + @controller.currentQuestionNumber).addClass("active")
 
-      $('#question-number text').html(@controller.currentQuestionNumber)
+      $('#stepselector-' + @controller.lastQuestionNumber).addClass("complete").removeClass("active")
+      $('#stepselector-' + @controller.currentQuestionNumber).addClass("active")
+
+      $('#stepselector-button .current').text(@controller.currentQuestionNumber)
 #
 #      window.intermediateResults = (input) ->
 #        if _q.intermediateresults
@@ -157,16 +164,42 @@ define ['settings'], (settings) ->
     statusMarker: $('#progress-marker-0')
     progressIndicator: $('#progress-indicator')
 
-    drawStatusMarker: (i) =>
-      if i == 0
-        marker = @statusMarker
-      else
-        marker = @statusMarker.clone()
-        marker.appendTo(@progressIndicator)
+    stepSelector: $('#stepselector-0')
+    stepDropdown: $('#stepDropdown')
 
-      marker.attr("id", "marker-" + i)
-      marker.find('text').get(0).textContent = i
-      marker.click( => @controller.setQuestion(i) )
+
+    drawSelectionDropdown: (questionList) =>
+
+      _controller = @controller
+
+      i = 0
+      for question in questionList
+        question.number = i
+        i++
+
+      setClick = (marker, question) ->
+        marker.click( ->
+          _controller.setQuestion(question.number)
+        )
+
+      for question in questionList
+
+        if question.number == 0
+          marker = @stepSelector
+        else
+          marker = @stepSelector.clone()
+          marker.appendTo(@stepDropdown)
+
+        marker.attr("id", "stepselector-" + question.number)
+        marker.find('a').get(0).href = "#" + question.number
+        marker.find('a').get(0).textContent = question.number + " " + question.title
+
+        # Set click out of function to create closure
+        setClick(marker, question)
+
+
+      $('#stepselector-button .total').text(questionList.length)
+
 
   return ApplicationView
 
