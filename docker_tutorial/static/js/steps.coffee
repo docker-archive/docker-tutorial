@@ -158,7 +158,7 @@ html: """
       <h3>Run your new image</h3>
       <p>Now you have basically setup a complete, self contained environment with the 'ping' program installed. </p>
       <p>Your image can now be run on any host that runs Docker.</p>
-      <p>Lets run this image on this machine.</p>
+      <p>Let's run this image on this machine.</p>
       """
 assignment: """
       <h3>Assignment</h3>
